@@ -1,3 +1,0 @@
-[console_scripts]
-insights-client = insights_client:_main
-

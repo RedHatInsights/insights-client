@@ -1,8 +1,0 @@
-setup.py
-insights_client/__init__.py
-insights_client/__main__.py
-insights_client.egg-info/PKG-INFO
-insights_client.egg-info/SOURCES.txt
-insights_client.egg-info/dependency_links.txt
-insights_client.egg-info/entry_points.txt
-insights_client.egg-info/top_level.txt
