@@ -44,7 +44,7 @@ echo "Running Insights Client."
 # Download the new Client Eggo
 if [ $OFFLINE == 0 ] && [ $DEVMODE == 0 ]; then
 	echo "Obtaining Insights Client"
-	EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output uploader.json https://cert-api.access.redhat.com/r/insights/static/insights-client.egg)
+	EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output insights-client.egg https://cert-api.access.redhat.com/r/insights/static/insights-client.egg)
 	echo "Client retrieval response "$EGG_CURL
 	if [ $EGG_CURL != 200 ]; then echo "Egg retrieval failed."; exit 1; fi;
 	if [ $EGG_CURL == 200 ]; then echo "Egg retrieval success."; fi;
