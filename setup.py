@@ -7,7 +7,7 @@ setup(
     author_email="rbrantle@redhat.com",
     license="GPL",
 	packages = find_packages(),
-	entry_points={'console_scripts': ['insights-client = insights_client:_main']},
+	entry_points={'console_scripts': ['insights-client = insights_client:main']},
 	py_modules=['__main__'],
 	include_package_data=True
 	)
