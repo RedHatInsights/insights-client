@@ -5,6 +5,7 @@ if [ $? == 1 ]; then echo "Python was not detected. Exiting."; exit 1; fi;
 # Define the help function
 # -h flag
 function show_help {
+	# TODO: Make this run python insights-client.egg --help
 	echo "Usage: insights-client [options]"
 	echo ""
 	echo "Options:"
@@ -20,6 +21,7 @@ function show_help {
 # Define the version function
 # -v flag
 function show_version {
+	# TODO: Make this run python insights-client.egg --version
 	echo "Insights Client Version X.X.X"
 	exit 0;
 }
@@ -30,7 +32,9 @@ DEVMODE=0
 USEGIT=0
 NOGPG=0
 VERBOSE=0
-while getopts "dhvVgG" opt; do
+DONTBUILD=0
+# TODO: Make this support --verbose, --help, --etc long flags
+while getopts "dhvVgGb" opt; do
 	case "$opt" in
 	h) show_help ;;
 	v) show_version ;;
@@ -38,6 +42,7 @@ while getopts "dhvVgG" opt; do
 	g) USEGIT=1 ;;
 	G) NOGPG=1 ;;
 	V) VERBOSE=1 ;;
+	b) DONTBUILD=1 ;;
 	esac
 done
 shift $((OPTIND-1))
@@ -70,26 +75,39 @@ else
 	if [ $EGG_CURL == 200 ]; then verbose_output "Egg retrieval success"; fi;
 fi
 
+# If we are running in development mode, build the new egg from local
+if [ $DEVMODE == 1 ] && [ $DONTBUILD == 0 ]; then
+	verbose_output "Running in development mode, building egg from local source"
+	python setup.py bdist_egg > /dev/null 2>&1
+else
+	verbose_output "Not building new egg, don't build flag set"
+fi
+
+
+
 # Verify the eggo if not bypassed via -G flag
 EGG_VERIFICATION=0
 if [ $NOGPG == 0 ]; then
 	verbose_output "Verifying egg"
-	EGG_VERIFICATION_EXEC=$(gpg --verify redhat.gpg insights-client.egg > /dev/null 2>&1)
+	GPG_KEY="redhat.gpg"
+	EGG_LOCATION="insights-client.egg"
+	if [ $DEVMODE == 1 ]; then 
+		GPG_KEY="redhat-dev.gpg";
+		EGG_LOCATION="dist/*.egg";
+	fi;
+	gpg --verify $GPG_KEY $EGG_LOCATION > /dev/null 2>&1
 	EGG_VERIFICATION=$?
 	# Bail if it doesn't check out
-	if [ $EGG_VERIFICATION > 1 ]; then
+	if [ $EGG_VERIFICATION != 0 ]; then
 		verbose_output "Egg verification failed";
 		exit 1;
+	else
+		verbose_output "Egg verification passed";
 	fi
 else
 	verbose_output "Egg verification bypassed"
 fi
 
-# If we are running in development mode, build the new egg from local
-if [ $DEVMODE == 1 ]; then
-	verbose_output "Running in development mode, building egg from local source"
-	python setup.py bdist_egg > /dev/null 2>&1
-fi
 
 # Hatch the egg if it checks out
 # The egg will check out if:

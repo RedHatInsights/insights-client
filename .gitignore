@@ -2,3 +2,4 @@ insights_client.egg-info/
 build/
 dist/
 insights_client/*.pyc
+redhat-dev.gpg

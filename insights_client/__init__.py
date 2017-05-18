@@ -11,7 +11,7 @@ def main():
 	'''
 	Main entry point
 	'''
-	print "Running Insights Client"
+	print "Running Insights Client Egg"
 	sys.exit(0)
 
 if __name__ == '__main__':
