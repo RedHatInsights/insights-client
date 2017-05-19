@@ -2,8 +2,8 @@
 WHICH_PYTHON=$(which python > /dev/null 2>&1)
 if [ $? == 1 ]; then echo "Python was not detected. Exiting."; exit 1; fi;
 
-# Check if insights-client is already installed
-WHICH_INSIGHTS_CLIENT=$(which insights-client > /dev/null 2>&1)
+# Check if insights-core is already installed
+WHICH_INSIGHTS_CLIENT=$(which insights-core > /dev/null 2>&1)
 INSIGHTS_CLIENT_INSTALLED=0
 if [ $? == 0 ]; then INSIGHTS_CLIENT_INSTALLED=1; fi;
 
@@ -52,7 +52,7 @@ function show_help {
 	if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
 		# Run whatever help mode is already installed
 		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
-			insights-client --help
+			insights-core --help
 			exit 0;
 		# otherwise, build it and verify it as usual
 		# then run it
@@ -81,7 +81,7 @@ function show_version {
 	if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
 		# Run whatever version output is already installed
 		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
-			insights-client --version
+			insights-core --version
 			exit 0;
 		# otherwise, build it and verify it as usual
 		# then run it
@@ -103,9 +103,9 @@ function verbose_output {
 
 # Define the download function for the client egg
 # 1) Not bypassed via devmode through -d flag
-EGG_URL="https://cert-api.access.redhat.com/r/insights/static/insights-client.egg"
+EGG_URL="https://cert-api.access.redhat.com/r/insights/static/insights-core.egg"
 if [ $USEGIT == 1 ]; then
-	EGG_URL="https://raw.githubusercontent.com/RedHatInsights/insights-client/master/insights-client.egg"
+	EGG_URL="https://raw.githubusercontent.com/RedHatInsights/insights-client/master/insights-core.egg"
 fi
 function download_client_eggo {
 	if [ $DEVMODE == 1 ]; then
@@ -114,7 +114,7 @@ function download_client_eggo {
 		verbose_output "Obtaining Insights Client"
 
 		#TODO: Probably need to stick this in /tmp somewhere...
-		EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output insights-client.egg $EGG_URL)
+		EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output insights-core.egg $EGG_URL)
 		verbose_output "Client retrieval response "$EGG_CURL""
 		if [ $EGG_CURL != 200 ]; then verbose_output "Egg retrieval failed"; exit 1; fi;
 		if [ $EGG_CURL == 200 ]; then verbose_output "Egg retrieval success"; fi;
@@ -135,7 +135,7 @@ function verify_eggo {
 	if [ $NOGPG == 0 ]; then
 		verbose_output "Verifying egg"
 		GPG_KEY="redhat.gpg"
-		EGG_LOCATION="insights-client.egg"
+		EGG_LOCATION="insights-core.egg"
 		if [ $DEVMODE == 1 ]; then 
 			GPG_KEY="redhat-dev.gpg";
 			EGG_LOCATION="dist/*.egg";
@@ -166,7 +166,7 @@ function hatch_eggo {
 			python dist/*.egg $ARGS
 		else
 			verbose_output "Running egg from Git or Mothership"
-			python insights-client.egg $ARGS
+			python insights-core.egg $ARGS
 		fi
 	fi
 }

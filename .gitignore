@@ -1,5 +1,5 @@
-insights_client.egg-info/
+insights_core.egg-info/
 build/
 dist/
-insights_client/*.pyc
+insights_core/*.pyc
 redhat-dev.gpg
