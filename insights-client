@@ -2,29 +2,11 @@
 WHICH_PYTHON=$(which python > /dev/null 2>&1)
 if [ $? == 1 ]; then echo "Python was not detected. Exiting."; exit 1; fi;
 
-# Define the help function
-# -h flag
-function show_help {
-	# TODO: Make this run python insights-client.egg --help
-	echo "Usage: insights-client [options]"
-	echo ""
-	echo "Options:"
-	echo -e "-h\t HALP!"
-	echo -e "-v\t Get the version."
-	echo -e "-V\t Verbose output."
-	echo -e "-d\t Run in development mode, this uses the local egg source instead of reaching out to the mothership."
-	echo -e "-g\t Retrieve the Egg from the Git repo https://github.com/RedHatInsights/insights-client instead of Red Hat mothership."
-	echo -e "-G\t Run with no GPG verficiation."
-	exit 0;
-}
+# Check if insights-client is already installed
+WHICH_INSIGHTS_CLIENT=$(which insights-client > /dev/null 2>&1)
+INSIGHTS_CLIENT_INSTALLED=0
+if [ $? == 0 ]; then INSIGHTS_CLIENT_INSTALLED=1; fi;
 
-# Define the version function
-# -v flag
-function show_version {
-	# TODO: Make this run python insights-client.egg --version
-	echo "Insights Client Version X.X.X"
-	exit 0;
-}
 
 # Setup flags & placeholders
 OPTIND=1
@@ -33,11 +15,26 @@ USEGIT=0
 NOGPG=0
 VERBOSE=0
 DONTBUILD=0
-# TODO: Make this support --verbose, --help, --etc long flags
-while getopts "dhvVgGb" opt; do
+SHOWHELP=0
+SHOWVERSION=0
+ARGS=$@
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    "--help") set -- "$@" "-h" ;;
+    "--version") set -- "$@" "-v" ;;
+	"--devmode") set -- "$@" "-d" ;;
+	"--usegit") set -- "$@" "-g" ;;
+	"--nogpg") set -- "$@" "-" ;;
+	"--verbose") set -- "$@" "-V" ;;
+	"--dontbuild") set -- "$@" "b" ;;
+    *)        set -- "$@" "$arg"
+  esac
+done
+while getopts "hvdgGVb" opt; do
 	case "$opt" in
-	h) show_help ;;
-	v) show_version ;;
+	h) SHOWHELP=1 ;;
+	v) SHOWVERSION=1 ;;
 	d) DEVMODE=1 ;;
 	g) USEGIT=1 ;;
 	G) NOGPG=1 ;;
@@ -48,79 +45,149 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
+
+# Define the help function
+# -h flag
+function show_help {
+	if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
+		# Run whatever help mode is already installed
+		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
+			insights-client --help
+			exit 0;
+		# otherwise, build it and verify it as usual
+		# then run it
+		else
+			do_the_things
+		fi
+	else
+		# These are default help options that will need to be updated as the actual client help options are updated
+		# This gives the illusion that the package is actually installed...
+		echo "Usage: insights-client [options]"
+		echo ""
+		echo "Options:"
+		echo -e "-h | --help\t HALP!"
+		echo -e "-v | --version\t Get the version."
+		echo -e "-V | --verbose\t Verbose output."
+		echo -e "-d | --devmode\t Run in development mode, this uses the local egg source instead of reaching out to the mothership."
+		echo -e "-g | --usegit\t Retrieve the Egg from the Git repo https://github.com/RedHatInsights/insights-client instead of Red Hat mothership."
+		echo -e "-G | --nogpg\t Run with no GPG verficiation."
+		exit 0;
+	fi
+}
+
+# Define the version function
+# -v flag
+function show_version {
+	if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
+		# Run whatever version output is already installed
+		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
+			insights-client --version
+			exit 0;
+		# otherwise, build it and verify it as usual
+		# then run it
+		else
+			do_the_things
+		fi
+	else
+		echo "Insights Client Version X.X.X"
+		exit 0;
+	fi
+}
+
 # Define the verbose output
 # -V  flag
 function verbose_output {
 	if [ $VERBOSE == 1 ]; then echo $1; fi;
 }
 
-# Setup the Egg Retrieval URL
+
+# Define the download function for the client egg
+# 1) Not bypassed via devmode through -d flag
 EGG_URL="https://cert-api.access.redhat.com/r/insights/static/insights-client.egg"
 if [ $USEGIT == 1 ]; then
 	EGG_URL="https://raw.githubusercontent.com/RedHatInsights/insights-client/master/insights-client.egg"
 fi
-
-# Verbose stuff
-verbose_output "Running Insights Client"
-
-# Download the new Client Eggo if:
-# 1) Not bypassed via devmode through -d flag
-if [ $DEVMODE == 1 ]; then
-	verbose_output "Not retrieving new Egg, running in development mode"
-else
-	verbose_output "Obtaining Insights Client"
-
-	#TODO: Probably need to stick this in /tmp somewhere...
-	EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output insights-client.egg $EGG_URL)
-	verbose_output "Client retrieval response "$EGG_CURL""
-	if [ $EGG_CURL != 200 ]; then verbose_output "Egg retrieval failed"; exit 1; fi;
-	if [ $EGG_CURL == 200 ]; then verbose_output "Egg retrieval success"; fi;
-fi
-
-# If we are running in development mode, build the new egg from local
-if [ $DEVMODE == 1 ] && [ $DONTBUILD == 0 ]; then
-	verbose_output "Running in development mode, building egg from local source"
-	python setup.py bdist_egg > /dev/null 2>&1
-else
-	verbose_output "Not building new egg, don't build flag set"
-fi
-
-
-
-# Verify the eggo if not bypassed via -G flag
-EGG_VERIFICATION=0
-if [ $NOGPG == 0 ]; then
-	verbose_output "Verifying egg"
-	GPG_KEY="redhat.gpg"
-	EGG_LOCATION="insights-client.egg"
-	if [ $DEVMODE == 1 ]; then 
-		GPG_KEY="redhat-dev.gpg";
-		EGG_LOCATION="dist/*.egg";
-	fi;
-	gpg --verify $GPG_KEY $EGG_LOCATION > /dev/null 2>&1
-	EGG_VERIFICATION=$?
-	# Bail if it doesn't check out
-	if [ $EGG_VERIFICATION != 0 ]; then
-		verbose_output "Egg verification failed";
-		exit 1;
+function download_client_eggo {
+	if [ $DEVMODE == 1 ]; then
+		verbose_output "Not retrieving new Egg, running in development mode"
 	else
-		verbose_output "Egg verification passed";
+		verbose_output "Obtaining Insights Client"
+
+		#TODO: Probably need to stick this in /tmp somewhere...
+		EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output insights-client.egg $EGG_URL)
+		verbose_output "Client retrieval response "$EGG_CURL""
+		if [ $EGG_CURL != 200 ]; then verbose_output "Egg retrieval failed"; exit 1; fi;
+		if [ $EGG_CURL == 200 ]; then verbose_output "Egg retrieval success"; fi;
 	fi
-else
-	verbose_output "Egg verification bypassed"
-fi
 
+	# If we are running in development mode, build the new egg from local
+	if [ $DEVMODE == 1 ] && [ $DONTBUILD == 0 ]; then
+		verbose_output "Running in development mode, building egg from local source"
+		python setup.py bdist_egg > /dev/null 2>&1
+	else
+		verbose_output "Not building new egg, don't build flag set"
+	fi
+}
 
-# Hatch the egg if it checks out
+# Define the function to verify the egg
+EGG_VERIFICATION=0
+function verify_eggo {
+	if [ $NOGPG == 0 ]; then
+		verbose_output "Verifying egg"
+		GPG_KEY="redhat.gpg"
+		EGG_LOCATION="insights-client.egg"
+		if [ $DEVMODE == 1 ]; then 
+			GPG_KEY="redhat-dev.gpg";
+			EGG_LOCATION="dist/*.egg";
+		fi;
+		gpg --verify $GPG_KEY $EGG_LOCATION > /dev/null 2>&1
+		EGG_VERIFICATION=$?
+		# Bail if it doesn't check out
+		if [ $EGG_VERIFICATION != 0 ]; then
+			verbose_output "Egg verification failed";
+			exit 1;
+		else
+			verbose_output "Egg verification passed";
+		fi
+	else
+		verbose_output "Egg verification bypassed"
+	fi
+}
+
+# Define the function run the egg and/or install the egg
+# Depending on flags
 # The egg will check out if:
 # 1) GPG is verified
 # 2) GPG is bypassed
-if [ $EGG_VERIFICATION == 0 ]; then
-	if [ $DEVMODE == 1 ]; then
-		verbose_output "Running development egg"
-		python dist/*.egg
-	else
-		verbose_output "Running egg from Git or Mothership"
-		python insights-client.egg
+function hatch_eggo {
+	if [ $EGG_VERIFICATION == 0 ]; then
+		if [ $DEVMODE == 1 ]; then
+			verbose_output "Running development egg"
+			python dist/*.egg $ARGS
+		else
+			verbose_output "Running egg from Git or Mothership"
+			python insights-client.egg $ARGS
+		fi
 	fi
-fi
+}
+
+if [ $SHOWHELP == 1 ]; then show_help; fi
+if [ $SHOWVERSION == 1 ]; then show_version; fi
+
+# Verbose stuff
+function do_the_things {
+
+	# Download the new Client Eggo if:
+	download_client_eggo
+
+	# Verify the eggo if not bypassed via -G flag
+	verify_eggo
+
+	# Hatch the egg if it checks out
+	hatch_eggo
+
+}
+
+# Main execution procedure
+verbose_output "Running Insights Client"
+do_the_things
