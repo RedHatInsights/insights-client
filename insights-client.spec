@@ -8,6 +8,7 @@ License:                GPLv2+
 URL:                    http://access.redhat.com/insights
 Group:                  Applications/System
 Vendor:                 Red Hat, Inc.
+BuildArch:              noarch
 
 %description
 Sends insightful information to Red Hat for automated analysis
@@ -28,7 +29,6 @@ Requires: pciutils
 %if 0%{?rhel} && 0%{?rhel} > 6
 Requires: libcgroup-tools
 %endif
-BuildArch: noarch
 
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
