@@ -69,6 +69,8 @@ if [ $DEVMODE == 1 ]; then
 	verbose_output "Not retrieving new Egg, running in development mode"
 else
 	verbose_output "Obtaining Insights Client"
+
+	#TODO: Probably need to stick this in /tmp somewhere...
 	EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output insights-client.egg $EGG_URL)
 	verbose_output "Client retrieval response "$EGG_CURL""
 	if [ $EGG_CURL != 200 ]; then verbose_output "Egg retrieval failed"; exit 1; fi;
