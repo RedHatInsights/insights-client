@@ -3,10 +3,9 @@ WHICH_PYTHON=$(which python > /dev/null 2>&1)
 if [ $? == 1 ]; then echo "Python was not detected. Exiting."; exit 1; fi;
 
 # Check if insights-core is already installed
-WHICH_INSIGHTS_CLIENT=$(which insights-core > /dev/null 2>&1)
 INSIGHTS_CLIENT_INSTALLED=0
+WHICH_INSIGHTS_CLIENT=$(which insights-core > /dev/null 2>&1)
 if [ $? == 0 ]; then INSIGHTS_CLIENT_INSTALLED=1; fi;
-
 
 # Setup flags & placeholders
 OPTIND=1
@@ -25,9 +24,9 @@ for arg in "$@"; do
     "--version") set -- "$@" "-v" ;;
 	"--devmode") set -- "$@" "-d" ;;
 	"--usegit") set -- "$@" "-g" ;;
-	"--nogpg") set -- "$@" "-" ;;
+	"--nogpg") set -- "$@" "-G" ;;
 	"--verbose") set -- "$@" "-V" ;;
-	"--dontbuild") set -- "$@" "b" ;;
+	"--dontbuild") set -- "$@" "-b" ;;
     *)        set -- "$@" "$arg"
   esac
 done
