@@ -2,7 +2,7 @@ Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.0.0
 Release:                0%{?dist}
-Source0:				insights-client
+Source0:                insights-client
 Epoch:                  0
 License:                GPLv2+
 URL:                    http://access.redhat.com/insights
