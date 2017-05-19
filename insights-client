@@ -17,6 +17,7 @@ DONTBUILD=0
 SHOWHELP=0
 SHOWVERSION=0
 ARGS=$@
+USEINSTALLEDCORE=0
 for arg in "$@"; do
   shift
   case "$arg" in
@@ -27,10 +28,11 @@ for arg in "$@"; do
 	"--nogpg") set -- "$@" "-G" ;;
 	"--verbose") set -- "$@" "-V" ;;
 	"--dontbuild") set -- "$@" "-b" ;;
+	"--useinstalledcore") set -- "$@" "-u" ;;
     *)        set -- "$@" "$arg"
   esac
 done
-while getopts "hvdgGVb" opt; do
+while getopts "hvdgGVbu" opt; do
 	case "$opt" in
 	h) SHOWHELP=1 ;;
 	v) SHOWVERSION=1 ;;
@@ -39,6 +41,7 @@ while getopts "hvdgGVb" opt; do
 	G) NOGPG=1 ;;
 	V) VERBOSE=1 ;;
 	b) DONTBUILD=1 ;;
+	u) USEINSTALLEDCORE=1;;
 	esac
 done
 shift $((OPTIND-1))
@@ -67,9 +70,11 @@ function show_help {
 		echo -e "-h | --help\t HALP!"
 		echo -e "-v | --version\t Get the version."
 		echo -e "-V | --verbose\t Verbose output."
-		echo -e "-d | --devmode\t Run in development mode, this uses the local egg source instead of reaching out to the mothership."
-		echo -e "-g | --usegit\t Retrieve the Egg from the Git repo https://github.com/RedHatInsights/insights-client instead of Red Hat mothership."
+		echo -e "-d | --devmode\t Run in development mode, this uses the local core source instead of reaching out to the mothership."
+		echo -e "-g | --usegit\t Retrieve the Core from the Git repo https://github.com/RedHatInsights/insights-client instead of Red Hat mothership."
 		echo -e "-G | --nogpg\t Run with no GPG verficiation."
+		echo -e "-b | --dontbuild\t Don't build a new core."
+		echo -e "-u | --useinstalledcore\t Use whatever insights-core package is already installed."
 		exit 0;
 	fi
 }
@@ -108,31 +113,36 @@ if [ $USEGIT == 1 ]; then
 fi
 function download_client_eggo {
 	if [ $DEVMODE == 1 ]; then
-		verbose_output "Not retrieving new Egg, running in development mode"
+		verbose_output "Not retrieving new Core, running in development mode"
+	elif [ $USEINSTALLEDCORE == 1 ]; then
+		verbose_output "Not building or retrieving new Core, using installed Core"
 	else
 		verbose_output "Obtaining Insights Client"
 
 		#TODO: Probably need to stick this in /tmp somewhere...
 		EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output insights-core.egg $EGG_URL)
 		verbose_output "Client retrieval response "$EGG_CURL""
-		if [ $EGG_CURL != 200 ]; then verbose_output "Egg retrieval failed"; exit 1; fi;
-		if [ $EGG_CURL == 200 ]; then verbose_output "Egg retrieval success"; fi;
+		if [ $EGG_CURL != 200 ]; then verbose_output "Core retrieval failed"; exit 1; fi;
+		if [ $EGG_CURL == 200 ]; then verbose_output "Core retrieval success"; fi;
 	fi
 
 	# If we are running in development mode, build the new egg from local
 	if [ $DEVMODE == 1 ] && [ $DONTBUILD == 0 ]; then
-		verbose_output "Running in development mode, building egg from local source"
+		verbose_output "Running in development mode, building core from local source"
 		python setup.py bdist_egg > /dev/null 2>&1
+	elif [ $USEINSTALLEDCORE  == 1 ]; then
+		verbose_output "Not building new Core, using installed Core"
 	else
-		verbose_output "Not building new egg, don't build flag set"
+		verbose_output "Not building new Core, don't build flag set"
 	fi
 }
 
 # Define the function to verify the egg
 EGG_VERIFICATION=0
+if [ $USEINSTALLEDCORE == 1 ]; then NOGPG=1; fi;
 function verify_eggo {
 	if [ $NOGPG == 0 ]; then
-		verbose_output "Verifying egg"
+		verbose_output "Verifying core"
 		GPG_KEY="redhat.gpg"
 		EGG_LOCATION="insights-core.egg"
 		if [ $DEVMODE == 1 ]; then 
@@ -163,8 +173,11 @@ function hatch_eggo {
 		if [ $DEVMODE == 1 ]; then
 			verbose_output "Running development egg"
 			python dist/*.egg $ARGS
+		elif [ $USEINSTALLEDCORE == 1 ]; then
+			verbose_output "Running locally installed core"
+			insights-core $ARGS
 		else
-			verbose_output "Running egg from Git or Mothership"
+			verbose_output "Running core from Git or Mothership"
 			python insights-core.egg $ARGS
 		fi
 	fi
