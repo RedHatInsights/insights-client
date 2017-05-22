@@ -138,11 +138,11 @@ function check_version {
 # Define the download function for the client egg
 # 1) Not bypassed via devmode through -d flag
 EGG_URL="https://cert-api.access.redhat.com/r/insights/static/insights-core.egg"
-if [ $USEGIT == 1 ]; then
-	EGG_URL="https://raw.githubusercontent.com/RedHatInsights/insights-client/master/insights-core.egg"
-fi
 TMP_EGG_LOC=$TMP_DIR"/insights-client.egg"
 function download_client_eggo {
+	if [ $USEGIT == 1 ]; then
+		EGG_URL="https://raw.githubusercontent.com/RedHatInsights/insights-client/master/insights-core.egg"
+	fi
 	if [ $DEVMODE == 1 ]; then
 		verbose_output "Not retrieving new Core, running in development mode"
 	elif [ $USEINSTALLEDCORE == 1 ]; then
@@ -169,9 +169,9 @@ function download_client_eggo {
 
 # Define the function to verify the egg
 EGG_VERIFICATION=0
-if [ $USEINSTALLEDCORE == 1 ]; then NOGPG=1; fi;
-if [ $USEGIT == 1 ]; then NOGPG=1; fi;
 function verify_eggo {
+	if [ $USEINSTALLEDCORE == 1 ]; then NOGPG=1; fi;
+	if [ $USEGIT == 1 ]; then NOGPG=1; fi;
 	if [ $NOGPG == 0 ]; then
 		verbose_output "Verifying core"
 		GPG_KEY="redhat.gpg"
@@ -233,14 +233,13 @@ if [ $SHOWVERSION == 1 ]; then show_version; fi
 function do_the_things {
 	# Only update the client if the version is behind
 	check_version
-	if [ $NEEDTOUPDATE == 1 ]; then
 
-		# Download the new Client Eggo if:
-		download_client_eggo
+	# Download the new Client Eggo if:
+	download_client_eggo
 
-		# Verify the eggo if not bypassed via -G flag
-		verify_eggo
-	fi
+	# Verify the eggo if not bypassed via -G flag
+	verify_eggo
+
 	# Hatch the egg if it checks out
 	run_eggo
 
