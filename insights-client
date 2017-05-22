@@ -7,6 +7,11 @@ INSIGHTS_CLIENT_INSTALLED=0
 WHICH_INSIGHTS_CLIENT=$(which insights-core > /dev/null 2>&1)
 if [ $? == 0 ]; then INSIGHTS_CLIENT_INSTALLED=1; fi;
 
+# Check if we can actually install the egg or need to run it im /tmp
+CANINSTALLEGG=0
+WHICH_EASY_INSTALL=$(which easy_install > /dev/null 2>&1)
+if [ $? == 0 ]; then CANINSTALLEGG=1; fi;
+
 # Setup flags & placeholders
 OPTIND=1
 DEVMODE=0
@@ -104,6 +109,30 @@ function verbose_output {
 	if [ $VERBOSE == 1 ]; then echo $1; fi;
 }
 
+# Define the function that checks what version we're running
+NEEDTOUPDATE=0
+VERSION_CURL_URL="https://cert-api.access.redhat.com/r/insights/static/insights-core.version"
+TMP_DIR=$(mktemp -d)
+TMP_VERSION_LOC=$TMP_DIR"/insights-core.version"
+function check_version { 
+	if [ $DEVMODE == 0 ] && [ $USEINSTALLEDCORE == 0 ] && [ $DONTBUILD == 0 ]; then
+		CURRENT_VERSION=0
+		if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
+			CURRENT_VERSION=$(insights-core --version)
+		fi
+		VERSION_CURL=$(curl --insecure --write-out %{http_code} --silent --output $TMP_VERSION_LOC $VERSION_CURL_URL)
+		if [ $VERSION_CURL == 200 ]; then
+			CURRENT_VERSION_STDOUT=$(cat $TMP_VERSION_LOC)	
+			if [ $VERSION_CURL_STDOUT > $CURRENT_VERSION ]; then NEEDTOUPDATE=1; fi;
+		else
+			verbose_output "There was an issue checking for new version"
+			USEINSTALLEDCORE=1
+		fi
+	else
+		verbose_output "Bypassing version check, --devmode, --useinstalledcore, or --dontbuild were flagged."
+	fi
+}
+
 
 # Define the download function for the client egg
 # 1) Not bypassed via devmode through -d flag
@@ -111,6 +140,7 @@ EGG_URL="https://cert-api.access.redhat.com/r/insights/static/insights-core.egg"
 if [ $USEGIT == 1 ]; then
 	EGG_URL="https://raw.githubusercontent.com/RedHatInsights/insights-client/master/insights-core.egg"
 fi
+TMP_EGG_LOC=$TMP_DIR"/insights-client.egg"
 function download_client_eggo {
 	if [ $DEVMODE == 1 ]; then
 		verbose_output "Not retrieving new Core, running in development mode"
@@ -119,8 +149,7 @@ function download_client_eggo {
 	else
 		verbose_output "Obtaining Insights Client"
 
-		#TODO: Probably need to stick this in /tmp somewhere...
-		EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output insights-core.egg $EGG_URL)
+		EGG_CURL=$(curl --insecure --write-out %{http_code} --silent --output $TMP_EGG_LOC $EGG_URL)
 		verbose_output "Client retrieval response "$EGG_CURL""
 		if [ $EGG_CURL != 200 ]; then verbose_output "Core retrieval failed"; exit 1; fi;
 		if [ $EGG_CURL == 200 ]; then verbose_output "Core retrieval success"; fi;
@@ -144,7 +173,7 @@ function verify_eggo {
 	if [ $NOGPG == 0 ]; then
 		verbose_output "Verifying core"
 		GPG_KEY="redhat.gpg"
-		EGG_LOCATION="insights-core.egg"
+		EGG_LOCATION=$TMP_EGG_LOC
 		if [ $DEVMODE == 1 ]; then 
 			GPG_KEY="redhat-dev.gpg";
 			EGG_LOCATION="dist/*.egg";
@@ -168,7 +197,7 @@ function verify_eggo {
 # The egg will check out if:
 # 1) GPG is verified
 # 2) GPG is bypassed
-function hatch_eggo {
+function run_eggo {
 	if [ $EGG_VERIFICATION == 0 ]; then
 		if [ $DEVMODE == 1 ]; then
 			verbose_output "Running development egg"
@@ -176,11 +205,23 @@ function hatch_eggo {
 		elif [ $USEINSTALLEDCORE == 1 ]; then
 			verbose_output "Running locally installed core"
 			insights-core $ARGS
+		elif [ $CANINSTALLEGG == 1 ]; then
+			verbose_output "Installing new core"
+			easy_install $TMP_EGG_LOC
+			if [ $? == 1 ]; then verbose_output "There was an issue installing the new core"; exit 1; fi;
+			verbose_output "Running new core"
+			insights-core $ARGS
 		else
-			verbose_output "Running core from Git or Mothership"
-			python insights-core.egg $ARGS
+			verbose_output "Running core directly"
+			python $TMP_EGG_LOC $ARGS
 		fi
 	fi
+}
+
+# Clean up after ourselves
+function clean_up {
+	verbose_output "Cleaning up"
+	rm -rf $TMP_EGG_DIR > /dev/null 2>&1
 }
 
 if [ $SHOWHELP == 1 ]; then show_help; fi
@@ -188,16 +229,21 @@ if [ $SHOWVERSION == 1 ]; then show_version; fi
 
 # Verbose stuff
 function do_the_things {
+	# Only update the client if the version is behind
+	check_version
+	if [ $NEEDTOUPDATE == 1 ]; then
 
-	# Download the new Client Eggo if:
-	download_client_eggo
+		# Download the new Client Eggo if:
+		download_client_eggo
 
-	# Verify the eggo if not bypassed via -G flag
-	verify_eggo
-
+		# Verify the eggo if not bypassed via -G flag
+		verify_eggo
+	fi
 	# Hatch the egg if it checks out
-	hatch_eggo
+	run_eggo
 
+	# Clean up time
+	clean_up
 }
 
 # Main execution procedure
