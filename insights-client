@@ -23,6 +23,7 @@ SHOWHELP=0
 SHOWVERSION=0
 ARGS=$@
 USEINSTALLEDCORE=0
+DONTCHECKVERSION=0
 for arg in "$@"; do
   shift
   case "$arg" in
@@ -34,10 +35,11 @@ for arg in "$@"; do
 	"--verbose") set -- "$@" "-V" ;;
 	"--dontbuild") set -- "$@" "-b" ;;
 	"--useinstalledcore") set -- "$@" "-u" ;;
+	"--dontcheckversion") set -- "$@" "-U" ;;
     *)        set -- "$@" "$arg"
   esac
 done
-while getopts "hvdgGVbu" opt; do
+while getopts "hvdgGVbuU" opt; do
 	case "$opt" in
 	h) SHOWHELP=1 ;;
 	v) SHOWVERSION=1 ;;
@@ -47,6 +49,7 @@ while getopts "hvdgGVbu" opt; do
 	V) VERBOSE=1 ;;
 	b) DONTBUILD=1 ;;
 	u) USEINSTALLEDCORE=1;;
+	U) DONTCHECKVERSION=1;;
 	esac
 done
 shift $((OPTIND-1))
@@ -55,7 +58,7 @@ shift $((OPTIND-1))
 
 # Define the help function
 # -h flag
-function show_help {
+function halp {
 	if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
 		# Run whatever help mode is already installed
 		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
@@ -64,7 +67,7 @@ function show_help {
 		# otherwise, build it and verify it as usual
 		# then run it
 		else
-			do_the_things
+			waffle_time
 		fi
 	else
 		# These are default help options that will need to be updated as the actual client help options are updated
@@ -86,7 +89,7 @@ function show_help {
 
 # Define the version function
 # -v flag
-function show_version {
+function whats_the_box_say {
 	if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
 		# Run whatever version output is already installed
 		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
@@ -95,7 +98,7 @@ function show_version {
 		# otherwise, build it and verify it as usual
 		# then run it
 		else
-			do_the_things
+			waffle_time
 		fi
 	else
 		echo "Insights Client Version X.X.X"
@@ -114,8 +117,12 @@ NEEDTOUPDATE=0
 VERSION_CURL_URL="https://cert-api.access.redhat.com/r/insights/static/insights-core.version"
 TMP_DIR=$(mktemp -d)
 TMP_VERSION_LOC=$TMP_DIR"/insights-core.version"
-function check_version { 
-	if [ $USEGIT == 1 ]; then NEEDTOUPDATE=1; return; fi;
+function read_the_box { 
+	if [ $USEGIT == 1 ]; then NEEDTOUPDATE=1; return; fi
+	if [ $DONTCHECKVERSION == 1 ]; then
+		verbose_output "Bypassing version check: --dontcheckversion was flagged."
+		return
+	fi
 	if [ $DEVMODE == 0 ] && [ $USEINSTALLEDCORE == 0 ] && [ $DONTBUILD == 0 ]; then
 		CURRENT_VERSION=0
 		if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
@@ -130,7 +137,7 @@ function check_version {
 			USEINSTALLEDCORE=1
 		fi
 	else
-		verbose_output "Bypassing version check, --devmode, --useinstalledcore, or --dontbuild were flagged."
+		verbose_output "Bypassing version check: --devmode, --useinstalledcore, or --dontbuild were flagged."
 	fi
 }
 
@@ -139,7 +146,7 @@ function check_version {
 # 1) Not bypassed via devmode through -d flag
 EGG_URL="https://cert-api.access.redhat.com/r/insights/static/insights-core.egg"
 TMP_EGG_LOC=$TMP_DIR"/insights-client.egg"
-function download_client_eggo {
+function open_freezer {
 	if [ $USEGIT == 1 ]; then
 		EGG_URL="https://raw.githubusercontent.com/RedHatInsights/insights-client/master/insights-core.egg"
 	fi
@@ -169,7 +176,7 @@ function download_client_eggo {
 
 # Define the function to verify the egg
 EGG_VERIFICATION=0
-function verify_eggo {
+function check_waffle {
 	if [ $USEINSTALLEDCORE == 1 ]; then NOGPG=1; fi;
 	if [ $USEGIT == 1 ]; then NOGPG=1; fi;
 	if [ $NOGPG == 0 ]; then
@@ -199,7 +206,7 @@ function verify_eggo {
 # The egg will check out if:
 # 1) GPG is verified
 # 2) GPG is bypassed
-function run_eggo {
+function put_in_toaster {
 	if [ $EGG_VERIFICATION == 0 ]; then
 		if [ $DEVMODE == 1 ]; then
 			verbose_output "Running development egg"
@@ -221,32 +228,32 @@ function run_eggo {
 }
 
 # Clean up after ourselves
-function clean_up {
+function leggo_my_eggo {
 	verbose_output "Cleaning up"
 	rm -rf $TMP_EGG_DIR > /dev/null 2>&1
 }
 
-if [ $SHOWHELP == 1 ]; then show_help; fi
-if [ $SHOWVERSION == 1 ]; then show_version; fi
+if [ $SHOWHELP == 1 ]; then halp; fi
+if [ $SHOWVERSION == 1 ]; then whats_the_box_say; fi
 
 # Verbose stuff
-function do_the_things {
+function waffle_time {
 	# Only update the client if the version is behind
-	check_version
+	read_the_box
 
 	# Download the new Client Eggo if:
-	download_client_eggo
+	open_freezer
 
 	# Verify the eggo if not bypassed via -G flag
-	verify_eggo
+	check_waffle
 
 	# Hatch the egg if it checks out
-	run_eggo
+	put_in_toaster
 
 	# Clean up time
-	clean_up
+	leggo_my_eggo
 }
 
 # Main execution procedure
 verbose_output "Running Insights Client"
-do_the_things
+waffle_time
