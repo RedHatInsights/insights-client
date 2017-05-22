@@ -58,7 +58,7 @@ shift $((OPTIND-1))
 
 # Define the help function
 # -h flag
-function halp {
+function show_help {
 	if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
 		# Run whatever help mode is already installed
 		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
@@ -67,7 +67,7 @@ function halp {
 		# otherwise, build it and verify it as usual
 		# then run it
 		else
-			waffle_time
+			do_the_things
 		fi
 	else
 		# These are default help options that will need to be updated as the actual client help options are updated
@@ -89,7 +89,7 @@ function halp {
 
 # Define the version function
 # -v flag
-function whats_the_box_say {
+function show_version {
 	if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
 		# Run whatever version output is already installed
 		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
@@ -98,7 +98,7 @@ function whats_the_box_say {
 		# otherwise, build it and verify it as usual
 		# then run it
 		else
-			waffle_time
+			do_the_things
 		fi
 	else
 		echo "Insights Client Version X.X.X"
@@ -117,7 +117,7 @@ NEEDTOUPDATE=0
 VERSION_CURL_URL="https://cert-api.access.redhat.com/r/insights/static/insights-core.version"
 TMP_DIR=$(mktemp -d)
 TMP_VERSION_LOC=$TMP_DIR"/insights-core.version"
-function read_the_box { 
+function check_version { 
 	if [ $USEGIT == 1 ]; then NEEDTOUPDATE=1; return; fi
 	if [ $DONTCHECKVERSION == 1 ]; then
 		verbose_output "Bypassing version check: --dontcheckversion was flagged."
@@ -146,7 +146,7 @@ function read_the_box {
 # 1) Not bypassed via devmode through -d flag
 EGG_URL="https://cert-api.access.redhat.com/r/insights/static/insights-core.egg"
 TMP_EGG_LOC=$TMP_DIR"/insights-client.egg"
-function open_freezer {
+function download_client_core {
 	if [ $USEGIT == 1 ]; then
 		EGG_URL="https://raw.githubusercontent.com/RedHatInsights/insights-client/master/insights-core.egg"
 	fi
@@ -176,7 +176,7 @@ function open_freezer {
 
 # Define the function to verify the egg
 EGG_VERIFICATION=0
-function check_waffle {
+function verify_core {
 	if [ $USEINSTALLEDCORE == 1 ]; then NOGPG=1; fi;
 	if [ $USEGIT == 1 ]; then NOGPG=1; fi;
 	if [ $NOGPG == 0 ]; then
@@ -191,13 +191,13 @@ function check_waffle {
 		EGG_VERIFICATION=$?
 		# Bail if it doesn't check out
 		if [ $EGG_VERIFICATION != 0 ]; then
-			verbose_output "Egg verification failed";
+			verbose_output "Core verification failed";
 			exit 1;
 		else
-			verbose_output "Egg verification passed";
+			verbose_output "Core verification passed";
 		fi
 	else
-		verbose_output "Egg verification bypassed"
+		verbose_output "Core verification bypassed"
 	fi
 }
 
@@ -206,10 +206,10 @@ function check_waffle {
 # The egg will check out if:
 # 1) GPG is verified
 # 2) GPG is bypassed
-function put_in_toaster {
+function run_core {
 	if [ $EGG_VERIFICATION == 0 ]; then
 		if [ $DEVMODE == 1 ]; then
-			verbose_output "Running development egg"
+			verbose_output "Running development core"
 			python dist/*.egg $ARGS
 		elif [ $USEINSTALLEDCORE == 1 ]; then
 			verbose_output "Running locally installed core"
@@ -228,32 +228,32 @@ function put_in_toaster {
 }
 
 # Clean up after ourselves
-function leggo_my_eggo {
+function clean_up {
 	verbose_output "Cleaning up"
 	rm -rf $TMP_EGG_DIR > /dev/null 2>&1
 }
 
-if [ $SHOWHELP == 1 ]; then halp; fi
-if [ $SHOWVERSION == 1 ]; then whats_the_box_say; fi
+if [ $SHOWHELP == 1 ]; then show_help; fi
+if [ $SHOWVERSION == 1 ]; then show_version; fi
 
 # Verbose stuff
-function waffle_time {
+function do_the_things {
 	# Only update the client if the version is behind
-	read_the_box
+	check_version
 
-	# Download the new Client Eggo if:
-	open_freezer
+	# Download the new Client Core if:
+	download_client_core
 
-	# Verify the eggo if not bypassed via -G flag
-	check_waffle
+	# Verify the core if not bypassed via -G flag
+	verify_core
 
-	# Hatch the egg if it checks out
-	put_in_toaster
+	# Hatch the core if it checks out
+	run_core
 
 	# Clean up time
-	leggo_my_eggo
+	clean_up
 }
 
 # Main execution procedure
 verbose_output "Running Insights Client"
-waffle_time
+do_the_things
