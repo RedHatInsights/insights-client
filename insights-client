@@ -115,6 +115,7 @@ VERSION_CURL_URL="https://cert-api.access.redhat.com/r/insights/static/insights-
 TMP_DIR=$(mktemp -d)
 TMP_VERSION_LOC=$TMP_DIR"/insights-core.version"
 function check_version { 
+	if [ $USEGIT == 1 ]; then NEEDTOUPDATE=1; return; fi;
 	if [ $DEVMODE == 0 ] && [ $USEINSTALLEDCORE == 0 ] && [ $DONTBUILD == 0 ]; then
 		CURRENT_VERSION=0
 		if [ $INSIGHTS_CLIENT_INSTALLED == 1 ]; then
@@ -161,7 +162,7 @@ function download_client_eggo {
 		python setup.py bdist_egg > /dev/null 2>&1
 	elif [ $USEINSTALLEDCORE  == 1 ]; then
 		verbose_output "Not building new Core, using installed Core"
-	else
+	elif [ $DONTBUILD == 1 ]; then
 		verbose_output "Not building new Core, don't build flag set"
 	fi
 }
@@ -169,6 +170,7 @@ function download_client_eggo {
 # Define the function to verify the egg
 EGG_VERIFICATION=0
 if [ $USEINSTALLEDCORE == 1 ]; then NOGPG=1; fi;
+if [ $USEGIT == 1 ]; then NOGPG=1; fi;
 function verify_eggo {
 	if [ $NOGPG == 0 ]; then
 		verbose_output "Verifying core"
@@ -207,7 +209,7 @@ function run_eggo {
 			insights-core $ARGS
 		elif [ $CANINSTALLEGG == 1 ]; then
 			verbose_output "Installing new core"
-			easy_install $TMP_EGG_LOC
+			easy_install $TMP_EGG_LOC > /dev/null 2>&1
 			if [ $? == 1 ]; then verbose_output "There was an issue installing the new core"; exit 1; fi;
 			verbose_output "Running new core"
 			insights-core $ARGS
