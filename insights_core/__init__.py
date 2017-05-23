@@ -39,6 +39,16 @@ def main():
                       action="store_true",
                       dest="usegit",
                       default=False)
+    parser.add_option('--dontcleanup','-c',
+                      help=optparse.SUPPRESS_HELP,
+                      action="store_true",
+                      dest="dontcleanup",
+                      default=False)
+    parser.add_option('--useinstalledcore','-u',
+                      help=optparse.SUPPRESS_HELP,
+                      action="store_true",
+                      dest="useinstalledcore",
+                      default=False)
     options, args = parser.parse_args()
     if options.show_version:
         print '3.X.X-X'

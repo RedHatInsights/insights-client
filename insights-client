@@ -24,6 +24,7 @@ SHOWVERSION=0
 ARGS=$@
 USEINSTALLEDCORE=0
 DONTCHECKVERSION=0
+DONTCLEANUP=0
 for arg in "$@"; do
   shift
   case "$arg" in
@@ -36,10 +37,11 @@ for arg in "$@"; do
 	"--dontbuild") set -- "$@" "-b" ;;
 	"--useinstalledcore") set -- "$@" "-u" ;;
 	"--dontcheckversion") set -- "$@" "-U" ;;
+	"--dontcleanup") set -- "$@" -"c" ;;
     *)        set -- "$@" "$arg"
   esac
 done
-while getopts "hvdgGVbuU" opt; do
+while getopts "hvdgGVbuUc" opt; do
 	case "$opt" in
 	h) SHOWHELP=1 ;;
 	v) SHOWVERSION=1 ;;
@@ -50,6 +52,7 @@ while getopts "hvdgGVbuU" opt; do
 	b) DONTBUILD=1 ;;
 	u) USEINSTALLEDCORE=1;;
 	U) DONTCHECKVERSION=1;;
+	c) DONTCLEANUP=1;;
 	esac
 done
 shift $((OPTIND-1))
@@ -221,8 +224,12 @@ function run_core {
 
 # Clean up after ourselves
 function clean_up {
-	verbose_output "Cleaning up"
-	rm -rf $TMP_EGG_DIR > /dev/null 2>&1
+	if [ $DONTCLEANUP == 0 ]; then
+		verbose_output "Cleaning up"
+		rm -rf $TMP_DIR > /dev/null 2>&1
+	else
+		verbose_output "Cleanup bypassed, not cleaning up"
+	fi
 }
 
 if [ $SHOWHELP == 1 ]; then show_help; fi
