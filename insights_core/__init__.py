@@ -34,6 +34,11 @@ def main():
                       action="store_true",
                       dest="devmode",
                       default=False)
+  parser.add_option('--usegit',
+                      help=optparse.SUPPRESS_HELP,
+                      action="store_true",
+                      dest="usegit",
+                      default=False)
 	options, args = parser.parse_args()
 
 	if options.show_version:
