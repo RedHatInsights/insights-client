@@ -64,10 +64,6 @@ function show_help {
 		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
 			insights-core --help
 			exit 0;
-		# otherwise, build it and verify it as usual
-		# then run it
-		else
-			do_the_things
 		fi
 	else
 		# These are default help options that will need to be updated as the actual client help options are updated
@@ -95,10 +91,6 @@ function show_version {
 		if [ $DEVMODE == 0 ] && [ $DONTBUILD == 0 ]; then
 			insights-core --version
 			exit 0;
-		# otherwise, build it and verify it as usual
-		# then run it
-		else
-			do_the_things
 		fi
 	else
 		echo "Insights Client Version X.X.X"
