@@ -21,7 +21,7 @@ install: $(RPM)
 	sudo dnf install -y $(RPM)
 
 clean:
-	rm -rf dist build
+	rm -rf dist build *.egg-info
 	find . -type f -name '*.pyc' -delete
 
 egg:
