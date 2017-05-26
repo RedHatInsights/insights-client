@@ -35,7 +35,7 @@ def main():
     core = InsightsCore(mode)
 
     # are we utilizing ansible?
-    ansible_helper = InsightsAnsible(core)
+    ansible_helper = InsightsAnsible(core, options.inventory)
     has_ansible = ansible_helper.ansible_loaded
     if has_ansible and options.useansible:  # if its present and we are forcing ansible
         ansible_helper.run()

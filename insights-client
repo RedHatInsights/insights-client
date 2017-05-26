@@ -42,10 +42,11 @@ for arg in "$@"; do
 	"--returnarchive") set -- "$@" - "-z" ;;
 	"--useansible") set -- "$@" - "-a" ;;
 	"--dontuseansible") set -- "$@" - "-A" ;;
+	"--inventory") set -- "$@" - "-i" ;;
     *)        set -- "$@" "$arg"
   esac
 done
-while getopts "hvdgGVbuUcjz" opt; do
+while getopts "hvdgGVbuUcjz:i" opt; do
 	case "$opt" in
 	h) SHOWHELP=1 ;;
 	v) SHOWVERSION=1 ;;

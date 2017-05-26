@@ -82,6 +82,11 @@ class InsightsOptions(object):
                           action="store_true",
                           dest="returnjson",
                           default=None)
+        parser.add_option('--inventory','-i',
+                          help="Supply an Ansible inventory file.",
+                          action="store",
+                          dest="inventory",
+                          default=None)
         options, args = parser.parse_args()
         self.options = options
         self.args = args

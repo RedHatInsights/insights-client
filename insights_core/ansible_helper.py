@@ -6,10 +6,11 @@ import sys
 class InsightsAnsible(object):
     
 
-    def __init__(self, core):
+    def __init__(self, core, inventory=None):
         self.ansible = None
         self.ansible_loaded = False
         self.core = core
+        self.inventory = inventory
         self.load_ansible()
 
     def load_ansible(self):
