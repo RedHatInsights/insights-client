@@ -37,11 +37,15 @@ for arg in "$@"; do
 	"--dontbuild") set -- "$@" "-b" ;;
 	"--useinstalledcore") set -- "$@" "-u" ;;
 	"--dontcheckversion") set -- "$@" "-U" ;;
-	"--dontcleanup") set -- "$@" -"c" ;;
+	"--dontcleanup") set -- "$@" -"-c" ;;
+	"--returnjson") set -- "$@" - "-j" ;;
+	"--returnarchive") set -- "$@" - "-z" ;;
+	"--useansible") set -- "$@" - "-a" ;;
+	"--dontuseansible") set -- "$@" - "-A" ;;
     *)        set -- "$@" "$arg"
   esac
 done
-while getopts "hvdgGVbuUc" opt; do
+while getopts "hvdgGVbuUcjz" opt; do
 	case "$opt" in
 	h) SHOWHELP=1 ;;
 	v) SHOWVERSION=1 ;;
