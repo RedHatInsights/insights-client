@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 import sys
 import logging
-import optparse
+
+from options import InsightsOptions
+from constants import InsightsConstants as constants
+from ansible_helper import InsightsAnsible
+from core import InsightsCore
 
 __author__ = 'Richard Brantley <rbrantle@redhat.com>'
 LOG_FORMAT = ("%(asctime)s %(levelname)s %(message)s")
@@ -13,52 +17,36 @@ def main():
     Main entry point
     '''
 
-    parser = optparse.OptionParser()
-    parser.add_option('--version','-v',
-                      help="Display version",
-                      action="store_true",
-                      dest="show_version",
-                      default=False)
-    parser.add_option('--verbose','-V',
-                      help="Run verbosely",
-                      action="store_true",
-                      dest="verbose",
-                      default=False)
-    parser.add_option('--nogpg','-G',
-                      help=optparse.SUPPRESS_HELP,
-                      action="store_true",
-                      dest="nogpg",
-                      default=False)
-    parser.add_option('--devmode','-d',
-                      help=optparse.SUPPRESS_HELP,
-                      action="store_true",
-                      dest="devmode",
-                      default=False)
-    parser.add_option('--usegit','-g',
-                      help=optparse.SUPPRESS_HELP,
-                      action="store_true",
-                      dest="usegit",
-                      default=False)
-    parser.add_option('--dontcleanup','-c',
-                      help=optparse.SUPPRESS_HELP,
-                      action="store_true",
-                      dest="dontcleanup",
-                      default=False)
-    parser.add_option('--useinstalledcore','-u',
-                      help=optparse.SUPPRESS_HELP,
-                      action="store_true",
-                      dest="useinstalledcore",
-                      default=False)
-    options, args = parser.parse_args()
+    # Setup options
+    the_options = InsightsOptions()
+    options, args = the_options.parse_options_and_args()
+
+    # Show version constant
     if options.show_version:
-        print '3.X.X-X'
+        print constants.version
         sys.exit(0)
 
-    if options.verbose:
-        print "Running Insights Core Egg"
-        sys.exit(0)
+    # setup the core
+    mode = 'json'
+    if options.returnarchive:
+        mode = 'archive'
+    if options.returnjson:
+        mode = 'json'
+    core = InsightsCore(mode)
 
-    sys.exit(0)
+    # are we utilizing ansible?
+    ansible_helper = InsightsAnsible(core)
+    has_ansible = ansible_helper.ansible_loaded
+    if has_ansible and options.useansible:  # if its present and we are forcing ansible
+        ansible_helper.run()
+    elif has_ansible and options.dontuseansible == None:  # if it is present and we are not bypassing it (auto-detection)
+        ansible_helper.run()
+    else:
+        core.run()
+
 
 if __name__ == '__main__':
+    '''
+    Run the main entry point
+    '''
     main()
