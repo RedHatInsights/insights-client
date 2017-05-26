@@ -38,7 +38,7 @@ class InsightsOptions(object):
                           dest="verbose",
                           default=False)
         parser.add_option('--nogpg','-G',
-                          help=optparse.SUPPRESS_HELP,
+                          help="Do not verify the core (DANGEROUS!).",
                           action="store_true",
                           dest="nogpg",
                           default=False)
@@ -48,7 +48,7 @@ class InsightsOptions(object):
                           dest="devmode",
                           default=False)
         parser.add_option('--usegit','-g',
-                          help=optparse.SUPPRESS_HELP,
+                          help="Use the Insights Client Git Repo to retrieve the core instead of cert-api",
                           action="store_true",
                           dest="usegit",
                           default=False)
@@ -58,7 +58,7 @@ class InsightsOptions(object):
                           dest="dontcleanup",
                           default=False)
         parser.add_option('--useinstalledcore','-u',
-                          help=optparse.SUPPRESS_HELP,
+                          help='Use the installed core. Do not auto-update.',
                           action="store_true",
                           dest="useinstalledcore",
                           default=False)
