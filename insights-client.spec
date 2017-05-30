@@ -40,6 +40,12 @@ cp %{SOURCE0} %{buildroot}%{_bindir}/
 %files
 %{_bindir}/insights-client
 
+%defattr(0600, root, root)
+%dir /etc/insights-client
+/etc/insights-client/insights_action_plugin.py
+/etc/insights-client/insights_ansible_module.py
+/etc/insights-client/redhat.gpg
+
 %changelog
 * Fri May 19 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.0-0
 - Initial build

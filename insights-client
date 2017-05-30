@@ -181,10 +181,10 @@ function verify_core {
 	if [ $USEGIT == 1 ]; then NOGPG=1; fi;
 	if [ $NOGPG == 0 ]; then
 		verbose_output "Verifying core"
-		GPG_KEY="redhat.gpg"
+		GPG_KEY="/etc/insights-client/redhat.gpg"
 		EGG_LOCATION=$TMP_EGG_LOC
 		if [ $DEVMODE == 1 ]; then 
-			GPG_KEY="redhat-dev.gpg";
+			GPG_KEY="etc/redhat-dev.gpg";
 			EGG_LOCATION="dist/*.egg";
 		fi;
 		gpg --verify $GPG_KEY $EGG_LOCATION > /dev/null 2>&1
