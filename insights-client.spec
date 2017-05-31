@@ -38,8 +38,11 @@ BuildRequires: python-setuptools
 mkdir -p %{buildroot}%{_bindir}
 cp %{SOURCE0} %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}/etc/insights-client
-cp %{SOURCE1}/insights-client/insights_action_plugin.py %{buildroot}/etc/insights-client/
-cp %{SOURCE1}/insights-client/insights_ansible_module.py %{buildroot}/etc/insights-client/
+mkdir -p %{buildroot}/etc/insights-client/insights
+mkdir -p %{buildroot}/etc/insights-client/insights/action_plugins
+mkdir -p %{buildroot}/etc/insights-client/insights/insights
+cp %{SOURCE1}/insights-client/insights/action_plugins/insights.py %{buildroot}/etc/insights-client/insights/action_plugins/
+cp %{SOURCE1}/insights-client/insights/insights/insights.py %{buildroot}/etc/insights-client/insights/insights/
 cp %{SOURCE1}/insights-client/redhat.gpg %{buildroot}/etc/insights-client/
 
 %files
@@ -49,8 +52,8 @@ cp %{SOURCE1}/insights-client/redhat.gpg %{buildroot}/etc/insights-client/
 
 %defattr(0600, root, root)
 %dir /etc/insights-client
-/etc/insights-client/insights_action_plugin.py
-/etc/insights-client/insights_ansible_module.py
+/etc/insights-client/insights/action_plugins/insights.py
+/etc/insights-client/insights/insights/insights.py
 /etc/insights-client/redhat.gpg
 
 %changelog

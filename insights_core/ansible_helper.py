@@ -2,6 +2,7 @@
 Ansible
 """
 import sys
+from constants import InsightsConstants as constants
 
 class InsightsAnsible(object):
     
@@ -23,4 +24,8 @@ class InsightsAnsible(object):
             return False
 
     def run(self):
-        self.core.run()
+        try:
+            pass
+        except Exception as an_exception:
+            print an_exception
+            sys.exit("Could not run the Ansible action plugin and module. Exiting.")
