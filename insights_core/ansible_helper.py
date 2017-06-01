@@ -34,10 +34,11 @@ class InsightsAnsible(object):
         try:
             inventory = self.inventory if self.inventory is not None else constants.default_ansible_inventory
             egg_path = self.egg_path if self.egg_path is not None else self.get_egg_path()
-            ansible_command = 'ansible %s -m insights -a "egg_path=%s"' % (inventory, egg_path)
+            ansible_command = 'ansible %s -m insights' % (inventory)
             print "Running command %s" % (ansible_command)
             env = os.environ.copy()
-            env['ANSIBLE_LIBRARY'] = "/etc/insights-client"
+            env['ANSIBLE_LIBRARY'] = "/etc/insights-client/insights/"
+            env['ANSIBLE_ACTION_PLUGINS'] = '/etc/insights-client/insights/action_plugins/'
             ansible_execution = self.utilities.run_command_get_output(ansible_command, env)
             print "Ansible execution Status:"
             print ansible_execution['status']

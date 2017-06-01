@@ -40,22 +40,22 @@ cp %{SOURCE0} %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}/etc/insights-client
 mkdir -p %{buildroot}/etc/insights-client/insights
 mkdir -p %{buildroot}/etc/insights-client/insights/action_plugins
-mkdir -p %{buildroot}/etc/insights-client/insights/insights
+mkdir -p %{buildroot}/etc/insights-client/insights/library
 cp %{SOURCE1}/insights-client/insights/action_plugins/insights.py %{buildroot}/etc/insights-client/insights/action_plugins/
-cp %{SOURCE1}/insights-client/insights/insights/insights.py %{buildroot}/etc/insights-client/insights/insights/
+cp %{SOURCE1}/insights-client/insights/library/insights.py %{buildroot}/etc/insights-client/insights/library/
 cp %{SOURCE1}/insights-client/redhat.gpg %{buildroot}/etc/insights-client/
 
 %files
 %{_bindir}/insights-client
 %exclude /etc/insights-client/insights/action_plugins/*.pyc
 %exclude /etc/insights-client/insights/action_plugins/*.pyo
-%exclude /etc/insights-client/insights/insights/*.pyo
-%exclude /etc/insights-client/insights/insights/*.pyc
+%exclude /etc/insights-client/insights/library/*.pyo
+%exclude /etc/insights-client/insights/library/*.pyc
 
 %defattr(0600, root, root)
 %dir /etc/insights-client
 /etc/insights-client/insights/action_plugins/insights.py
-/etc/insights-client/insights/insights/insights.py
+/etc/insights-client/insights/library/insights.py
 /etc/insights-client/redhat.gpg
 
 %changelog
