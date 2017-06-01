@@ -8,8 +8,9 @@ def main():
         "egg_path": {"required": True, "type": "path"}
     })
     sys.path.append(module.params["egg_path"])
-    import insights_core
-    insights_core_json=insights_core.main()
+    from insights_core.core import InsightsCore
+    the_core = InsightsCore('json')
+    insights_core_json = the_core.run_json()
     module.exit_json(insights_facts=insights_core_json)
 
 if __name__ == "__main__":

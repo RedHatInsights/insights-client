@@ -32,7 +32,7 @@ def main():
         mode = 'archive'
     if options.returnjson:
         mode = 'json'
-    core = InsightsCore(mode)
+    core = InsightsCore(mode, options)
 
     # are we utilizing ansible?
     ansible_helper = InsightsAnsible(core, options.inventory)

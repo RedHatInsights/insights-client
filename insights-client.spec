@@ -47,8 +47,10 @@ cp %{SOURCE1}/insights-client/redhat.gpg %{buildroot}/etc/insights-client/
 
 %files
 %{_bindir}/insights-client
-%exclude /etc/insights-client/*.pyc
-%exclude /etc/insights-client/*.pyo
+%exclude /etc/insights-client/insights/action_plugins/*.pyc
+%exclude /etc/insights-client/insights/action_plugins/*.pyo
+%exclude /etc/insights-client/insights/insights/*.pyo
+%exclude /etc/insights-client/insights/insights/*.pyc
 
 %defattr(0600, root, root)
 %dir /etc/insights-client
