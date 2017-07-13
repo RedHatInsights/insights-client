@@ -1,0 +1,83 @@
+.\" insights-client - Red Hat Insights
+.TH "insights-client" "8" "" "Red Hat Insights" ""
+.SH "NAME"
+insights\-client \- Red Hat Insights Client tool
+
+.SH "SYNOPSIS"
+.B insights-client [options]
+.SH "DESCRIPTION"
+\fBinsights\-client\fP is designed to help customers proactively resolve issues affecting business operations in Red Hat Enterprise Linux and Cloud Infrastructure environments. View alerts or learn more at https://access.redhat.com/insights/
+
+
+.SH "OPTIONS"
+.IP "-h, --help"
+show this help message and exit
+.IP "--register"
+Register system to the Red Hat Insights Service
+.IP "--unregister"
+Unregister system from the Red Hat Insights Service
+.IP "--update-collection-rules"
+Refresh collection rules from Red Hat
+Set Red Hat Insights to collect data once per week
+.IP "--display-name=DISPLAYNAME"
+Group to add this system to during registration
+.IP "--group=GROUP"
+Group to add this system to during registration
+.IP "--retry=RETRIES"
+Number of times to retry uploading. 300 seconds between tries
+.IP "--validate"
+Validate remove.conf
+.IP "--quiet"
+Only display error messages to stdout
+.IP "--silent"
+Display no messages to stdout
+.IP "--enable-schedule"
+Enable automatic scheduling
+.IP "--disable-schedule"
+Disable automatic scheduling
+.IP "-c CONF, --conf=CONF"
+Pass a custom config file
+.IP "--to-stdout"
+print archive to stdout; sets --silent and --no-upload
+.IP "--compressor"
+Specifies the compression algorithm to use. Choices are gz, bz2, xz, and none. Defaults to gz.
+.IP "--from-stdin"
+This accepts a JSON document from stdin rather than read rule config from a
+file or from Red Hat directly.  This reads a JSON document from stdin with the
+keys: "uploader.json", with a value of a raw string representing an uploader
+config JSON document; and "sig", with a value of the raw signature content.
+Make sure the uploader JSON is not actually parsed into the resulting dict from
+stdin, i.e. it should be a raw string with JSON special characters escaped
+within.
++.IP "--from-file"
+ +Similar to --from-stdin, but will read a specialized JSON config from file.
+.IP "--offline"
+Collect locally only, do not connect to Insights and do not upload.
+
+.SH "DEBUG OPTIONS"
+.IP "--version"
+Display version
+.IP "--test-connection"
+Test connectivity to Red Hat
+.IP "--force-reregister"
+Forcefully reregister this machine to Red Hat.  Use only as directed.
+.IP "--verbose"
+DEBUG output to stdout
+.IP "--no-gpg"
+Do not verify GPG signature
+.IP "--no-upload"
+Do not upload the archive.  Implies --offline
+.IP "--no-tar-file"
+Build the directory, but do not tar
+.IP "--keep-archive"
+Do not delete archive after upload
+.IP "--support"
+Create a support logfile for Red Hat Insights
+.IP "--status"
+Check this machine's registration status with Red Hat Insights
+
+.SH "SEE ALSO"
+.BR insights-client.conf (5)
+
+.SH "AUTHOR"
+Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>\&
