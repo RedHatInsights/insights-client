@@ -5,8 +5,6 @@
 """
 import os
 import sys
-import logging
-from insights.client.constants import InsightsConstants as constants
 from insights.client import run
 
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
