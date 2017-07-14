@@ -36,7 +36,10 @@ if __name__ == "__main__":
         scripts=[
             "scripts/insights-client"
         ],
-        entry_points={'console_scripts': ['insights-client = insights_client:_main']},
+        entry_points={'console_scripts': [
+            'insights-client = insights_client:_main',
+            'insights-client-run = insights_client:run'
+        ]},
         data_files=[
             # config files
             (confpath, ['etc/insights-client.conf',
