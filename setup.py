@@ -1,7 +1,7 @@
 # !/usr/bin/python
 
 from setuptools import setup, find_packages
-
+import subprocess
 
 def get_version():
     f = open('insights_client/constants.py')
@@ -10,17 +10,21 @@ def get_version():
             return eval(line.split('=')[-1])
 
 VERSION = get_version().split('-')[0]
+MAN_PAGE = "docs/insights-client.8"
+CONF_PAGE = "docs/insights-client.conf.5"
 SHORT_DESC = "Red Hat Insights"
 LONG_DESC = """
 Uploads insightful information to Red Hat
 """
 
 if __name__ == "__main__":
-    logpath = "/var/log/insights-client"
+
+    subprocess.call("cat {0} | gzip > {0}.gz".format(MAN_PAGE), shell=True)
+    subprocess.call("cat {0} | gzip > {0}.gz".format(CONF_PAGE), shell=True)
 
     # where stuff lands
+    logpath = "/var/log/insights-client"
     confpath = "/etc/insights-client"
-
     man5path = "/usr/share/man/man5/"
     man8path = "/usr/share/man/man8/"
 
@@ -38,7 +42,7 @@ if __name__ == "__main__":
         ],
         entry_points={'console_scripts': [
             'insights-client = insights_client:_main',
-            'insights-client-run = insights_client:run'
+            'insights-client-run = insights_client.run:_main'
         ]},
         data_files=[
             # config files

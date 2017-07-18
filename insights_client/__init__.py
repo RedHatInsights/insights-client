@@ -18,9 +18,11 @@ def _main():
     """
 
     # Instantiate Client API
-    return_code = subprocess.call("insights-client-run")
+    arguments = sys.argv[1:]
+    insights_command = ["insights-client-run"] + arguments
+    return_code = subprocess.call(insights_command)
     if return_code == 42:
-        sys.exit(subprocess.call("insights-client-run"))
+        sys.exit(subprocess.call(insights_command))
     else:
         sys.exit(return_code)
 
