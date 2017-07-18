@@ -100,6 +100,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(755,root,root)
 %{_bindir}/insights-client
+%{_bindir}/insights-client-run
 /etc/insights-client/insights-client.cron
 
 %defattr(0600, root, root)

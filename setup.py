@@ -26,10 +26,10 @@ if __name__ == "__main__":
 
     setup(
         name="insights-client",
-        version=VERSION,
         author="Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>",
         author_email="rbrantle@redhat.com, jcrafts@redhat.com",
         license="GPL",
+        version=VERSION,
         packages=find_packages(),
         install_requires=['requests'],
         include_package_data=True,
