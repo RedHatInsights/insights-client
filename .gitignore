@@ -6,3 +6,5 @@ redhat-dev.gpg
 etc/insights-client/redhat-dev.gpg
 ansible/
 .cache
+docs/*.gz
+*.egg-info
