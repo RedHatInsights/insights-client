@@ -47,6 +47,9 @@ if __name__ == "__main__":
         data_files=[
             # config files
             (confpath, ['etc/insights-client.conf',
+                        'etc/.fallback.json',
+                        'etc/.fallback.json.asc',
+                        'etc/redhattools.pub.gpg',
                         'etc/api.access.redhat.com.pem',
                         'etc/cert-api.access.redhat.com.pem',
                         'etc/.exp.sed',
