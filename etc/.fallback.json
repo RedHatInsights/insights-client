@@ -1,0 +1,2585 @@
+{
+    "files": [
+        {
+            "pattern": [],
+            "file": "/boot/grub/grub.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/boot/grub2/grub.cfg"
+        },
+        {
+            "pattern": [
+                "</policymap>",
+                "<policymap>",
+                "<policy"
+            ],
+            "file": "/etc/ImageMagick.*/policy.xml"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/cinder/cinder.conf"
+        },
+        {
+            "pattern": [
+                "<lvm",
+                "clusternode name="
+            ],
+            "file": "/etc/cluster/cluster.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/haproxy/haproxy.cfg"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/heat/heat.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/hosts"
+        },
+        {
+            "pattern": [
+                "SSLProtocol",
+                "SSLCipherSuite",
+                "NSSProtocol"
+            ],
+            "file": "/etc/httpd/conf/httpd.conf"
+        },
+        {
+            "pattern": [
+                "SSLProtocol",
+                "SSLCipherSuite",
+                "NSSProtocol"
+            ],
+            "file": "/etc/httpd/conf\\.d/.+\\.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/kdump.conf"
+        },
+        {
+            "pattern": [
+                "keystone.identity.backends"
+            ],
+            "file": "/etc/keystone/keystone.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/lvm/lvm.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/my.cnf.d/galera.cnf"
+        },
+        {
+            "pattern": [
+                "agent_down_time",
+                "report_interval"
+            ],
+            "file": "/etc/neutron/neutron.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/nova/nova.conf"
+        },
+        {
+            "pattern": [
+                "enable-cache"
+            ],
+            "file": "/etc/nscd.conf"
+        },
+        {
+            "pattern": [
+                "hosts:"
+            ],
+            "file": "/etc/nsswitch.conf"
+        },
+        {
+            "pattern": [
+                "ENGINE_TMP="
+            ],
+            "file": "/etc/ovirt-engine/engine\\.conf\\.d/.*"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/pam.d/password-auth"
+        },
+        {
+            "pattern": [
+                "auth"
+            ],
+            "file": "/etc/pam.d/vsftpd"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/rc.d/rc.local"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/redhat-access-insights/machine-id"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/redhat-release"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/redhat_access_proactive/machine-id"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/resolv.conf"
+        },
+        {
+            "pattern": [
+                "regex",
+                "imtcp"
+            ],
+            "file": "/etc/rsyslog.conf"
+        },
+        {
+            "pattern": [
+                "security",
+                "realm"
+            ],
+            "file": "/etc/samba/smb.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/security/limits.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/security/limits\\.d/.*-nproc\\.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/selinux/config"
+        },
+        {
+            "pattern": [
+                "LoginGraceTime",
+                "Protocol",
+                "MaxAuthTries",
+                "PermitRootLogin",
+                "PermitEmptyPasswords",
+                "ChallengeResponseAuthentication",
+                "ClientAliveInterval",
+                "KbdInteractiveAuthentication",
+                "Cipher",
+                "ClientAliveCountMax",
+                "Macs",
+                "MaxStartups",
+                "MACS",
+                "MACs",
+                "cipher"
+            ],
+            "file": "/etc/ssh/sshd_config"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/sysconfig/kdump"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/sysconfig/netconsole"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/sysconfig/network-scripts/ifcfg-.*"
+        },
+        {
+            "pattern": [],
+            "file": "/etc/sysctl.conf"
+        },
+        {
+            "pattern": [
+                "httpd22"
+            ],
+            "file": "/etc/tmpfiles\\.d/.*"
+        },
+        {
+            "pattern": [
+                "ssl_sslv3",
+                "local_enable",
+                "ssl_enable"
+            ],
+            "file": "/etc/vsftpd/vsftpd.conf"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/cmdline"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/cpuinfo"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/driver/cciss/cciss.*"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/interrupts"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/mdstat"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/meminfo"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/net/bonding/bond.*"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/net/netfilter/nfnetlink_queue"
+        },
+        {
+            "pattern": [],
+            "file": "/proc/scsi/scsi"
+        },
+        {
+            "pattern": [],
+            "file": "/sys/devices/system/clocksource/clocksource0/current_clocksource"
+        },
+        {
+            "pattern": [],
+            "file": "/sys/kernel/kexec_crash_loaded"
+        },
+        {
+            "pattern": [],
+            "file": "/var/lib/pacemaker/cib/cib.xml"
+        },
+        {
+            "pattern": [
+                "nsslapd-cachememsize"
+            ],
+            "file": "/var/log/dirsrv/slapd-.*/errors"
+        },
+        {
+            "pattern": [
+                "swapper: page allocation failure",
+                "tg3_start_xmit",
+                "Machine",
+                "be2net",
+                "Temperature above threshold",
+                "nf_conntrack: table full, dropping packet",
+                "per_source_limit from",
+                "Dazed and confused, but trying to continue",
+                "Uhhuh. NMI received for unknown reason",
+                "dev_watchdog",
+                "Requested DCBX mode 5 is beyond advertised capabilities",
+                "SELinux is preventing /usr/sbin/logrotate from getattr access on the file",
+                "page allocation failure",
+                "mode:0x20",
+                "WATCHDOG",
+                "heated above trip temperature",
+                "khash_super_prune_nolock",
+                "'Ifcfg' object has no attribute 'runningConfig",
+                "Abort command issued",
+                "Out of MCCQ wrbs",
+                "skb_copy",
+                "udevd"
+            ],
+            "file": "/var/log/messages"
+        },
+        {
+            "pattern": [
+                "nss-softokn-freebl-3.14.3",
+                "nss-softokn-3.14.3"
+            ],
+            "file": "/var/log/yum.log"
+        },
+        {
+            "pattern": [],
+            "file": "/var/log/redhat-access-insights/redhat-access-insights.log"
+        },
+        {
+            "pattern": [],
+            "file": "/var/log/redhat_access_proactive/redhat_access_proactive.log"
+        }
+    ],
+    "meta_specs": {
+        "analysis_target": {
+            "archive_file_name": "/insights_data/analysis_target"
+        },
+        "branch_info": {
+            "archive_file_name": "/branch_info"
+        },
+        "machine-id": {
+            "archive_file_name": "/insights_data/machine-id"
+        },
+        "uploader_log": {
+            "archive_file_name": "/insights_data/insights_logs/insights.log"
+        }
+    },
+    "commands": [
+        {
+            "pattern": [],
+            "command": "/bin/date"
+        },
+        {
+            "pattern": [
+                "crashkernel reservation failed",
+                "Linux version",
+                "P220i",
+                "HP HPSA",
+                "Dropping TSO",
+                "P420i",
+                "CSUM",
+                "lo:",
+                "NUMA: "
+            ],
+            "command": "/bin/dmesg"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/hostname"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/ls -lanR /boot"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/mount"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/netstat -neopa"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/netstat -s"
+        },
+        {
+            "pattern": [
+                "keystone",
+                "qemu-kvm",
+                "COMMAND",
+                "STAP"
+            ],
+            "command": "/bin/ps aux"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/ps auxcww"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/rpm -V coreutils procps procps-ng shadow-utils passwd sudo"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/rpm -qa --qf='%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\t%{INSTALLTIME:date}\t%{BUILDTIME}\t%{RSAHEADER:pgpsig}\t%{DSAHEADER:pgpsig}\n'"
+        },
+        {
+            "pattern": [],
+            "command": "/bin/uname -a"
+        },
+        {
+            "pattern": [],
+            "command": "/sbin/chkconfig --list"
+        },
+        {
+            "pattern": [
+                "Filesystem features:"
+            ],
+            "pre_command": "dumpdev",
+            "command": "/sbin/dumpe2fs -h"
+        },
+        {
+            "pattern": [],
+            "pre_command": "iface",
+            "command": "/sbin/ethtool"
+        },
+        {
+            "pattern": [],
+            "pre_command": "iface",
+            "command": "/sbin/ethtool -S"
+        },
+        {
+            "pattern": [],
+            "pre_command": "iface",
+            "command": "/sbin/ethtool -g"
+        },
+        {
+            "pattern": [],
+            "pre_command": "iface",
+            "command": "/sbin/ethtool -i"
+        },
+        {
+            "pattern": [],
+            "pre_command": "iface",
+            "command": "/sbin/ethtool -k"
+        },
+        {
+            "pattern": [],
+            "command": "/sbin/ip addr"
+        },
+        {
+            "pattern": [],
+            "command": "/sbin/ip route show table all"
+        },
+        {
+            "pattern": [],
+            "command": "/sbin/lsmod"
+        },
+        {
+            "pattern": [],
+            "command": "/sbin/lspci"
+        },
+        {
+            "pattern": [],
+            "command": "/sbin/lvs -a -o lv_name,vg_name,lv_size,region_size,mirror_log,lv_attr,devices"
+        },
+        {
+            "pattern": [],
+            "command": "/sbin/sysctl -a"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/chronyc sources"
+        },
+        {
+            "pattern": [
+                "heat-manage"
+            ],
+            "command": "/usr/bin/crontab -l -u heat"
+        },
+        {
+            "pattern": [
+                "heat-manage",
+                "keystone-manage"
+            ],
+            "command": "/usr/bin/crontab -l -u keystone"
+        },
+        {
+            "pattern": [
+                "heat-manage"
+            ],
+            "command": "/usr/bin/crontab -l -u root"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/df -alP"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/df -li"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/docker images --all --no-trunc --digests"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/docker info"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/docker ps --all --no-trunc --size"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/find /var/crash /var/tmp -path '*.reports-*/whoopsie-report'"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/free"
+        },
+        {
+            "pattern": [
+                "grub"
+            ],
+            "command": "/usr/bin/ls -lan /etc"
+        },
+        {
+            "pattern": [
+                "grub"
+            ],
+            "command": "/usr/bin/ls -lan /etc"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/ls -lanR /boot"
+        },
+        {
+            "pattern": [
+                "vm.nr_hugepages",
+                "vm.min_free_kbytes"
+            ],
+            "command": "/usr/bin/lsinitrd /boot/initramfs-*kdump.img -f /etc/sysctl.conf /etc/sysctl.d/*.conf"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/mount"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/ovs-vsctl show"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/uptime"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/bin/yum -C repolist"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/sbin/blkid -c /dev/null"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/sbin/dmidecode"
+        },
+        {
+            "pattern": [
+                "Filesystem features:"
+            ],
+            "pre_command": "dumpdev",
+            "command": "/usr/sbin/dumpe2fs -h"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/sbin/ip addr"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/sbin/lvs -a -o lv_name,vg_name,lv_size,region_size,mirror_log,lv_attr,devices"
+        },
+        {
+            "pattern": [],
+            "command": "/usr/sbin/ntpq -pn"
+        },
+        {
+            "pattern": [],
+            "pre_command": "device",
+            "command": "/usr/sbin/parted -s"
+        },
+        {
+            "pattern": [],
+            "command": "hponcfg -g"
+        },
+        {
+            "pattern": [],
+            "command": "ls -l /etc/ssh/sshd_config"
+        },
+        {
+            "pattern": [
+                "libcrypto",
+                "libssl.so",
+                "multipath",
+                "libssl"
+            ],
+            "command": "lsof"
+        },
+        {
+            "pattern": [],
+            "command": "rabbitmqctl list_queues name messages consumers auto_delete"
+        },
+        {
+            "pattern": [
+                "total_limit"
+            ],
+            "command": "rabbitmqctl report"
+        },
+        {
+            "pattern": [],
+            "command": "systemctl list-unit-files"
+        },
+        {
+            "pattern": [
+                "Clustered",
+                "Couldn't find device with uuid",
+                "Mirrored volumes",
+                "LV Name",
+                "VG Name"
+            ],
+            "command": "vgdisplay"
+        }
+    ],
+    "pre_commands": {
+        "iface": "/sbin/ip -o link | awk -F ': ' '/.*link\\/ether/ {print $2}'",
+        "module": "/bin/ls /sys/module",
+        "block": "/bin/ls /sys/block | awk '!/^ram|^\\.+$/ {print \"/dev/\" $1 \" unit s print\"}'"
+    },
+    "version": "530",
+    "specs": {
+        "ip_addr": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/sbin/ip addr",
+                    "archive_file_name": "/insights_commands/ip_addr"
+                },
+                {
+                    "pattern": [],
+                    "command": "/sbin/ip addr",
+                    "archive_file_name": "/insights_commands/ip_addr"
+                }
+            ]
+        },
+        "heat.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/heat/heat.conf",
+                    "file": "/etc/heat/heat.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/heat/heat.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/heat/heat.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/heat/heat.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/heat/heat.conf"
+                }
+            ]
+        },
+        "df_-alP": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/df -alP",
+                    "archive_file_name": "/insights_commands/df_-alP"
+                }
+            ]
+        },
+        "vsftpd": {
+            "host": [
+                {
+                    "pattern": [
+                        "auth"
+                    ],
+                    "archive_file_name": "/etc/pam.d/vsftpd",
+                    "file": "/etc/pam.d/vsftpd"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "auth"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/pam.d/vsftpd",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/pam.d/vsftpd"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "auth"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/pam.d/vsftpd",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/pam.d/vsftpd"
+                }
+            ]
+        },
+        "woopsie": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/find /var/crash /var/tmp -path '*.reports-*/whoopsie-report'",
+                    "archive_file_name": "/insights_commands/find_.var.crash_.var.tmp_-path_.reports-_.whoopsie-report"
+                }
+            ]
+        },
+        "sysctl": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/sbin/sysctl -a",
+                    "archive_file_name": "/insights_commands/sysctl_-a"
+                }
+            ]
+        },
+        "df_-li": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/df -li",
+                    "archive_file_name": "/insights_commands/df_-li"
+                }
+            ]
+        },
+        "samba": {
+            "host": [
+                {
+                    "pattern": [
+                        "security",
+                        "realm"
+                    ],
+                    "archive_file_name": "/etc/samba/smb.conf",
+                    "file": "/etc/samba/smb.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "security",
+                        "realm"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/samba/smb.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/samba/smb.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "security",
+                        "realm"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/samba/smb.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/samba/smb.conf"
+                }
+            ]
+        },
+        "neutron.conf": {
+            "host": [
+                {
+                    "pattern": [
+                        "agent_down_time",
+                        "report_interval"
+                    ],
+                    "archive_file_name": "/etc/neutron/neutron.conf",
+                    "file": "/etc/neutron/neutron.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "agent_down_time",
+                        "report_interval"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/neutron/neutron.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/neutron/neutron.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "agent_down_time",
+                        "report_interval"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/neutron/neutron.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/neutron/neutron.conf"
+                }
+            ]
+        },
+        "galera.cnf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/my.cnf.d/galera.cnf",
+                    "file": "/etc/my.cnf.d/galera.cnf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/my.cnf.d/galera.cnf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/my.cnf.d/galera.cnf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/my.cnf.d/galera.cnf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/my.cnf.d/galera.cnf"
+                }
+            ]
+        },
+        "resolv.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/resolv.conf",
+                    "file": "/etc/resolv.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/resolv.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/resolv.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/resolv.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/resolv.conf"
+                }
+            ]
+        },
+        "nfnetlink_queue": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/proc/net/netfilter/nfnetlink_queue",
+                    "file": "/proc/net/netfilter/nfnetlink_queue"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/proc/net/netfilter/nfnetlink_queue",
+                    "file": "{CONTAINER_MOUNT_POINT}/proc/net/netfilter/nfnetlink_queue"
+                }
+            ]
+        },
+        "lspci": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/sbin/lspci",
+                    "archive_file_name": "/insights_commands/lspci"
+                }
+            ]
+        },
+        "ethtool": {
+            "host": [
+                {
+                    "pattern": [],
+                    "pre_command": "iface",
+                    "command": "/sbin/ethtool",
+                    "archive_file_name": "/insights_commands/ethtool_"
+                }
+            ]
+        },
+        "kdump.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/kdump.conf",
+                    "file": "/etc/kdump.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/kdump.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/kdump.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/kdump.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/kdump.conf"
+                }
+            ]
+        },
+        "ethtool-g": {
+            "host": [
+                {
+                    "pattern": [],
+                    "pre_command": "iface",
+                    "command": "/sbin/ethtool -g",
+                    "archive_file_name": "/insights_commands/ethtool_-g_"
+                }
+            ]
+        },
+        "ethtool-i": {
+            "host": [
+                {
+                    "pattern": [],
+                    "pre_command": "iface",
+                    "command": "/sbin/ethtool -i",
+                    "archive_file_name": "/insights_commands/ethtool_-i_"
+                }
+            ]
+        },
+        "cinder.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/cinder/cinder.conf",
+                    "file": "/etc/cinder/cinder.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/cinder/cinder.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/cinder/cinder.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/cinder/cinder.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/cinder/cinder.conf"
+                }
+            ]
+        },
+        "vgdisplay": {
+            "host": [
+                {
+                    "pattern": [
+                        "Clustered",
+                        "Couldn't find device with uuid",
+                        "Mirrored volumes",
+                        "LV Name",
+                        "VG Name"
+                    ],
+                    "command": "vgdisplay",
+                    "archive_file_name": "/insights_commands/vgdisplay"
+                }
+            ]
+        },
+        "systemctl_list-unit-files": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "systemctl list-unit-files",
+                    "archive_file_name": "/insights_commands/systemctl_list-unit-files"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "command": "systemctl --root={CONTAINER_MOUNT_POINT} list-unit-files",
+                    "archive_file_name": "/insights_data/container/commands/systemctl_list-unit-files"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "command": "systemctl --root={CONTAINER_MOUNT_POINT} list-unit-files",
+                    "archive_file_name": "/insights_data/image/commands/systemctl_list-unit-files"
+                }
+            ]
+        },
+        "sysctl.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/sysctl.conf",
+                    "file": "/etc/sysctl.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/sysctl.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/sysctl.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/sysctl.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/sysctl.conf"
+                }
+            ]
+        },
+        "docker_image_inspect": {
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/docker inspect --type=image {DOCKER_IMAGE_NAME}",
+                    "archive_file_name": "/insights_data/image/dockerhost/commands/docker_inspect_--type_image_{DOCKER_IMAGE_NAME}"
+                }
+            ]
+        },
+        "parted-s": {
+            "host": [
+                {
+                    "pattern": [],
+                    "pre_command": "device",
+                    "command": "/usr/sbin/parted -s",
+                    "archive_file_name": "/insights_commands/parted_-s_"
+                }
+            ]
+        },
+        "sshd_config": {
+            "host": [
+                {
+                    "pattern": [
+                        "LoginGraceTime",
+                        "Protocol",
+                        "MaxAuthTries",
+                        "PermitRootLogin",
+                        "PermitEmptyPasswords",
+                        "ChallengeResponseAuthentication",
+                        "ClientAliveInterval",
+                        "KbdInteractiveAuthentication",
+                        "Cipher",
+                        "ClientAliveCountMax",
+                        "Macs",
+                        "MaxStartups",
+                        "MACS",
+                        "MACs",
+                        "cipher"
+                    ],
+                    "archive_file_name": "/etc/ssh/sshd_config",
+                    "file": "/etc/ssh/sshd_config"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "LoginGraceTime",
+                        "Protocol",
+                        "MaxAuthTries",
+                        "PermitRootLogin",
+                        "PermitEmptyPasswords",
+                        "ChallengeResponseAuthentication",
+                        "ClientAliveInterval",
+                        "KbdInteractiveAuthentication",
+                        "Cipher",
+                        "ClientAliveCountMax",
+                        "Macs",
+                        "MaxStartups",
+                        "MACS",
+                        "MACs",
+                        "cipher"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/ssh/sshd_config",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/ssh/sshd_config"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "LoginGraceTime",
+                        "Protocol",
+                        "MaxAuthTries",
+                        "PermitRootLogin",
+                        "PermitEmptyPasswords",
+                        "ChallengeResponseAuthentication",
+                        "ClientAliveInterval",
+                        "KbdInteractiveAuthentication",
+                        "Cipher",
+                        "ClientAliveCountMax",
+                        "Macs",
+                        "MaxStartups",
+                        "MACS",
+                        "MACs",
+                        "cipher"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/ssh/sshd_config",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/ssh/sshd_config"
+                }
+            ]
+        },
+        "netstat-s": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/bin/netstat -s",
+                    "archive_file_name": "/insights_commands/netstat_-s"
+                }
+            ]
+        },
+        "rpm_-V_packages": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/bin/rpm -V coreutils procps procps-ng shadow-utils passwd sudo",
+                    "archive_file_name": "/insights_commands/rpm_-V_coreutils_procps_procps-ng_shadow-utils_passwd_sudo"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "command": "/bin/rpm --root={CONTAINER_MOUNT_POINT} -V coreutils procps procps-ng shadow-utils passwd sudo",
+                    "archive_file_name": "/insights_data/container/commands/rpm_-V_coreutils_procps_procps-ng_shadow-utils_passwd_sudo"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "command": "/bin/rpm --root={CONTAINER_MOUNT_POINT} -V coreutils procps procps-ng shadow-utils passwd sudo",
+                    "archive_file_name": "/insights_data/image/commands/rpm_-V_coreutils_procps_procps-ng_shadow-utils_passwd_sudo"
+                }
+            ]
+        },
+        "httpd.conf": {
+            "host": [
+                {
+                    "pattern": [
+                        "SSLProtocol",
+                        "SSLCipherSuite",
+                        "NSSProtocol"
+                    ],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/etc/httpd/conf/httpd.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "SSLProtocol",
+                        "SSLCipherSuite",
+                        "NSSProtocol"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/httpd/conf/httpd.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "SSLProtocol",
+                        "SSLCipherSuite",
+                        "NSSProtocol"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/httpd/conf/httpd.conf"
+                }
+            ]
+        },
+        "uname": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/bin/uname -a",
+                    "archive_file_name": "/insights_commands/uname_-a"
+                }
+            ]
+        },
+        "ethtool-S": {
+            "host": [
+                {
+                    "pattern": [],
+                    "pre_command": "iface",
+                    "command": "/sbin/ethtool -S",
+                    "archive_file_name": "/insights_commands/ethtool_-S_"
+                }
+            ]
+        },
+        "hosts": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/hosts",
+                    "file": "/etc/hosts"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/hosts",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/hosts"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/hosts",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/hosts"
+                }
+            ]
+        },
+        "bond": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/proc/net/bonding/bond.*"
+                }
+            ]
+        },
+        "sshd_config_perms": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "ls -l /etc/ssh/sshd_config",
+                    "archive_file_name": "/insights_commands/ls_-l_.etc.ssh.sshd_config"
+                }
+            ]
+        },
+        "netconsole": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/sysconfig/netconsole",
+                    "file": "/etc/sysconfig/netconsole"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/sysconfig/netconsole",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/sysconfig/netconsole"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/sysconfig/netconsole",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/sysconfig/netconsole"
+                }
+            ]
+        },
+        "lvm.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/lvm/lvm.conf",
+                    "file": "/etc/lvm/lvm.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/lvm/lvm.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/lvm/lvm.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/lvm/lvm.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/lvm/lvm.conf"
+                }
+            ]
+        },
+        "keystone_crontab": {
+            "host": [
+                {
+                    "pattern": [
+                        "heat-manage",
+                        "keystone-manage"
+                    ],
+                    "command": "/usr/bin/crontab -l -u keystone",
+                    "archive_file_name": "/insights_commands/crontab_-l_-u_keystone"
+                }
+            ]
+        },
+        "redhat-release": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/redhat-release",
+                    "file": "/etc/redhat-release"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/redhat-release",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/redhat-release"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/redhat-release",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/redhat-release"
+                }
+            ]
+        },
+        "chronyc_sources": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/chronyc sources",
+                    "archive_file_name": "/insights_commands/chronyc_sources"
+                }
+            ]
+        },
+        "rabbitmq_report": {
+            "host": [
+                {
+                    "pattern": [
+                        "total_limit"
+                    ],
+                    "command": "rabbitmqctl report",
+                    "archive_file_name": "/insights_commands/rabbitmqctl_report"
+                }
+            ]
+        },
+        "ps_aux": {
+            "host": [
+                {
+                    "pattern": [
+                        "keystone",
+                        "qemu-kvm",
+                        "COMMAND",
+                        "STAP"
+                    ],
+                    "command": "/bin/ps aux",
+                    "archive_file_name": "/insights_commands/ps_aux"
+                }
+            ]
+        },
+        "sysctl.conf_initramfs": {
+            "host": [
+                {
+                    "pattern": [
+                        "vm.nr_hugepages",
+                        "vm.min_free_kbytes"
+                    ],
+                    "command": "/usr/bin/lsinitrd /boot/initramfs-*kdump.img -f /etc/sysctl.conf /etc/sysctl.d/*.conf",
+                    "archive_file_name": "/insights_commands/lsinitrd_.boot.initramfs-_kdump.img_-f_.etc.sysctl.conf_.etc.sysctl.d._.conf"
+                }
+            ]
+        },
+        "grub2.cfg": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/boot/grub2/grub.cfg",
+                    "file": "/boot/grub2/grub.cfg"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/boot/grub2/grub.cfg",
+                    "file": "{CONTAINER_MOUNT_POINT}/boot/grub2/grub.cfg"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/boot/grub2/grub.cfg",
+                    "file": "{CONTAINER_MOUNT_POINT}/boot/grub2/grub.cfg"
+                }
+            ]
+        },
+        "hponcfg-g": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "hponcfg -g",
+                    "archive_file_name": "/insights_commands/hponcfg_-g"
+                }
+            ]
+        },
+        "netstat": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/bin/netstat -neopa",
+                    "archive_file_name": "/insights_commands/netstat_-neopa"
+                }
+            ]
+        },
+        "cib.xml": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/var/lib/pacemaker/cib/cib.xml"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/var/lib/pacemaker/cib/cib.xml"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/var/lib/pacemaker/cib/cib.xml"
+                }
+            ]
+        },
+        "free": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/free",
+                    "archive_file_name": "/insights_commands/free"
+                }
+            ]
+        },
+        "rsyslog.conf": {
+            "host": [
+                {
+                    "pattern": [
+                        "regex",
+                        "imtcp"
+                    ],
+                    "archive_file_name": "/etc/rsyslog.conf",
+                    "file": "/etc/rsyslog.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "regex",
+                        "imtcp"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/rsyslog.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/rsyslog.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "regex",
+                        "imtcp"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/rsyslog.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/rsyslog.conf"
+                }
+            ]
+        },
+        "dmidecode": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/sbin/dmidecode",
+                    "archive_file_name": "/insights_commands/dmidecode"
+                }
+            ]
+        },
+        "password-auth": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/pam.d/password-auth",
+                    "file": "/etc/pam.d/password-auth"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/pam.d/password-auth",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/pam.d/password-auth"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/pam.d/password-auth",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/pam.d/password-auth"
+                }
+            ]
+        },
+        "docker_container_inspect": {
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/docker inspect --type=container {DOCKER_CONTAINER_NAME}",
+                    "archive_file_name": "/insights_data/container/dockerhost/commands/docker_inspect_--type_container_{DOCKER_CONTAINER_NAME}"
+                }
+            ]
+        },
+        "root_crontab": {
+            "host": [
+                {
+                    "pattern": [
+                        "heat-manage"
+                    ],
+                    "command": "/usr/bin/crontab -l -u root",
+                    "archive_file_name": "/insights_commands/crontab_-l_-u_root"
+                }
+            ]
+        },
+        "lsof": {
+            "host": [
+                {
+                    "pattern": [
+                        "libcrypto",
+                        "libssl.so",
+                        "multipath",
+                        "libssl"
+                    ],
+                    "command": "lsof",
+                    "archive_file_name": "/insights_commands/lsof"
+                }
+            ]
+        },
+        "haproxy_cfg": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/haproxy/haproxy.cfg",
+                    "file": "/etc/haproxy/haproxy.cfg"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/haproxy/haproxy.cfg",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/haproxy/haproxy.cfg"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/haproxy/haproxy.cfg",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/haproxy/haproxy.cfg"
+                }
+            ]
+        },
+        "nproc.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/etc/security/limits\\.d/.*-nproc\\.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/security/limits\\.d/.*-nproc\\.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/security/limits\\.d/.*-nproc\\.conf"
+                }
+            ]
+        },
+        "cpuinfo": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/proc/cpuinfo",
+                    "file": "/proc/cpuinfo"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/proc/cpuinfo",
+                    "file": "{CONTAINER_MOUNT_POINT}/proc/cpuinfo"
+                }
+            ]
+        },
+        "nsswitch.conf": {
+            "host": [
+                {
+                    "pattern": [
+                        "hosts:"
+                    ],
+                    "archive_file_name": "/etc/nsswitch.conf",
+                    "file": "/etc/nsswitch.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "hosts:"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/nsswitch.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/nsswitch.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "hosts:"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/nsswitch.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/nsswitch.conf"
+                }
+            ]
+        },
+        "docker_info": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/docker info",
+                    "archive_file_name": "/insights_commands/docker_info"
+                }
+            ]
+        },
+        "installed-rpms": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/bin/rpm -qa --qf='%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\t%{INSTALLTIME:date}\t%{BUILDTIME}\t%{RSAHEADER:pgpsig}\t%{DSAHEADER:pgpsig}\n'",
+                    "archive_file_name": "/insights_commands/rpm_-qa_--qf_NAME_-_VERSION_-_RELEASE_._ARCH_INSTALLTIME_date_BUILDTIME_RSAHEADER_pgpsig_DSAHEADER_pgpsig"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "command": "/bin/rpm --root={CONTAINER_MOUNT_POINT} -qa --qf='%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\t%{INSTALLTIME:date}\t%{BUILDTIME}\t%{RSAHEADER:pgpsig}\t%{DSAHEADER:pgpsig}\n'",
+                    "archive_file_name": "/insights_data/container/commands/rpm_-qa_--qf_NAME_-_VERSION_-_RELEASE_._ARCH_INSTALLTIME_date_BUILDTIME_RSAHEADER_pgpsig_DSAHEADER_pgpsig"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "command": "/bin/rpm --root={CONTAINER_MOUNT_POINT} -qa --qf='%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\t%{INSTALLTIME:date}\t%{BUILDTIME}\t%{RSAHEADER:pgpsig}\t%{DSAHEADER:pgpsig}\n'",
+                    "archive_file_name": "/insights_data/image/commands/rpm_-qa_--qf_NAME_-_VERSION_-_RELEASE_._ARCH_INSTALLTIME_date_BUILDTIME_RSAHEADER_pgpsig_DSAHEADER_pgpsig"
+                }
+            ]
+        },
+        "etc_tmpfiles": {
+            "host": [
+                {
+                    "pattern": [
+                        "httpd22"
+                    ],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/etc/tmpfiles\\.d/.*"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "httpd22"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/tmpfiles\\.d/.*"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "httpd22"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/tmpfiles\\.d/.*"
+                }
+            ]
+        },
+        "ps_auxcww": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/bin/ps auxcww",
+                    "archive_file_name": "/insights_commands/ps_auxcww"
+                }
+            ]
+        },
+        "slapd_errors": {
+            "host": [
+                {
+                    "pattern": [
+                        "nsslapd-cachememsize"
+                    ],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/var/log/dirsrv/slapd-.*/errors"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "nsslapd-cachememsize"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/var/log/dirsrv/slapd-.*/errors"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "nsslapd-cachememsize"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/var/log/dirsrv/slapd-.*/errors"
+                }
+            ]
+        },
+        "ip_route_show_table_all": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/sbin/ip route show table all",
+                    "archive_file_name": "/insights_commands/ip_route_show_table_all"
+                }
+            ]
+        },
+        "vsftpd.conf": {
+            "host": [
+                {
+                    "pattern": [
+                        "ssl_sslv3",
+                        "local_enable",
+                        "ssl_enable"
+                    ],
+                    "archive_file_name": "/etc/vsftpd/vsftpd.conf",
+                    "file": "/etc/vsftpd/vsftpd.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "ssl_sslv3",
+                        "local_enable",
+                        "ssl_enable"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/vsftpd/vsftpd.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/vsftpd/vsftpd.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "ssl_sslv3",
+                        "local_enable",
+                        "ssl_enable"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/vsftpd/vsftpd.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/vsftpd/vsftpd.conf"
+                }
+            ]
+        },
+        "ntpq_pn": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/sbin/ntpq -pn",
+                    "archive_file_name": "/insights_commands/ntpq_-pn"
+                }
+            ]
+        },
+        "rc.local": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/rc.d/rc.local",
+                    "file": "/etc/rc.d/rc.local"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/rc.d/rc.local",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/rc.d/rc.local"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/rc.d/rc.local",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/rc.d/rc.local"
+                }
+            ]
+        },
+        "blkid": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/sbin/blkid -c /dev/null",
+                    "archive_file_name": "/insights_commands/blkid_-c_.dev.null"
+                }
+            ]
+        },
+        "lsmod": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/sbin/lsmod",
+                    "archive_file_name": "/insights_commands/lsmod"
+                }
+            ]
+        },
+        "interrupts": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/proc/interrupts",
+                    "file": "/proc/interrupts"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/proc/interrupts",
+                    "file": "{CONTAINER_MOUNT_POINT}/proc/interrupts"
+                }
+            ]
+        },
+        "ifcfg": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/etc/sysconfig/network-scripts/ifcfg-.*"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/sysconfig/network-scripts/ifcfg-.*"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/sysconfig/network-scripts/ifcfg-.*"
+                }
+            ]
+        },
+        "kexec_crash_loaded": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/sys/kernel/kexec_crash_loaded",
+                    "file": "/sys/kernel/kexec_crash_loaded"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/sys/kernel/kexec_crash_loaded",
+                    "file": "{CONTAINER_MOUNT_POINT}/sys/kernel/kexec_crash_loaded"
+                }
+            ]
+        },
+        "yum-repolist": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/yum -C repolist",
+                    "archive_file_name": "/insights_commands/yum_-C_repolist"
+                }
+            ]
+        },
+        "kdump": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/sysconfig/kdump",
+                    "file": "/etc/sysconfig/kdump"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/sysconfig/kdump",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/sysconfig/kdump"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/sysconfig/kdump",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/sysconfig/kdump"
+                }
+            ]
+        },
+        "docker_list_containers": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/docker ps --all --no-trunc --size",
+                    "archive_file_name": "/insights_commands/docker_ps_--all_--no-trunc_--size"
+                }
+            ]
+        },
+        "docker_host_machine-id": {
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/dockerhost/rootfs/etc/redhat-access-insights/machine-id",
+                    "file": "/etc/redhat-access-insights/machine-id"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/dockerhost/rootfs/etc/redhat-access-insights/machine-id",
+                    "file": "/etc/redhat-access-insights/machine-id"
+                }
+            ]
+        },
+        "lvs": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/sbin/lvs -a -o lv_name,vg_name,lv_size,region_size,mirror_log,lv_attr,devices",
+                    "archive_file_name": "/insights_commands/lvs_-a_-o_lv_name_vg_name_lv_size_region_size_mirror_log_lv_attr_devices"
+                },
+                {
+                    "pattern": [],
+                    "command": "/sbin/lvs -a -o lv_name,vg_name,lv_size,region_size,mirror_log,lv_attr,devices",
+                    "archive_file_name": "/insights_commands/lvs_-a_-o_lv_name_vg_name_lv_size_region_size_mirror_log_lv_attr_devices"
+                }
+            ]
+        },
+        "mount": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/mount",
+                    "archive_file_name": "/insights_commands/mount"
+                },
+                {
+                    "pattern": [],
+                    "command": "/bin/mount",
+                    "archive_file_name": "/insights_commands/mount"
+                }
+            ]
+        },
+        "rabbitmq_queues": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "rabbitmqctl list_queues name messages consumers auto_delete",
+                    "archive_file_name": "/insights_commands/rabbitmqctl_list_queues_name_messages_consumers_auto_delete"
+                }
+            ]
+        },
+        "selinux-config": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/selinux/config",
+                    "file": "/etc/selinux/config"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/selinux/config",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/selinux/config"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/selinux/config",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/selinux/config"
+                }
+            ]
+        },
+        "cciss": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/proc/driver/cciss/cciss.*"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/proc/driver/cciss/cciss.*"
+                }
+            ]
+        },
+        "meminfo": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/proc/meminfo",
+                    "file": "/proc/meminfo"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/proc/meminfo",
+                    "file": "{CONTAINER_MOUNT_POINT}/proc/meminfo"
+                }
+            ]
+        },
+        "yum.log": {
+            "host": [
+                {
+                    "pattern": [
+                        "nss-softokn-freebl-3.14.3",
+                        "nss-softokn-3.14.3"
+                    ],
+                    "archive_file_name": "/var/log/yum.log",
+                    "file": "/var/log/yum.log"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "nss-softokn-freebl-3.14.3",
+                        "nss-softokn-3.14.3"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/var/log/yum.log",
+                    "file": "{CONTAINER_MOUNT_POINT}/var/log/yum.log"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "nss-softokn-freebl-3.14.3",
+                        "nss-softokn-3.14.3"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/var/log/yum.log",
+                    "file": "{CONTAINER_MOUNT_POINT}/var/log/yum.log"
+                }
+            ]
+        },
+        "limits.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/security/limits.conf",
+                    "file": "/etc/security/limits.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/security/limits.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/security/limits.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/security/limits.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/security/limits.conf"
+                }
+            ]
+        },
+        "messages": {
+            "host": [
+                {
+                    "pattern": [
+                        "swapper: page allocation failure",
+                        "tg3_start_xmit",
+                        "Machine",
+                        "be2net",
+                        "Temperature above threshold",
+                        "nf_conntrack: table full, dropping packet",
+                        "per_source_limit from",
+                        "Dazed and confused, but trying to continue",
+                        "Uhhuh. NMI received for unknown reason",
+                        "dev_watchdog",
+                        "Requested DCBX mode 5 is beyond advertised capabilities",
+                        "SELinux is preventing /usr/sbin/logrotate from getattr access on the file",
+                        "page allocation failure",
+                        "mode:0x20",
+                        "WATCHDOG",
+                        "heated above trip temperature",
+                        "khash_super_prune_nolock",
+                        "'Ifcfg' object has no attribute 'runningConfig",
+                        "Abort command issued",
+                        "Out of MCCQ wrbs",
+                        "skb_copy",
+                        "udevd"
+                    ],
+                    "archive_file_name": "/var/log/messages",
+                    "file": "/var/log/messages"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "swapper: page allocation failure",
+                        "tg3_start_xmit",
+                        "Machine",
+                        "be2net",
+                        "Temperature above threshold",
+                        "nf_conntrack: table full, dropping packet",
+                        "per_source_limit from",
+                        "Dazed and confused, but trying to continue",
+                        "Uhhuh. NMI received for unknown reason",
+                        "dev_watchdog",
+                        "Requested DCBX mode 5 is beyond advertised capabilities",
+                        "SELinux is preventing /usr/sbin/logrotate from getattr access on the file",
+                        "page allocation failure",
+                        "mode:0x20",
+                        "WATCHDOG",
+                        "heated above trip temperature",
+                        "khash_super_prune_nolock",
+                        "'Ifcfg' object has no attribute 'runningConfig",
+                        "Abort command issued",
+                        "Out of MCCQ wrbs",
+                        "skb_copy",
+                        "udevd"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/var/log/messages",
+                    "file": "{CONTAINER_MOUNT_POINT}/var/log/messages"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "swapper: page allocation failure",
+                        "tg3_start_xmit",
+                        "Machine",
+                        "be2net",
+                        "Temperature above threshold",
+                        "nf_conntrack: table full, dropping packet",
+                        "per_source_limit from",
+                        "Dazed and confused, but trying to continue",
+                        "Uhhuh. NMI received for unknown reason",
+                        "dev_watchdog",
+                        "Requested DCBX mode 5 is beyond advertised capabilities",
+                        "SELinux is preventing /usr/sbin/logrotate from getattr access on the file",
+                        "page allocation failure",
+                        "mode:0x20",
+                        "WATCHDOG",
+                        "heated above trip temperature",
+                        "khash_super_prune_nolock",
+                        "'Ifcfg' object has no attribute 'runningConfig",
+                        "Abort command issued",
+                        "Out of MCCQ wrbs",
+                        "skb_copy",
+                        "udevd"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/var/log/messages",
+                    "file": "{CONTAINER_MOUNT_POINT}/var/log/messages"
+                }
+            ]
+        },
+        "cmdline": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/proc/cmdline",
+                    "file": "/proc/cmdline"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/proc/cmdline",
+                    "file": "{CONTAINER_MOUNT_POINT}/proc/cmdline"
+                }
+            ]
+        },
+        "mdstat": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/proc/mdstat",
+                    "file": "/proc/mdstat"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/proc/mdstat",
+                    "file": "{CONTAINER_MOUNT_POINT}/proc/mdstat"
+                }
+            ]
+        },
+        "chkconfig": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/sbin/chkconfig --list",
+                    "archive_file_name": "/insights_commands/chkconfig_--list"
+                }
+            ]
+        },
+        "uptime": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/uptime",
+                    "archive_file_name": "/insights_commands/uptime"
+                }
+            ]
+        },
+        "ovs-vsctl_show": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/ovs-vsctl show",
+                    "archive_file_name": "/insights_commands/ovs-vsctl_show"
+                }
+            ]
+        },
+        "hostname": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/bin/hostname",
+                    "archive_file_name": "/insights_commands/hostname"
+                }
+            ]
+        },
+        "ethtool-k": {
+            "host": [
+                {
+                    "pattern": [],
+                    "pre_command": "iface",
+                    "command": "/sbin/ethtool -k",
+                    "archive_file_name": "/insights_commands/ethtool_-k_"
+                }
+            ]
+        },
+        "ovirt_engine_confd": {
+            "host": [
+                {
+                    "pattern": [
+                        "ENGINE_TMP="
+                    ],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/etc/ovirt-engine/engine\\.conf\\.d/.*"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "ENGINE_TMP="
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/ovirt-engine/engine\\.conf\\.d/.*"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "ENGINE_TMP="
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/ovirt-engine/engine\\.conf\\.d/.*"
+                }
+            ]
+        },
+        "cluster.conf": {
+            "host": [
+                {
+                    "pattern": [
+                        "<lvm",
+                        "clusternode name="
+                    ],
+                    "archive_file_name": "/etc/cluster/cluster.conf",
+                    "file": "/etc/cluster/cluster.conf"
+                }
+            ]
+        },
+        "heat_crontab": {
+            "host": [
+                {
+                    "pattern": [
+                        "heat-manage"
+                    ],
+                    "command": "/usr/bin/crontab -l -u heat",
+                    "archive_file_name": "/insights_commands/crontab_-l_-u_heat"
+                }
+            ]
+        },
+        "grub.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/boot/grub/grub.conf",
+                    "file": "/boot/grub/grub.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/boot/grub/grub.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/boot/grub/grub.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/boot/grub/grub.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/boot/grub/grub.conf"
+                }
+            ]
+        },
+        "current_clocksource": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/sys/devices/system/clocksource/clocksource0/current_clocksource",
+                    "file": "/sys/devices/system/clocksource/clocksource0/current_clocksource"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/sys/devices/system/clocksource/clocksource0/current_clocksource",
+                    "file": "{CONTAINER_MOUNT_POINT}/sys/devices/system/clocksource/clocksource0/current_clocksource"
+                }
+            ]
+        },
+        "httpd.conf.d": {
+            "host": [
+                {
+                    "pattern": [
+                        "SSLProtocol",
+                        "SSLCipherSuite",
+                        "NSSProtocol"
+                    ],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/etc/httpd/conf\\.d/.+\\.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "SSLProtocol",
+                        "SSLCipherSuite",
+                        "NSSProtocol"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/httpd/conf\\.d/.+\\.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "SSLProtocol",
+                        "SSLCipherSuite",
+                        "NSSProtocol"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/httpd/conf\\.d/.+\\.conf"
+                }
+            ]
+        },
+        "date": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/bin/date",
+                    "archive_file_name": "/insights_commands/date"
+                }
+            ]
+        },
+        "ls_boot": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/ls -lanR /boot",
+                    "archive_file_name": "/insights_commands/ls_-lanR_.boot"
+                },
+                {
+                    "pattern": [],
+                    "command": "/bin/ls -lanR /boot",
+                    "archive_file_name": "/insights_commands/ls_-lanR_.boot"
+                }
+            ]
+        },
+        "ls_etc": {
+            "host": [
+                {
+                    "pattern": [
+                        "grub"
+                    ],
+                    "command": "/usr/bin/ls -lan /etc",
+                    "archive_file_name": "/insights_commands/ls_-lan_.etc"
+                },
+                {
+                    "pattern": [
+                        "grub"
+                    ],
+                    "command": "/usr/bin/ls -lan /etc",
+                    "archive_file_name": "/insights_commands/ls_-lan_.etc"
+                }
+            ]
+        },
+        "machine-id2": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/redhat_access_proactive/machine-id",
+                    "file": "/etc/redhat_access_proactive/machine-id"
+                }
+            ]
+        },
+        "scsi": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/proc/scsi/scsi",
+                    "file": "/proc/scsi/scsi"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/proc/scsi/scsi",
+                    "file": "{CONTAINER_MOUNT_POINT}/proc/scsi/scsi"
+                }
+            ]
+        },
+        "machine-id1": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/redhat-access-insights/machine-id",
+                    "file": "/etc/redhat-access-insights/machine-id"
+                }
+            ]
+        },
+        "dmesg": {
+            "host": [
+                {
+                    "pattern": [
+                        "crashkernel reservation failed",
+                        "Linux version",
+                        "P220i",
+                        "HP HPSA",
+                        "Dropping TSO",
+                        "P420i",
+                        "CSUM",
+                        "lo:",
+                        "NUMA: "
+                    ],
+                    "command": "/bin/dmesg",
+                    "archive_file_name": "/insights_commands/dmesg"
+                }
+            ]
+        },
+        "imagemagick_policy": {
+            "host": [
+                {
+                    "pattern": [
+                        "</policymap>",
+                        "<policymap>",
+                        "<policy"
+                    ],
+                    "archive_file_name": "/{EXPANDED_FILE_NAME}",
+                    "file": "/etc/ImageMagick.*/policy.xml"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "</policymap>",
+                        "<policymap>",
+                        "<policy"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/ImageMagick.*/policy.xml"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "</policymap>",
+                        "<policymap>",
+                        "<policy"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/{EXPANDED_FILE_NAME}",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/ImageMagick.*/policy.xml"
+                }
+            ]
+        },
+        "nova.conf": {
+            "host": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/etc/nova/nova.conf",
+                    "file": "/etc/nova/nova.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/nova/nova.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/nova/nova.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/nova/nova.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/nova/nova.conf"
+                }
+            ]
+        },
+        "nscd.conf": {
+            "host": [
+                {
+                    "pattern": [
+                        "enable-cache"
+                    ],
+                    "archive_file_name": "/etc/nscd.conf",
+                    "file": "/etc/nscd.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "enable-cache"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/nscd.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/nscd.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "enable-cache"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/nscd.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/nscd.conf"
+                }
+            ]
+        },
+        "dumpe2fs-h": {
+            "host": [
+                {
+                    "pattern": [
+                        "Filesystem features:"
+                    ],
+                    "pre_command": "dumpdev",
+                    "command": "/sbin/dumpe2fs -h",
+                    "archive_file_name": "/insights_commands/dumpe2fs_-h_"
+                },
+                {
+                    "pattern": [
+                        "Filesystem features:"
+                    ],
+                    "pre_command": "dumpdev",
+                    "command": "/usr/sbin/dumpe2fs -h",
+                    "archive_file_name": "/insights_commands/dumpe2fs_-h_"
+                }
+            ]
+        },
+        "keystone.conf": {
+            "host": [
+                {
+                    "pattern": [
+                        "keystone.identity.backends"
+                    ],
+                    "archive_file_name": "/etc/keystone/keystone.conf",
+                    "file": "/etc/keystone/keystone.conf"
+                }
+            ],
+            "docker_container": [
+                {
+                    "pattern": [
+                        "keystone.identity.backends"
+                    ],
+                    "archive_file_name": "/insights_data/container/rootfs/etc/keystone/keystone.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/keystone/keystone.conf"
+                }
+            ],
+            "docker_image": [
+                {
+                    "pattern": [
+                        "keystone.identity.backends"
+                    ],
+                    "archive_file_name": "/insights_data/image/rootfs/etc/keystone/keystone.conf",
+                    "file": "{CONTAINER_MOUNT_POINT}/etc/keystone/keystone.conf"
+                }
+            ]
+        },
+        "docker_list_images": {
+            "host": [
+                {
+                    "pattern": [],
+                    "command": "/usr/bin/docker images --all --no-trunc --digests",
+                    "archive_file_name": "/insights_commands/docker_images_--all_--no-trunc_--digests"
+                }
+            ]
+        }
+    }
+}
