@@ -108,6 +108,9 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/insights-client/*.conf
 /etc/insights-client/.exp.sed
 /etc/insights-client/*.pem
+/etc/insights-client/.fallback.json
+/etc/insights-client/.fallback.json.asc
+/etc/insights-client/redhattools.pub.gpg
 
 %defattr(-,root,root)
 %{python_sitelib}/insights_client*.egg-info
