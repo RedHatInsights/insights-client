@@ -6,4 +6,5 @@ include etc/*.pem
 include etc/.fallback.json
 include etc/.fallback.json.asc
 include etc/redhattools.pub.gpg
+include etc/rpm.egg
 include docs/*

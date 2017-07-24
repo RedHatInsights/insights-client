@@ -21,10 +21,10 @@ def go(phase, eggs):
     index of the egg that succeeded to be used in the next phase.
     """
     insights_command = ["insights-client-run"] + sys.argv[1:]
-    for egg, idx in enumerate(eggs):
+    for idx, egg in enumerate(eggs):
         return_code = subprocess.call(insights_command, env={
-            "INSIGHTS_PHASE": phase,
-            "PYTHONPATH": egg
+            "INSIGHTS_PHASE": str(phase),
+            "PYTHONPATH": str(egg)
         })
         if return_code == 0:
             return idx

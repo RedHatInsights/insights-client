@@ -86,6 +86,7 @@ rm -f /etc/insights-client/.cache*
 rm -f /etc/insights-client/.registered
 rm -f /etc/insights-client/.unregistered
 rm -f /etc/insights-client/.lastupload
+rm -f /etc/insights-client/rpm.egg
 # remove symlink to old name on uninstall
 rm -f %{_bindir}/redhat-access-insights
 # remove symlinks to old configs
@@ -111,6 +112,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /etc/insights-client/redhattools.pub.gpg
 /etc/insights-client/.exp.sed
 /etc/insights-client/*.pem
+/etc/insights-client/rpm.egg
 
 %defattr(-,root,root)
 %{python_sitelib}/insights_client*.egg-info
