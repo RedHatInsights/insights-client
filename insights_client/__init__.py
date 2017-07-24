@@ -9,8 +9,8 @@ import subprocess
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
 EGGS = [
-    "/var/lib/insights/new.egg",
-    "/var/lib/insights/current.egg",
+    "/var/lib/insights/newest.egg",
+    "/var/lib/insights/last_stable.egg",
     "/etc/insights-client/rpm.egg"
 ]
 
