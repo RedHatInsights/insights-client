@@ -8,24 +8,40 @@ import subprocess
 
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
+EGGS = [
+    "/var/lib/insights/new.egg",
+    "/var/lib/insights/current.egg",
+    "/etc/insights-client/rpm.egg"
+]
+
+
+def go(phase, eggs):
+    """
+    Call the run script for the given phase.  If the phase succeeds returns the
+    index of the egg that succeeded to be used in the next phase.
+    """
+    insights_command = ["insights-client-run"] + sys.argv[1:]
+    for egg, idx in enumerate(eggs):
+        return_code = subprocess.call(insights_command, env={
+            "INSIGHTS_PHASE": phase,
+            "PYTHONPATH": egg
+        })
+        if return_code == 0:
+            return idx
+
 
 def _main():
     """
-    Main entry point
-
-    Runs the client code up to two times.  The only reason we'd run two times
-    is if we get a code update exit code on the first run.
+    attempt to update with current, fallback to rpm
+    attempt to collect and upload with new, then current, then rpm
+    if an egg fails a phase never try it again
     """
 
-    # Instantiate Client API
-    arguments = sys.argv[1:]
-    insights_command = ["insights-client-run"] + arguments
-    return_code = subprocess.call(insights_command)
-    if return_code == 42:
-        sys.exit(subprocess.call(insights_command))
-    else:
-        sys.exit(return_code)
+    go('update', EGGS[1:])
 
+    idx = go('collect', EGGS)
+    if idx is not None:
+        go('upload', EGGS[idx:])
 
 if __name__ == '__main__':
     _main()
