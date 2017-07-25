@@ -3,6 +3,7 @@
 from setuptools import setup, find_packages
 import subprocess
 
+
 def get_version():
     f = open('insights_client/constants.py')
     for line in f:
@@ -35,11 +36,8 @@ if __name__ == "__main__":
         license="GPL",
         version=VERSION,
         packages=find_packages(),
-        install_requires=['requests'],
+        install_requires=['requests', 'PyYaml', 'six'],
         include_package_data=True,
-        scripts=[
-            "scripts/insights-client"
-        ],
         entry_points={'console_scripts': [
             'insights-client = insights_client:_main',
             'insights-client-run = insights_client.run:_main'
