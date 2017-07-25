@@ -8,3 +8,9 @@ ansible/
 .cache
 docs/*.gz
 *.egg-info
+*.pyc
+bin/
+lib/
+lib64
+include/
+pip-selfcheck.json
