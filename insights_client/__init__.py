@@ -9,8 +9,6 @@ import subprocess
 from subprocess import PIPE
 import logging
 
-logging.basicConfig()
-
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
 EGGS = [
@@ -59,4 +57,5 @@ def _main():
         go('upload', eggs, response)
 
 if __name__ == '__main__':
+    logging.basicConfig()
     _main()
