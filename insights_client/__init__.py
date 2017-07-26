@@ -24,7 +24,7 @@ def go(phase, eggs, inp=None):
     index of the egg that succeeded to be used in the next phase.
     """
     insights_command = ["insights-client-run"] + sys.argv[1:]
-    for egg in eggs:
+    for i, egg in enumerate(eggs):
         logging.debug("Attempting %s with %s", phase, egg)
         process = subprocess.Popen(insights_command, stdout=PIPE, stderr=PIPE, stdin=inp, env={
             "INSIGHTS_PHASE": str(phase),
@@ -37,7 +37,8 @@ def go(phase, eggs, inp=None):
         if stderr:
             logging.error("%s failed with: %s", phase, stderr.strip())
         if process.wait() == 0:
-            return stdout
+            return stdout, i
+    return None, None
 
 
 def _main():
@@ -53,9 +54,9 @@ def _main():
         go('update', EGGS[1:])
 
     eggs = [egg] if egg else EGGS
-    response = go('collect', eggs)
+    response, i = go('collect', eggs)
     if response is not None:
-        go('upload', eggs, response)
+        go('upload', eggs[i:], response)
 
 if __name__ == '__main__':
     logging.basicConfig()
