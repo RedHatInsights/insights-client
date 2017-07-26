@@ -33,7 +33,7 @@ def go(phase, eggs, inp=None):
         })
         stdout, stderr = process.communicate(inp)
         if stdout:
-            logging.info("%s completed with: %s", stdout.strip())
+            logging.debug("%s completed with: %s", stdout.strip())
         if stderr:
             logging.error("%s failed with: %s", phase, stderr.strip())
         if process.wait() == 0:
