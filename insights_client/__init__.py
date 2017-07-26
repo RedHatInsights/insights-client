@@ -32,10 +32,11 @@ def go(phase, eggs, inp=None):
             "PATH": os.environ["PATH"]
         })
         stdout, stderr = process.communicate(inp)
+        if stdout:
+            logging.info("%s completed with: %s", stdout.strip())
         if stderr:
             logging.error("%s failed with: %s", phase, stderr.strip())
         if process.wait() == 0:
-            logging.info("%s completed with: %s", stdout.strip())
             return stdout
 
 
