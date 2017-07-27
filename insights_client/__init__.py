@@ -25,7 +25,7 @@ def go(phase, eggs, inp=None):
     insights_command = ["insights-client-run"] + sys.argv[1:]
     for i, egg in enumerate(eggs):
         print("Attempting %s with %s" % (phase, egg))
-        process = subprocess.Popen(insights_command, stdout=PIPE, stderr=PIPE, stdin=inp, env={
+        process = subprocess.Popen(insights_command, stdout=PIPE, stderr=PIPE, stdin=PIPE, env={
             "INSIGHTS_PHASE": str(phase),
             "PYTHONPATH": str(egg),
             "PATH": os.environ["PATH"]
@@ -56,6 +56,7 @@ def _main():
     response, i = go('collect', eggs)
     if response is not None:
         go('upload', eggs[i:], response)
+
 
 if __name__ == '__main__':
     _main()
