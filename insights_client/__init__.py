@@ -7,7 +7,6 @@ import os
 import sys
 import subprocess
 from subprocess import PIPE
-import logging
 
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
@@ -25,7 +24,7 @@ def go(phase, eggs, inp=None):
     """
     insights_command = ["insights-client-run"] + sys.argv[1:]
     for i, egg in enumerate(eggs):
-        logging.debug("Attempting %s with %s", phase, egg)
+        print("Attempting %s with %s" % (phase, egg))
         process = subprocess.Popen(insights_command, stdout=PIPE, stderr=PIPE, stdin=inp, env={
             "INSIGHTS_PHASE": str(phase),
             "PYTHONPATH": str(egg),
@@ -33,9 +32,9 @@ def go(phase, eggs, inp=None):
         })
         stdout, stderr = process.communicate(inp)
         if stdout:
-            logging.debug("%s completed with: %s", stdout.strip())
+            print("%s stdout: %s" % (phase, stdout.strip()))
         if stderr:
-            logging.error("%s failed with: %s", phase, stderr.strip())
+            print("%s stderr: %s" % (phase, stderr.strip()))
         if process.wait() == 0:
             return stdout, i
     return None, None
@@ -59,5 +58,4 @@ def _main():
         go('upload', eggs[i:], response)
 
 if __name__ == '__main__':
-    logging.basicConfig()
     _main()
