@@ -36,7 +36,7 @@ if __name__ == "__main__":
         license="GPL",
         version=VERSION,
         packages=find_packages(),
-        install_requires=['requests', 'PyYaml', 'six'],
+        install_requires=['requests', 'PyYaml', 'six', 'pyOpenSSL'],
         include_package_data=True,
         entry_points={'console_scripts': [
             'insights-client = insights_client:_main',
