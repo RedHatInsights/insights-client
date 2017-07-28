@@ -24,7 +24,7 @@ def go(phase, eggs, inp=None):
     """
     insights_command = ["insights-client-run"] + sys.argv[1:]
     for i, egg in enumerate(eggs):
-        print("Attempting %s with %s" % (phase, egg))
+        print("Attempting %s with egg: %s" % (phase, egg))
         process = subprocess.Popen(insights_command, stdout=PIPE, stderr=PIPE, stdin=PIPE, env={
             "INSIGHTS_PHASE": str(phase),
             "PYTHONPATH": str(egg),
@@ -32,11 +32,13 @@ def go(phase, eggs, inp=None):
         })
         stdout, stderr = process.communicate(inp)
         if stdout:
-            print("%s stdout: %s" % (phase, stdout.strip()))
+            print(stdout.strip())
         if stderr:
-            print("%s stderr: %s" % (phase, stderr.strip()))
+            print(stderr.strip())
         if process.wait() == 0:
             return stdout, i
+        else:
+            print("Attempt failed.")
     return None, None
 
 
