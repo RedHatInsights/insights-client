@@ -10,12 +10,21 @@ from subprocess import PIPE
 
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
+RPM_EGG = "/etc/insights-client/rpm.egg"
+
 EGGS = [
     "/var/lib/insights/newest.egg",
     "/var/lib/insights/last_stable.egg",
-    "/etc/insights-client/rpm.egg"
+    RPM_EGG
 ]
 
+sys.path.insert(0, "/etc/insights-client/rpm.egg")
+
+from insights.client import InsightsClient
+from insights.client import config
+
+client = InsightsClient()
+debug = config["debug"]
 
 def go(phase, eggs, inp=None):
     """
