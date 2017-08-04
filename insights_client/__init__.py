@@ -34,6 +34,9 @@ def go(phase, eggs, inp=None):
     insights_command = ["insights-client-run"] + sys.argv[1:]
     for i, egg in enumerate(eggs):
         print("Attempting %s with egg: %s" % (phase, egg))
+        if config['gpg'] and not client.verify(egg)['gpg']:
+            print("WARNING: GPG verification failed.  Not loading egg: %s" % egg)
+            continue
         process = subprocess.Popen(insights_command, stdout=PIPE, stderr=PIPE, stdin=PIPE, env={
             "INSIGHTS_PHASE": str(phase),
             "PYTHONPATH": str(egg),
