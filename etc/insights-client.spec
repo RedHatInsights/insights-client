@@ -1,6 +1,9 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %define _binaries_in_noarch_packages_terminate_build 0
 
+%global insights_user  insights
+%global insights_group %{insights_user}
+
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.0.0
@@ -43,6 +46,12 @@ Sends insightful information to Red Hat for automated analysis
 rm -rf ${RPM_BUILD_ROOT}
 %{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 
+%pre
+getent group insights > /dev/null || /usr/sbin/groupadd -r %{insights_group}
+getent passwd insights > /dev/null || \
+    /usr/sbin/useradd -r --shell /sbin/nologin %{insights_user} \
+    -c "Red Hat Insights"
+
 %post
 #Migrate existing machine-id
 if  [ -f "/etc/redhat_access_proactive/machine-id" ]; then
@@ -77,6 +86,12 @@ ln -sf /etc/cron.weekly/insights-client /etc/cron.weekly/redhat-access-insights
 ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
 ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
+setfacl -R -m g:insights:rwX /var/log/insights-client
+setfacl -R -m g:insights:rwX /var/lib/insights
+setfacl -R -m g:insights:rwX /etc/insights-client
+setfacl -m g:insights:r /etc/insights-client/*.pem
+setfacl -m g:insights:r /etc/insights-client/insights-client.conf
+setfacl -m g:insights:r /etc/insights-client/rpm.egg
 
 %postun
 if [ "$1" -eq 0 ]; then

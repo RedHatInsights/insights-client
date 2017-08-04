@@ -3,6 +3,7 @@
  Gather and upload Insights data for
  Red Hat Insights
 """
+import pwd
 import os
 import sys
 import subprocess
@@ -26,6 +27,21 @@ from insights.client import config
 
 client = InsightsClient()
 debug = config["debug"]
+try:
+    insights_uid = pwd.getpwnam("insights").pw_uid
+    insights_gid = pwd.getpwnam("insights").pw_gid
+except:
+    insights_uid, insights_gid = None, None
+    raise
+
+
+def demote(uid, gid, phase):
+    if uid and gid and phase != "collect":
+        def result():
+            os.setgid(gid)
+            os.setuid(uid)
+        return result
+
 
 def go(phase, eggs, inp=None):
     """
@@ -43,11 +59,15 @@ def go(phase, eggs, inp=None):
             continue
         if debug:
             print("Attempting %s with egg: %s" % (phase, egg))
-        process = subprocess.Popen(insights_command, stdout=PIPE, stderr=PIPE, stdin=PIPE, env={
+        env = {
             "INSIGHTS_PHASE": str(phase),
             "PYTHONPATH": str(egg),
             "PATH": os.environ["PATH"]
-        })
+        }
+        process = subprocess.Popen(insights_command,
+                                   preexec_fn=demote(insights_uid, insights_gid, phase),
+                                   stdout=PIPE, stderr=PIPE, stdin=PIPE, 
+                                   env=env)
         # stdout is used to communicate with parent process
         # stderr is used to communicate with end user
         # return code indicates whether or not child process failed
@@ -76,6 +96,9 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+
+    if not (insights_uid or insights_gid):
+        print("WARNING: 'insights' user not found.  Using root to run all phases")
 
     egg = os.environ.get("EGG")
 
