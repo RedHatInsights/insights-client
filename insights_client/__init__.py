@@ -33,15 +33,23 @@ def go(phase, eggs, inp=None):
     """
     insights_command = ["insights-client-run"] + sys.argv[1:]
     for i, egg in enumerate(eggs):
-        print("Attempting %s with egg: %s" % (phase, egg))
+        if not os.path.isfile(egg):
+            if debug:
+                print("Egg does not exist: %s" % egg)
+            continue
         if config['gpg'] and not client.verify(egg)['gpg']:
             print("WARNING: GPG verification failed.  Not loading egg: %s" % egg)
             continue
+        if debug:
+            print("Attempting %s with egg: %s" % (phase, egg))
         process = subprocess.Popen(insights_command, stdout=PIPE, stderr=PIPE, stdin=PIPE, env={
             "INSIGHTS_PHASE": str(phase),
             "PYTHONPATH": str(egg),
             "PATH": os.environ["PATH"]
         })
+        # stdout is used to communicate with parent process
+        # stderr is used to communicate with end user
+        # return code indicates whether or not child process failed
         stdout, stderr = process.communicate(inp)
         if stdout:
             print(stdout.strip())
@@ -50,7 +58,8 @@ def go(phase, eggs, inp=None):
         if process.wait() == 0:
             return stdout, i
         else:
-            print("Attempt failed.")
+            if debug:
+                print("Attempt failed.")
     return None, None
 
 
