@@ -10,6 +10,7 @@ from subprocess import PIPE
 
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
+INIT_PREFIX = "INIT: "
 RPM_EGG = "/etc/insights-client/rpm.egg"
 
 EGGS = [
@@ -51,8 +52,6 @@ def go(phase, eggs, inp=None):
         # stderr is used to communicate with end user
         # return code indicates whether or not child process failed
         stdout, stderr = process.communicate(inp)
-        if stdout:
-            print(stdout.strip())
         if stderr:
             print(stderr.strip())
         if process.wait() == 0:
@@ -61,6 +60,14 @@ def go(phase, eggs, inp=None):
             if debug:
                 print("Attempt failed.")
     return None, None
+
+
+def process_init(response):
+    if response and response.startswith(INIT_PREFIX):
+        response_msg = response[len(INIT_PREFIX):].strip()
+        if response_msg:
+            print(response_msg)
+        return True
 
 
 def _main():
@@ -73,10 +80,14 @@ def _main():
     egg = os.environ.get("EGG")
 
     if not egg:
-        go('update', EGGS[1:])
+        response, i = go('update', EGGS[1:])
+        if process_init(response):
+            return
 
     eggs = [egg] if egg else EGGS
     response, i = go('collect', eggs)
+    if process_init(response):
+        return
     if response is not None:
         go('upload', eggs[i:], response)
 
