@@ -94,6 +94,7 @@ if ! [ -d "/var/log/insights-client" ]; then
 mkdir /var/log/insights-client
 fi
 setfacl -Rd -m g:insights:rwX /var/log/insights-client
+setfacl -d -m g:insights:rwX /var/log/insights-client
 
 # if the library directory for eggs and such isn't present
 # make it AND
@@ -102,12 +103,14 @@ if ! [ -d "/var/lib/insights" ]; then
 mkdir /var/lib/insights
 fi
 setfacl -Rd -m g:insights:rwX /var/lib/insights
+setfacl -R -m g:insights:rwX /var/lib/insights
 
 # set some more ACLs
 setfacl -m g:insights:rx /etc/insights-client/*.pem
 setfacl -m g:insights:rwx /etc/insights-client/insights-client.conf
 setfacl -m g:insights:rx /etc/insights-client/rpm.egg
 setfacl -Rd -m g:insights:rwX /etc/insights-client
+setfacl -R -m g:insights:rwX /etc/insights-client
 
 # if ansible is present
 # make the fact directory AND
