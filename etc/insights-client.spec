@@ -112,7 +112,7 @@ setfacl -m g:insights:rx /etc/insights-client/rpm.egg
 # make the fact directory AND
 # the fact file AND
 # set the ACLs
-if [ -d "/etc/ansible"]; then
+if [ -d "/etc/ansible" ]; then
 if ! [ -d "/etc/ansible/facts.d" ]; then
 mkdir /etc/ansible/facts.d
 fi
