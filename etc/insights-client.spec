@@ -86,12 +86,43 @@ ln -sf /etc/cron.weekly/insights-client /etc/cron.weekly/redhat-access-insights
 ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
 ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
+
+# if the logging directory isnt created then make it
+# and set the ACLs
+if ! [ -d "/var/log/insights-client" ]; then
+mkdir /var/log/insights-client
+fi
 setfacl -R -m g:insights:rwX /var/log/insights-client
+
+# if the library directory for eggs and such isn't present
+# make it AND
+# set the ACLs
+if ! [ -d "/var/lib/insights" ]; then
+mkdir /var/lib/insights
+fi
 setfacl -R -m g:insights:rwX /var/lib/insights
+
+# set some more ACLs
 setfacl -R -m g:insights:rwX /etc/insights-client
-setfacl -m g:insights:r /etc/insights-client/*.pem
-setfacl -m g:insights:r /etc/insights-client/insights-client.conf
-setfacl -m g:insights:r /etc/insights-client/rpm.egg
+setfacl -m g:insights:rx /etc/insights-client/*.pem
+setfacl -m g:insights:rwx /etc/insights-client/insights-client.conf
+setfacl -m g:insights:rx /etc/insights-client/rpm.egg
+
+# if ansible is present
+# make the fact directory AND
+# the fact file AND
+# set the ACLs
+if [ -d "/etc/ansible"]; then
+if ! [ -d "/etc/ansible/facts.d" ]; then
+mkdir /etc/ansible/facts.d
+fi
+fi
+if [ -d "/etc/ansible/facts.d" ]; then
+touch /etc/ansible/facts.d/insights.fact
+touch /etc/ansible/facts.d/insights_machine_id.fact
+setfacl -m g:insights:rwx /etc/ansible/facts.d/insights.fact
+setfacl -m g:insights:rwx /etc/ansible/facts.d/insights_machine_id.fact
+fi
 
 %postun
 if [ "$1" -eq 0 ]; then
@@ -102,6 +133,9 @@ rm -f /etc/insights-client/.registered
 rm -f /etc/insights-client/.unregistered
 rm -f /etc/insights-client/.lastupload
 rm -f /etc/insights-client/rpm.egg
+rm -rf /var/lib/insights
+rm -f /etc/ansible/facts.d/insights.fact
+rm -f /etc/ansible/facts.d/insights_machine_id.fact
 # remove symlink to old name on uninstall
 rm -f %{_bindir}/redhat-access-insights
 # remove symlinks to old configs
