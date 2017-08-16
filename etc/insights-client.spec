@@ -51,7 +51,7 @@ rm -rf ${RPM_BUILD_ROOT}
 getent group insights > /dev/null || /usr/sbin/groupadd -r %{insights_group}
 getent passwd insights > /dev/null || \
     /usr/sbin/useradd -g insights -r --shell /sbin/nologin %{insights_user} \
-    -c "Red Hat Insights"
+    -c "Red Hat Insights" -d /var/lib/insights
 
 %post
 #Migrate existing machine-id
