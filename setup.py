@@ -52,7 +52,8 @@ if __name__ == "__main__":
                         'etc/cert-api.access.redhat.com.pem',
                         'etc/.exp.sed',
                         'etc/insights-client.cron',
-                        'etc/rpm.egg']),
+                        'etc/rpm.egg',
+                        'etc/rpm.egg.asc']),
 
             # man pages
             (man5path, ['docs/insights-client.conf.5']),

@@ -109,6 +109,7 @@ setfacl -R -m g:insights:rwX /var/lib/insights
 setfacl -m g:insights:rx /etc/insights-client/*.pem
 setfacl -m g:insights:rwx /etc/insights-client/insights-client.conf
 setfacl -m g:insights:rx /etc/insights-client/rpm.egg
+setfacl -m g:insights:rx /etc/insights-client/rpm.egg.asc
 setfacl -Rd -m g:insights:rwX /etc/insights-client
 setfacl -R -m g:insights:rwX /etc/insights-client
 
@@ -137,6 +138,7 @@ rm -f /etc/insights-client/.registered
 rm -f /etc/insights-client/.unregistered
 rm -f /etc/insights-client/.lastupload
 rm -f /etc/insights-client/rpm.egg
+rm -f /etc/insights-client/rpm.egg.asc
 rm -rf /var/lib/insights
 rm -f /etc/ansible/facts.d/insights.fact
 rm -f /etc/ansible/facts.d/insights_machine_id.fact
@@ -166,6 +168,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /etc/insights-client/.exp.sed
 /etc/insights-client/*.pem
 /etc/insights-client/rpm.egg
+/etc/insights-client/rpm.egg.asc
 
 %defattr(-,root,root)
 %{python_sitelib}/insights_client*.egg-info
