@@ -107,8 +107,8 @@ setfacl -R -m g:insights:rwX /var/lib/insights
 
 # set some more ACLs
 setfacl -m g:insights:r /etc/insights-client/*.pem
-setfacl -m g:insights:rw /etc/insights-client/insights-client.conf
-setfacl -m g:insights:rx /etc/insights-client/rpm.egg
+setfacl -m g:insights:r /etc/insights-client/insights-client.conf
+setfacl -m g:insights:r /etc/insights-client/rpm.egg
 setfacl -m g:insights:r /etc/insights-client/rpm.egg.asc
 setfacl -Rd -m g:insights:rwX /etc/insights-client
 setfacl -R -m g:insights:rwX /etc/insights-client
