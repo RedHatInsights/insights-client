@@ -106,10 +106,10 @@ setfacl -Rd -m g:insights:rwX /var/lib/insights
 setfacl -R -m g:insights:rwX /var/lib/insights
 
 # set some more ACLs
-setfacl -m g:insights:rx /etc/insights-client/*.pem
-setfacl -m g:insights:rwx /etc/insights-client/insights-client.conf
-setfacl -m g:insights:rx /etc/insights-client/rpm.egg
-setfacl -m g:insights:rx /etc/insights-client/rpm.egg.asc
+setfacl -m g:insights:r /etc/insights-client/*.pem
+setfacl -m g:insights:r /etc/insights-client/insights-client.conf
+setfacl -m g:insights:r /etc/insights-client/rpm.egg
+setfacl -m g:insights:r /etc/insights-client/rpm.egg.asc
 setfacl -Rd -m g:insights:rwX /etc/insights-client
 setfacl -R -m g:insights:rwX /etc/insights-client
 
@@ -125,8 +125,8 @@ fi
 if [ -d "/etc/ansible/facts.d" ]; then
 touch /etc/ansible/facts.d/insights.fact
 touch /etc/ansible/facts.d/insights_machine_id.fact
-setfacl -m g:insights:rwx /etc/ansible/facts.d/insights.fact
-setfacl -m g:insights:rwx /etc/ansible/facts.d/insights_machine_id.fact
+setfacl -m g:insights:rw /etc/ansible/facts.d/insights.fact
+setfacl -m g:insights:rw /etc/ansible/facts.d/insights_machine_id.fact
 fi
 
 %postun
