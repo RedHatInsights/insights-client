@@ -112,7 +112,9 @@ def _main():
     if process_init(response):
         return
     if response is not None and response.strip() != "None" and config["no_upload"] is not True:
-        go('upload', eggs[i:], response)
+        collection_response, collection_i = go('upload', eggs[i:], response)
+        if process_init(collection_response):
+            return
 
 
 if __name__ == '__main__':
