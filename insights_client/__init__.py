@@ -11,7 +11,7 @@ from subprocess import PIPE
 
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
-INIT_PREFIX = "INIT: "
+STDOUT_PREFIX = "STDOUTRESPONSE: "
 RPM_EGG = "/etc/insights-client/rpm.egg"
 
 EGGS = [
@@ -82,9 +82,9 @@ def go(phase, eggs, inp=None):
     return None, None
 
 
-def process_init(response):
-    if response and response.startswith(INIT_PREFIX):
-        response_msg = response[len(INIT_PREFIX):].strip()
+def process_stdout_response(response):
+    if response and response.startswith(STDOUT_PREFIX):
+        response_msg = response[len(STDOUT_PREFIX):].strip()
         if response_msg:
             print(response_msg)
         return True
@@ -104,16 +104,16 @@ def _main():
 
     if not egg:
         response, i = go('update', EGGS[1:])
-        if process_init(response):
+        if process_stdout_response(response):
             return
 
     eggs = [egg] if egg else EGGS
     response, i = go('collect', eggs)
-    if process_init(response):
+    if process_stdout_response(response):
         return
     if response is not None and response.strip() != "None" and config["no_upload"] is not True:
         collection_response, collection_i = go('upload', eggs[i:], response)
-        if process_init(collection_response):
+        if process_stdout_response(collection_response):
             return
 
 
