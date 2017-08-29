@@ -32,15 +32,13 @@ try:
     insights_uid = pwd.getpwnam("insights").pw_uid
     insights_gid = pwd.getpwnam("insights").pw_gid
     insights_grpid = grp.getgrpname("insights").gr_gid
-    insights_grpusers = grp.getgrpname("insights").gr_mem
     curr_user_grps = os.getgroups()
 except:
     sys.exit("User and group 'insights' not found. Exiting.")
 
 
 def demote(uid, gid, phase):
-    user_is_root = os.geteuid() is 0
-    if not user_is_root:
+    if os.geteuid() != 0:
         def result():
             os.setgid(gid)
             os.setuid(uid)
@@ -113,8 +111,7 @@ def _main():
     # check if the user is in the insights group
     # make sure they are not root
     in_insights_group = insights_grpid in curr_user_grps
-    is_root = os.geteuid() is 0
-    if not in_insights_group and not is_root:
+    if not in_insights_group and os.geteuid() != 0:
         print("ERROR: user not in 'insights' group AND not root. Exiting.")
         return
 
