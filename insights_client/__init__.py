@@ -35,15 +35,12 @@ try:
     insights_grpusers = grp.getgrpname("insights").gr_mem
     curr_user_grps = os.getgroups()
 except:
-    insights_uid, insights_gid = None, None
-    insights_grpid, insights_grpusers = None, None
-    curr_user_grps = os.getgroups()
-    raise
+    sys.exit("User and group 'insights' not found. Exiting.")
 
 
 def demote(uid, gid, phase):
     user_is_root = os.geteuid() is 0
-    if uid and gid and phase != "collect" and not user_is_root:
+    if not user_is_root:
         def result():
             os.setgid(gid)
             os.setuid(uid)
