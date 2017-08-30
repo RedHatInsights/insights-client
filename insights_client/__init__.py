@@ -4,6 +4,7 @@
  Red Hat Insights
 """
 import pwd
+import grp
 import os
 import sys
 import subprocess
@@ -31,13 +32,14 @@ debug = config["debug"]
 try:
     insights_uid = pwd.getpwnam("insights").pw_uid
     insights_gid = pwd.getpwnam("insights").pw_gid
+    insights_grpid = grp.getgrpname("insights").gr_gid
+    curr_user_grps = os.getgroups()
 except:
-    insights_uid, insights_gid = None, None
-    raise
+    sys.exit("User and group 'insights' not found. Exiting.")
 
 
 def demote(uid, gid, phase):
-    if uid and gid and phase != "collect":
+    if os.geteuid() != 0:
         def result():
             os.setgid(gid)
             os.setuid(uid)
@@ -84,6 +86,11 @@ def go(phase, eggs, inp=None):
 
 
 def process_stdout_response(response):
+    """
+    This is used to process any stdout/response from the client invocation
+    This is an internally implemented protocol
+    Any response from the client with STDOUT_PREFIX will be stripped/printed
+    """
     if response and response.startswith(STDOUT_PREFIX):
         response_msg = response[len(STDOUT_PREFIX):].strip()
         if response_msg:
@@ -98,16 +105,27 @@ def _main():
     if an egg fails a phase never try it again
     """
 
+    # check for insights user/group
     if not (insights_uid or insights_gid):
         print("WARNING: 'insights' user not found.  Using root to run all phases")
 
+    # check if the user is in the insights group
+    # make sure they are not root
+    in_insights_group = insights_grpid in curr_user_grps
+    if not in_insights_group and os.geteuid() != 0:
+        print("ERROR: user not in 'insights' group AND not root. Exiting.")
+        return
+
+    # get current egg environment
     egg = os.environ.get("EGG")
 
+    # if no egg was found, then get one
     if not egg:
         response, i = go('update', EGGS[1:])
         if process_stdout_response(response):
             return
 
+    # run collection
     eggs = [egg] if egg else EGGS
     response, i = go('collect', eggs)
     if config["to_stdout"]:
@@ -116,6 +134,8 @@ def _main():
         return
     if process_stdout_response(response):
         return
+
+    # run upload
     if response is not None and response.strip() != "None" and config["no_upload"] is not True:
         collection_response, collection_i = go('upload', eggs[i:], response)
         if process_stdout_response(collection_response):
