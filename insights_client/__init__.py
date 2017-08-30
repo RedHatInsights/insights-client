@@ -109,6 +109,9 @@ def _main():
 
     eggs = [egg] if egg else EGGS
     response, i = go('collect', eggs)
+    if config["to_stdout"]:
+        print response
+        return
     if process_stdout_response(response):
         return
     if response is not None and response.strip() != "None" and config["no_upload"] is not True:
