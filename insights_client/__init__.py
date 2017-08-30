@@ -7,6 +7,7 @@ import pwd
 import os
 import sys
 import subprocess
+import shutil
 from subprocess import PIPE
 
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
@@ -110,7 +111,8 @@ def _main():
     eggs = [egg] if egg else EGGS
     response, i = go('collect', eggs)
     if config["to_stdout"]:
-        print response
+        with open(response.strip(), 'rb') as f:
+            shutil.copyfileobj(f, sys.stdout)
         return
     if process_stdout_response(response):
         return
