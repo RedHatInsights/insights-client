@@ -32,7 +32,7 @@ debug = config["debug"]
 try:
     insights_uid = pwd.getpwnam("insights").pw_uid
     insights_gid = pwd.getpwnam("insights").pw_gid
-    insights_grpid = grp.getgrpname("insights").gr_gid
+    insights_grpid = grp.getgrnam("insights").gr_gid
     curr_user_grps = os.getgroups()
 except:
     sys.exit("User and group 'insights' not found. Exiting.")
