@@ -3,6 +3,7 @@
  Gather and upload Insights data for
  Red Hat Insights
 """
+from __future__ import print_function
 import pwd
 import grp
 import os
@@ -38,6 +39,10 @@ except:
     sys.exit("User and group 'insights' not found. Exiting.")
 
 
+def log(msg):
+    print(msg, file=sys.stderr)
+
+
 def demote(uid, gid, phase):
     if os.geteuid() != 0:
         def result():
@@ -55,13 +60,13 @@ def go(phase, eggs, inp=None):
     for i, egg in enumerate(eggs):
         if not os.path.isfile(egg):
             if debug:
-                print("Egg does not exist: %s" % egg)
+                log("Egg does not exist: %s" % egg)
             continue
         if config['gpg'] and not client.verify(egg)['gpg']:
-            print("WARNING: GPG verification failed.  Not loading egg: %s" % egg)
+            log("WARNING: GPG verification failed.  Not loading egg: %s" % egg)
             continue
         if debug:
-            print("Attempting %s with egg: %s" % (phase, egg))
+            log("Attempting %s with egg: %s" % (phase, egg))
         env = {
             "INSIGHTS_PHASE": str(phase),
             "PYTHONPATH": str(egg),
@@ -76,12 +81,12 @@ def go(phase, eggs, inp=None):
         # return code indicates whether or not child process failed
         stdout, stderr = process.communicate(inp)
         if stderr:
-            print(stderr.strip())
+            log(stderr.strip())
         if process.wait() == 0:
             return stdout, i
         else:
             if debug:
-                print("Attempt failed.")
+                log("Attempt failed.")
     return None, None
 
 
@@ -107,13 +112,13 @@ def _main():
 
     # check for insights user/group
     if not (insights_uid or insights_gid):
-        print("WARNING: 'insights' user not found.  Using root to run all phases")
+        log("WARNING: 'insights' user not found.  Using root to run all phases")
 
     # check if the user is in the insights group
     # make sure they are not root
     in_insights_group = insights_grpid in curr_user_grps
     if not in_insights_group and os.geteuid() != 0:
-        print("ERROR: user not in 'insights' group AND not root. Exiting.")
+        log("ERROR: user not in 'insights' group AND not root. Exiting.")
         return
 
     # get current egg environment
