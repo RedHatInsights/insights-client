@@ -12,6 +12,10 @@ import subprocess
 import shutil
 from subprocess import PIPE
 
+sys.path.insert(0, "/etc/insights-client/rpm.egg")
+from insights.client import InsightsClient  # noqa E402
+from insights.client import config  # noqa E402
+
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
 STDOUT_PREFIX = "STDOUTRESPONSE: "
@@ -23,10 +27,6 @@ EGGS = [
     RPM_EGG
 ]
 
-sys.path.insert(0, "/etc/insights-client/rpm.egg")
-
-from insights.client import InsightsClient
-from insights.client import config
 
 client = InsightsClient()
 debug = config["debug"]
@@ -74,7 +74,7 @@ def go(phase, eggs, inp=None):
         }
         process = subprocess.Popen(insights_command,
                                    preexec_fn=demote(insights_uid, insights_gid, phase),
-                                   stdout=PIPE, stderr=PIPE, stdin=PIPE, 
+                                   stdout=PIPE, stderr=PIPE, stdin=PIPE,
                                    env=env)
         # stdout is used to communicate with parent process
         # stderr is used to communicate with end user

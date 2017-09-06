@@ -10,6 +10,7 @@ def get_version():
         if 'version' in line:
             return eval(line.split('=')[-1])
 
+
 VERSION = get_version().split('-')[0]
 MAN_PAGE = "docs/insights-client.8"
 CONF_PAGE = "docs/insights-client.conf.5"
@@ -17,6 +18,8 @@ SHORT_DESC = "Red Hat Insights"
 LONG_DESC = """
 Uploads insightful information to Red Hat
 """
+
+requires = ['requests', 'PyYaml', 'six', 'pyOpenSSL']
 
 if __name__ == "__main__":
 
@@ -36,7 +39,8 @@ if __name__ == "__main__":
         license="GPL",
         version=VERSION,
         packages=find_packages(),
-        install_requires=['requests', 'PyYaml', 'six', 'pyOpenSSL'],
+        install_requires=requires,
+        extras_require={'develop': requires + ['flake8']},
         include_package_data=True,
         entry_points={'console_scripts': [
             'insights-client = insights_client:_main',
