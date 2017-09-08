@@ -52,7 +52,6 @@ if __name__ == "__main__":
                         'etc/.fallback.json',
                         'etc/.fallback.json.asc',
                         'etc/redhattools.pub.gpg',
-                        'etc/api.access.redhat.com.pem',
                         'etc/cert-api.access.redhat.com.pem',
                         'etc/.exp.sed',
                         'etc/insights-client.cron',
