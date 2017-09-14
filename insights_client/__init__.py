@@ -98,7 +98,7 @@ def process_stdout_response(response):
     """
     if response and response.startswith(STDOUT_PREFIX):
         response_msg = response[len(STDOUT_PREFIX):].strip()
-        if response_msg:
+        if response_msg and not config['silent']:
             print(response_msg)
         return True
 
