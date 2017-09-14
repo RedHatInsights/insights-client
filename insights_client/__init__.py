@@ -141,7 +141,7 @@ def _main():
         return
 
     # run upload
-    if response is not None and response.strip() != "None" and config["no_upload"] is not True:
+    if response is not None and response.strip() != "None":
         collection_response, collection_i = go('upload', eggs[i:], response)
         if process_stdout_response(collection_response):
             return
