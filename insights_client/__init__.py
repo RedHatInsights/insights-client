@@ -26,6 +26,13 @@ from insights.client import InsightsClient  # noqa E402
 from insights.client import config  # noqa E402
 
 client = InsightsClient()
+client.logger.debug("THISSHOULDNTHAPPEN")
+"""
+You will also have to add a "self.logger = logger" to your InsightsClient()
+This will then appear three times in the logs
+I would think that __init__.py should only be ran ONCE, then each phase invocation is done through run.py
+"""
+
 debug = config["debug"]
 try:
     insights_uid = pwd.getpwnam("insights").pw_uid
