@@ -12,21 +12,18 @@ import subprocess
 import shutil
 from subprocess import PIPE
 
-sys.path.insert(0, "/etc/insights-client/rpm.egg")
-from insights.client import InsightsClient  # noqa E402
-from insights.client import config  # noqa E402
-
 __author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
 
 STDOUT_PREFIX = "STDOUTRESPONSE: "
+NEW_EGG = "/var/lib/insights/newest.egg"
+STABLE_EGG = "/var/lib/insights/last_stable.egg"
 RPM_EGG = "/etc/insights-client/rpm.egg"
+EGGS = [NEW_EGG, STABLE_EGG, RPM_EGG]
 
-EGGS = [
-    "/var/lib/insights/newest.egg",
-    "/var/lib/insights/last_stable.egg",
-    RPM_EGG
-]
-
+sys.path = [STABLE_EGG, RPM_EGG] + sys.path
+# flake8 complains because these imports aren't at the top
+from insights.client import InsightsClient  # noqa E402
+from insights.client import config  # noqa E402
 
 client = InsightsClient()
 debug = config["debug"]
@@ -51,7 +48,7 @@ def demote(uid, gid, phase):
         return result
 
 
-def go(phase, eggs, inp=None):
+def run_phase(phase, eggs, inp=None):
     """
     Call the run script for the given phase.  If the phase succeeds returns the
     index of the egg that succeeded to be used in the next phase.
@@ -124,15 +121,23 @@ def _main():
     # get current egg environment
     egg = os.environ.get("EGG")
 
+    r, _ = run_phase('pre_update', [STABLE_EGG, RPM_EGG])
+    if process_stdout_response(r):
+        return
+
     # if no egg was found, then get one
     if not egg:
-        response, i = go('update', EGGS[1:])
+        response, i = run_phase('update', EGGS[1:])
         if process_stdout_response(response):
             return
 
-    # run collection
     eggs = [egg] if egg else EGGS
-    response, i = go('collect', eggs)
+    r, _ = run_phase('post_update', eggs)
+    if process_stdout_response(r):
+        return
+
+    # run collection
+    response, i = run_phase('collect', eggs)
     if config["to_stdout"]:
         with open(response.strip(), 'rb') as f:
             shutil.copyfileobj(f, sys.stdout)
@@ -142,7 +147,7 @@ def _main():
 
     # run upload
     if response is not None and response.strip() != "None":
-        collection_response, collection_i = go('upload', eggs[i:], response)
+        collection_response, collection_i = run_phase('upload', eggs[i:], response)
         if process_stdout_response(collection_response):
             return
 
