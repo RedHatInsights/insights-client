@@ -80,11 +80,16 @@ ln -sf %{_bindir}/insights-client %{_bindir}/redhat-access-insights
 if ! [ -d "/etc/redhat-access-insights" ]; then
 mkdir /etc/redhat-access-insights
 fi
+#Link old cron job to new one
+if [ -f "/etc/cron.daily/redhat-access-insights"]; then
+ln -sf /etc/cron.daily/insights-client /etc/cron.daily/redhat-access-insights
+fi
+if [ -f "/etc/cron.weekly/redhat-access-insights"]; then
+ln -sf /etc/cron.weekly/insights-client /etc/cron.weekly/redhat-access-insights
+fi
 ln -sf /etc/insights-client/insights-client.conf /etc/redhat-access-insights/redhat-access-insights.conf
 ln -sf /etc/insights-client/insights-client.cron /etc/redhat-access-insights/redhat-access-insights.cron
 ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client
-ln -sf /etc/cron.daily/insights-client /etc/cron.daily/redhat-access-insights
-ln -sf /etc/cron.weekly/insights-client /etc/cron.weekly/redhat-access-insights
 ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
 ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
