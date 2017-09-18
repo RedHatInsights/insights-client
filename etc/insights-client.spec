@@ -80,11 +80,13 @@ ln -sf %{_bindir}/insights-client %{_bindir}/redhat-access-insights
 if ! [ -d "/etc/redhat-access-insights" ]; then
 mkdir /etc/redhat-access-insights
 fi
+# Symlink new cron job if the old one exists. Remove the old one                                               
+if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
+rm -f /etc/cron.daily/redhat-access-insights
+ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
+fi 
 ln -sf /etc/insights-client/insights-client.conf /etc/redhat-access-insights/redhat-access-insights.conf
 ln -sf /etc/insights-client/insights-client.cron /etc/redhat-access-insights/redhat-access-insights.cron
-ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client
-ln -sf /etc/cron.daily/insights-client /etc/cron.daily/redhat-access-insights
-ln -sf /etc/cron.weekly/insights-client /etc/cron.weekly/redhat-access-insights
 ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
 ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
@@ -107,12 +109,13 @@ setfacl -Rd -m g:insights:rwX /var/lib/insights
 setfacl -R -m g:insights:rwX /var/lib/insights
 
 # set some more ACLs
-setfacl -m g:insights:r /etc/insights-client/*.pem
-setfacl -m g:insights:r /etc/insights-client/insights-client.conf
-setfacl -m g:insights:r /etc/insights-client/rpm.egg
-setfacl -m g:insights:r /etc/insights-client/rpm.egg.asc
-setfacl -Rd -m g:insights:rwX /etc/insights-client
-setfacl -R -m g:insights:rwX /etc/insights-client
+setfacl -Rd -m g:insights:rwX -m m:rw /etc/insights-client
+setfacl -R -m g:insights:rwX -m m:rw /etc/insights-client
+setfacl -m g:insights:r -m m:r /etc/insights-client/*.pem
+setfacl -m g:insights:r -m m:r /etc/insights-client/redhattools.pub.gpg
+setfacl -m g:insights:rw -m m:rw /etc/insights-client/insights-client.conf
+setfacl -m g:insights:r -m m:r /etc/insights-client/rpm.egg
+setfacl -m g:insights:r -m m:r /etc/insights-client/rpm.egg.asc
 
 # if ansible is present
 # make the fact directory AND
@@ -155,25 +158,25 @@ fi
 test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(755,root,root)
-%{_bindir}/insights-client
-%{_bindir}/insights-client-run
-/etc/insights-client/insights-client.cron
-
 %defattr(0600, root, root)
 %dir /etc/insights-client
 %config(noreplace) /etc/insights-client/*.conf
 /etc/insights-client/.fallback.json
 /etc/insights-client/.fallback.json.asc
-/etc/insights-client/redhattools.pub.gpg
 /etc/insights-client/.exp.sed
-/etc/insights-client/*.pem
-/etc/insights-client/rpm.egg
-/etc/insights-client/rpm.egg.asc
 
-%defattr(-,root,root)
-%{python_sitelib}/insights_client*.egg-info
-%{python_sitelib}/insights_client/*.py*
+%attr(440,root,root) /etc/insights-client/*.pem
+%attr(440,root,root) /etc/insights-client/redhattools.pub.gpg
+
+%attr(755,root,root) %{_bindir}/insights-client
+%attr(755,root,root) %{_bindir}/insights-client-run
+%attr(755,root,root) /etc/insights-client/insights-client.cron
+
+%attr(644,root,root) /etc/insights-client/rpm.egg
+%attr(644,root,root) /etc/insights-client/rpm.egg.asc
+
+%attr(-,root,root) %{python_sitelib}/insights_client*.egg-info
+%attr(-,root,root) %{python_sitelib}/insights_client/*.py*
 
 %doc
 /usr/share/man/man8/*.8.gz
