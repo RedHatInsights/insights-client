@@ -4,6 +4,7 @@
  Red Hat Insights
 """
 from __future__ import print_function
+import json
 import pwd
 import grp
 import os
@@ -48,7 +49,7 @@ def demote(uid, gid, phase):
         return result
 
 
-def run_phase(phase, eggs, inp=None):
+def run_phase(phase, eggs, inp=None, process_response=True):
     """
     Call the run script for the given phase.  If the phase succeeds returns the
     index of the egg that succeeded to be used in the next phase.
@@ -80,24 +81,40 @@ def run_phase(phase, eggs, inp=None):
         if stderr:
             log(stderr.strip())
         if process.wait() == 0:
-            return stdout, i
+            response = process_stdout_response(stdout.strip(), process_response)
+            if response is not False:
+                return "" if response is True else response, i
         else:
             if debug:
                 log("Attempt failed.")
+    # All attempts to execute this phase have failed
     return None, None
 
 
-def process_stdout_response(response):
+def process_stdout_response(response, process_response):
     """
-    This is used to process any stdout/response from the client invocation
-    This is an internally implemented protocol
-    Any response from the client with STDOUT_PREFIX will be stripped/printed
+    Returns False if the phase execution was considered a failure, causing the
+    phase to be be retried with a fallback egg if one is available.
+
+    Returns the content in the "response" field is the execution was successful
+    and the "response" field is not empty.  Otherwise it returns True (to
+    indicate success).
     """
-    if response and response.startswith(STDOUT_PREFIX):
-        response_msg = response[len(STDOUT_PREFIX):].strip()
-        if response_msg and not config['silent']:
-            print(response_msg)
+    if not process_response:
         return True
+    try:
+        d = json.loads(response)
+        if d["message"] and not config['silent']:
+            print(d["message"])
+        if d["retry"]:
+            return False
+        elif d["rc"] is not None:
+            sys.exit(d["rc"])
+        else:
+            return d["response"] if d["response"] else True
+    except Exception as e:
+        if debug:
+            log("Failed to process subprocess output: %s", e.message)
 
 
 def _main():
@@ -122,34 +139,21 @@ def _main():
     egg = os.environ.get("EGG")
 
     r, _ = run_phase('pre_update', [STABLE_EGG, RPM_EGG])
-    if process_stdout_response(r):
-        return
 
     # if no egg was found, then get one
     if not egg:
         response, i = run_phase('update', EGGS[1:])
-        if process_stdout_response(response):
-            return
 
     eggs = [egg] if egg else EGGS
     r, _ = run_phase('post_update', eggs)
-    if process_stdout_response(r):
-        return
 
     # run collection
     response, i = run_phase('collect', eggs)
     if config["to_stdout"]:
-        with open(response.strip(), 'rb') as f:
+        with open(response, 'rb') as f:
             shutil.copyfileobj(f, sys.stdout)
-        return
-    if process_stdout_response(response):
-        return
-
-    # run upload
-    if response is not None and response.strip() != "None":
+    elif response is not None:
         collection_response, collection_i = run_phase('upload', eggs[i:], response)
-        if process_stdout_response(collection_response):
-            return
 
 
 if __name__ == '__main__':
