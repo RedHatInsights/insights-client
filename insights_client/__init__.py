@@ -88,7 +88,7 @@ def run_phase(phase, eggs, inp=None, process_response=True):
             if debug:
                 log("Attempt failed.")
     # All attempts to execute this phase have failed
-    return None, None
+    sys.exit(1)
 
 
 def process_stdout_response(response, process_response):
