@@ -130,7 +130,7 @@ def _main():
     # handle log rotation here instead of core
     if os.path.isfile(config['logging_file']):
         log_handler = logging.handlers.RotatingFileHandler(
-            config['logging_file'], delay=True, backupCount=3)
+            config['logging_file'], backupCount=3)
         log_handler.doRollover()
     # we now have access to the clients logging mechanism instead of using print
     client.set_up_logging()
