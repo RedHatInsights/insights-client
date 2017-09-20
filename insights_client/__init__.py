@@ -11,23 +11,23 @@ import os
 import sys
 import subprocess
 import shutil
+import logging
+import logging.handlers
 from subprocess import PIPE
 
-__author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
-
-STDOUT_PREFIX = "STDOUTRESPONSE: "
+# setup eggs
 NEW_EGG = "/var/lib/insights/newest.egg"
 STABLE_EGG = "/var/lib/insights/last_stable.egg"
 RPM_EGG = "/etc/insights-client/rpm.egg"
 EGGS = [NEW_EGG, STABLE_EGG, RPM_EGG]
-
 sys.path = [STABLE_EGG, RPM_EGG] + sys.path
-# flake8 complains because these imports aren't at the top
-from insights.client import InsightsClient  # noqa E402
-from insights.client import config  # noqa E402
 
-client = InsightsClient()
-debug = config["debug"]
+# client/core library containers
+client = None
+config = None
+debug = None
+
+# handle user/group permissions
 try:
     insights_uid = pwd.getpwnam("insights").pw_uid
     insights_gid = pwd.getpwnam("insights").pw_gid
@@ -123,6 +123,23 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+     # flake8 complains because these imports aren't at the top
+    from insights.client import InsightsClient  # noqa E402
+    from insights.client import config  # noqa E402
+
+     # handle client instantation here so that it isn't done multiple times in __init__
+    global client, config, debug
+    client = InsightsClient(True, False)  # read config, but dont setup logging
+    config = client.get_conf()
+    debug = config["debug"]
+
+    # handle log rotation here instead of core
+    if os.path.isfile(config['logging_file']):
+        log_handler = logging.handlers.RotatingFileHandler(
+            config['logging_file'], delay=True, backupCount=3)
+        log_handler.doRollover()
+    # we now have access to the clients logging mechanism instead of using print
+    client.set_up_logging()
 
     # check for insights user/group
     if not (insights_uid or insights_gid):
