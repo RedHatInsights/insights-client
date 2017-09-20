@@ -11,23 +11,18 @@ import os
 import sys
 import subprocess
 import shutil
+import logging
+import logging.handlers
 from subprocess import PIPE
 
-__author__ = 'Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>'
-
-STDOUT_PREFIX = "STDOUTRESPONSE: "
+# setup eggs
 NEW_EGG = "/var/lib/insights/newest.egg"
 STABLE_EGG = "/var/lib/insights/last_stable.egg"
 RPM_EGG = "/etc/insights-client/rpm.egg"
 EGGS = [NEW_EGG, STABLE_EGG, RPM_EGG]
-
 sys.path = [STABLE_EGG, RPM_EGG] + sys.path
-# flake8 complains because these imports aren't at the top
-from insights.client import InsightsClient  # noqa E402
-from insights.client import config  # noqa E402
 
-client = InsightsClient()
-debug = config["debug"]
+# handle user/group permissions
 try:
     insights_uid = pwd.getpwnam("insights").pw_uid
     insights_gid = pwd.getpwnam("insights").pw_gid
@@ -49,12 +44,14 @@ def demote(uid, gid, phase):
         return result
 
 
-def run_phase(phase, eggs, inp=None, process_response=True):
+def run_phase(client, phase, eggs, inp=None, process_response=True):
     """
     Call the run script for the given phase.  If the phase succeeds returns the
     index of the egg that succeeded to be used in the next phase.
     """
     insights_command = ["insights-client-run"] + sys.argv[1:]
+    config = client.get_conf()
+    debug = config["debug"]
     for i, egg in enumerate(eggs):
         if not os.path.isfile(egg):
             if debug:
@@ -81,7 +78,7 @@ def run_phase(phase, eggs, inp=None, process_response=True):
         if stderr:
             log(stderr.strip())
         if process.wait() == 0:
-            response = process_stdout_response(stdout.strip(), process_response)
+            response = process_stdout_response(config, stdout.strip(), process_response)
             if response is not False:
                 return "" if response is True else response, i
         else:
@@ -91,7 +88,7 @@ def run_phase(phase, eggs, inp=None, process_response=True):
     sys.exit(1)
 
 
-def process_stdout_response(response, process_response):
+def process_stdout_response(config, response, process_response):
     """
     Returns False if the phase execution was considered a failure, causing the
     phase to be be retried with a fallback egg if one is available.
@@ -113,7 +110,7 @@ def process_stdout_response(response, process_response):
         else:
             return d["response"] if d["response"] else True
     except Exception as e:
-        if debug:
+        if config["debug"]:
             log("Failed to process subprocess output: %s", e.message)
 
 
@@ -123,6 +120,20 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+    # flake8 complains because these imports aren't at the top
+    from insights.client import InsightsClient  # noqa E402
+
+    # handle client instantation here so that it isn't done multiple times in __init__
+    client = InsightsClient(True, False)  # read config, but dont setup logging
+    config = client.get_conf()
+
+    # handle log rotation here instead of core
+    if os.path.isfile(config['logging_file']):
+        log_handler = logging.handlers.RotatingFileHandler(
+            config['logging_file'], delay=True, backupCount=3)
+        log_handler.doRollover()
+    # we now have access to the clients logging mechanism instead of using print
+    client.set_up_logging()
 
     # check for insights user/group
     if not (insights_uid or insights_gid):
@@ -138,22 +149,22 @@ def _main():
     # get current egg environment
     egg = os.environ.get("EGG")
 
-    r, _ = run_phase('pre_update', [STABLE_EGG, RPM_EGG])
+    r, _ = run_phase(client, 'pre_update', [STABLE_EGG, RPM_EGG])
 
     # if no egg was found, then get one
     if not egg:
-        response, i = run_phase('update', EGGS[1:])
+        response, i = run_phase(client, 'update', EGGS[1:])
 
     eggs = [egg] if egg else EGGS
-    r, _ = run_phase('post_update', eggs)
+    r, _ = run_phase(client, 'post_update', eggs)
 
     # run collection
-    response, i = run_phase('collect', eggs)
+    response, i = run_phase(client, 'collect', eggs)
     if config["to_stdout"]:
         with open(response, 'rb') as f:
             shutil.copyfileobj(f, sys.stdout)
     elif response is not None:
-        collection_response, collection_i = run_phase('upload', eggs[i:], response)
+        collection_response, collection_i = run_phase(client, 'upload', eggs[i:], response)
 
 
 if __name__ == '__main__':
