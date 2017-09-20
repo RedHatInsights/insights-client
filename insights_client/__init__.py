@@ -69,14 +69,10 @@ def run_phase(client, phase, eggs, inp=None, process_response=True):
         }
         process = subprocess.Popen(insights_command,
                                    preexec_fn=demote(insights_uid, insights_gid, phase),
-                                   stdout=PIPE, stderr=PIPE, stdin=PIPE,
-                                   env=env)
+                                   stdout=PIPE, stdin=PIPE, env=env)
         # stdout is used to communicate with parent process
-        # stderr is used to communicate with end user
         # return code indicates whether or not child process failed
-        stdout, stderr = process.communicate(inp)
-        if stderr:
-            log(stderr.strip())
+        stdout, _ = process.communicate(inp)
         if process.wait() == 0:
             response = process_stdout_response(config, stdout.strip(), process_response)
             if response is not False:
