@@ -80,7 +80,7 @@ ln -sf %{_bindir}/insights-client %{_bindir}/redhat-access-insights
 if ! [ -d "/etc/redhat-access-insights" ]; then
 mkdir /etc/redhat-access-insights
 fi
-# Symlink new cron job if the old one exists. Remove the old one                                               
+# Symlink new cron job if the old one exists. Remove the old one
 if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
 rm -f /etc/cron.daily/redhat-access-insights
 ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
