@@ -10,23 +10,23 @@ The \fBinsights\-client.conf\fP file contains configuration information for \fBi
 .IP "loglevel=DEBUG"
 Change log level, valid options DEBUG, INFO, WARNING, ERROR, CRITICAL.
 .IP "trace=False"
-Log each line executed
+Log each line executed.
 .IP "auto_config=True"
-Automatically attempt to configure connectivity to Red Hat Insights
+Automatically attempt to configure connectivity to Red Hat Insights.
 .IP "authmethod=BASIC"
-Change authentication method, valid options BASIC, CERT. Default BASIC\&
+Change authentication method, valid options BASIC, CERT. Default BASIC.\&
 .IP "username="
-Username to use when authmethod is BASIC
+Username to use when authmethod is BASIC.
 .IP "password="
-Password to use when authmethod is BASIC
+Password to use when authmethod is BASIC.
 .IP "base_url=cert-api.access.redhat.com:443/r/insights"
-Base URL for API Interactions
+Base URL for API Interactions.
 .IP "remove_file=/etc/insights-client/remove.conf"
 File that can be used to prevent files or commands from being collected or to exclude lines containing a specified word.
 .br
 Each word specified in patterns will exclude the entire line containing the word in all commands and files.
 .br
-Keywords will be obfuscated to keyword# in all commands and files and require the obfuscate option to be True.
+Keywords will be obfuscated to keyword# in all commands and files and require the Obfuscate option to be True.
 .br
 This file MUST be in the following format, and MUST match exactly what is in the dynamic_config for file or command name.
 .br
@@ -42,23 +42,17 @@ patterns=password,username
 .br
 keywords=super$ecret,ultra$ecret
 .br
-.IP "cert_verify=/etc/insights-client/cert-api.access.redhat.com.pem"
-Location of the certificate chain for cert-api.access.redhat.com used for Certificate Pinning.  Valid options are True, False, or a path to the pinned certificate(s).
-.IP "gpg=True"
-Enable/Disable GPG verification of dynamic configuration
 .IP "auto_update=True"
-Automatically update the dynamic configuration
+Automatically update the dynamic configuration.
 .IP "obfuscate=False"
-Obfuscate ip addresses
+Obfuscate IP addresses.
 .IP "obfuscate_hostname=False"
-Obfuscate hostname
+Obfuscate hostname.
 .IP "proxy=http://user:pass@192.168.100.50:8080"
-URL for the proxy
+URL for the proxy.
 .IP "no_schedule=False"
-Disable automatic scheduling
+Disable automatic scheduling.
 
 .SH "SEE ALSO"
 .BR insights-client (8)
-
-.SH "AUTHOR"
-Richard Brantley <rbrantle@redhat.com>, Jeremy Crafts <jcrafts@redhat.com>, Dan Varga <dvarga@redhat.com>\&
+\&
