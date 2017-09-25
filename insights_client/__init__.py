@@ -4,22 +4,22 @@
  Red Hat Insights
 """
 from __future__ import print_function
-import json
 import pwd
 import grp
 import os
 import sys
 import subprocess
-import shutil
 import logging
 import logging.handlers
-from subprocess import PIPE
 
-# setup eggs
+ENV_EGG = os.environ.get("EGG")
 NEW_EGG = "/var/lib/insights/newest.egg"
 STABLE_EGG = "/var/lib/insights/last_stable.egg"
 RPM_EGG = "/etc/insights-client/rpm.egg"
-EGGS = [NEW_EGG, STABLE_EGG, RPM_EGG]
+EGGS = [ENV_EGG, NEW_EGG, STABLE_EGG, RPM_EGG]
+
+logger = logging.getLogger(__name__)
+
 sys.path = [STABLE_EGG, RPM_EGG] + sys.path
 
 # handle user/group permissions
@@ -44,7 +44,7 @@ def demote(uid, gid, phase):
         return result
 
 
-def run_phase(client, phase, eggs, inp=None, process_response=True):
+def run_phase(phase, client):
     """
     Call the run script for the given phase.  If the phase succeeds returns the
     index of the egg that succeeded to be used in the next phase.
@@ -52,8 +52,8 @@ def run_phase(client, phase, eggs, inp=None, process_response=True):
     insights_command = ["insights-client-run"] + sys.argv[1:]
     config = client.get_conf()
     debug = config["debug"]
-    for i, egg in enumerate(eggs):
-        if not os.path.isfile(egg):
+    for i, egg in enumerate(EGGS):
+        if egg is None or not os.path.isfile(egg):
             if debug:
                 log("Egg does not exist: %s" % egg)
             continue
@@ -69,49 +69,19 @@ def run_phase(client, phase, eggs, inp=None, process_response=True):
         }
         process = subprocess.Popen(insights_command,
                                    preexec_fn=demote(insights_uid, insights_gid, phase),
-                                   stdout=PIPE, stderr=PIPE, stdin=PIPE,
                                    env=env)
-        # stdout is used to communicate with parent process
-        # stderr is used to communicate with end user
-        # return code indicates whether or not child process failed
-        stdout, stderr = process.communicate(inp)
-        if stderr:
-            log(stderr.strip())
-        if process.wait() == 0:
-            response = process_stdout_response(config, stdout.strip(), process_response)
-            if response is not False:
-                return "" if response is True else response, i
-        else:
-            if debug:
-                log("Attempt failed.")
-    # All attempts to execute this phase have failed
-    sys.exit(1)
-
-
-def process_stdout_response(config, response, process_response):
-    """
-    Returns False if the phase execution was considered a failure, causing the
-    phase to be be retried with a fallback egg if one is available.
-
-    Returns the content in the "response" field is the execution was successful
-    and the "response" field is not empty.  Otherwise it returns True (to
-    indicate success).
-    """
-    if not process_response:
-        return True
-    try:
-        d = json.loads(response)
-        if d["message"] and not config['silent']:
-            print(d["message"])
-        if d["retry"]:
-            return False
-        elif d["rc"] is not None:
-            sys.exit(d["rc"])
-        else:
-            return d["response"] if d["response"] else True
-    except Exception as e:
-        if config["debug"]:
-            log("Failed to process subprocess output: %s", e.message)
+        stdout, stderr = process.communicate()
+        if process.returncode == 0:
+            # phase successful, don't try another egg
+            break
+        if process.returncode == 1:
+            # egg hit an error, try the next
+            logger.debug('Attempt failed.')
+        if process.returncode >= 100:
+            # 100 and 101 are unrecoverable, like post-unregistration, or
+            #   a machine not being registered yet, or simply a 'dump & die'
+            #   CLI option
+            sys.exit(process.returncode % 100)
 
 
 def _main():
@@ -120,8 +90,9 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+
     # flake8 complains because these imports aren't at the top
-    from insights.client import InsightsClient  # noqa E402
+    from insights.client import InsightsClient, get_phases  # noqa E402
 
     # handle client instantation here so that it isn't done multiple times in __init__
     client = InsightsClient(True, False)  # read config, but dont setup logging
@@ -146,25 +117,8 @@ def _main():
         log("ERROR: user not in 'insights' group AND not root. Exiting.")
         return
 
-    # get current egg environment
-    egg = os.environ.get("EGG")
-
-    r, _ = run_phase(client, 'pre_update', [STABLE_EGG, RPM_EGG])
-
-    # if no egg was found, then get one
-    if not egg:
-        response, i = run_phase(client, 'update', EGGS[1:])
-
-    eggs = [egg] if egg else EGGS
-    r, _ = run_phase(client, 'post_update', eggs)
-
-    # run collection
-    response, i = run_phase(client, 'collect', eggs)
-    if config["to_stdout"]:
-        with open(response, 'rb') as f:
-            shutil.copyfileobj(f, sys.stdout)
-    elif response is not None:
-        collection_response, collection_i = run_phase(client, 'upload', eggs[i:], response)
+    for p in get_phases():
+        run_phase(p, client)
 
 
 if __name__ == '__main__':
