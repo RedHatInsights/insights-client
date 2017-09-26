@@ -90,35 +90,37 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+    try:
+        # flake8 complains because these imports aren't at the top
+        from insights.client import InsightsClient, get_phases  # noqa E402
 
-    # flake8 complains because these imports aren't at the top
-    from insights.client import InsightsClient, get_phases  # noqa E402
+        # handle client instantation here so that it isn't done multiple times in __init__
+        client = InsightsClient(True, False)  # read config, but dont setup logging
+        config = client.get_conf()
 
-    # handle client instantation here so that it isn't done multiple times in __init__
-    client = InsightsClient(True, False)  # read config, but dont setup logging
-    config = client.get_conf()
+        # handle log rotation here instead of core
+        if os.path.isfile(config['logging_file']):
+            log_handler = logging.handlers.RotatingFileHandler(
+                config['logging_file'], backupCount=3)
+            log_handler.doRollover()
+        # we now have access to the clients logging mechanism instead of using print
+        client.set_up_logging()
 
-    # handle log rotation here instead of core
-    if os.path.isfile(config['logging_file']):
-        log_handler = logging.handlers.RotatingFileHandler(
-            config['logging_file'], backupCount=3)
-        log_handler.doRollover()
-    # we now have access to the clients logging mechanism instead of using print
-    client.set_up_logging()
+        # check for insights user/group
+        if not (insights_uid or insights_gid):
+            log("WARNING: 'insights' user not found.  Using root to run all phases")
 
-    # check for insights user/group
-    if not (insights_uid or insights_gid):
-        log("WARNING: 'insights' user not found.  Using root to run all phases")
+        # check if the user is in the insights group
+        # make sure they are not root
+        in_insights_group = insights_grpid in curr_user_grps
+        if not in_insights_group and os.geteuid() != 0:
+            log("ERROR: user not in 'insights' group AND not root. Exiting.")
+            return
 
-    # check if the user is in the insights group
-    # make sure they are not root
-    in_insights_group = insights_grpid in curr_user_grps
-    if not in_insights_group and os.geteuid() != 0:
-        log("ERROR: user not in 'insights' group AND not root. Exiting.")
-        return
-
-    for p in get_phases():
-        run_phase(p, client)
+        for p in get_phases():
+            run_phase(p, client)
+    except KeyboardInterrupt:
+        sys.exit('Aborting.')
 
 
 if __name__ == '__main__':
