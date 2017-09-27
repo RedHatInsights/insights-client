@@ -7,7 +7,7 @@
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.0.0
-Release:                0%{?dist}
+Release:                2%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -187,5 +187,5 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man5/*.5.gz
 
 %changelog
-* Wed Jul 12 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.0-0
+* Wed Sep 27 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.0-2
 - Initial build
