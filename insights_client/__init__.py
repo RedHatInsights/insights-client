@@ -85,7 +85,7 @@ def run_phase(phase, client):
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             # phase successful, don't try another egg
-            break
+            return
         if process.returncode == 1:
             # egg hit an error, try the next
             logger.debug('Attempt failed.')
@@ -94,6 +94,8 @@ def run_phase(phase, client):
             #   a machine not being registered yet, or simply a 'dump & die'
             #   CLI option
             sys.exit(process.returncode % 100)
+    # All attemps to run phase have failed
+    sys.exit(1)
 
 
 def _main():
