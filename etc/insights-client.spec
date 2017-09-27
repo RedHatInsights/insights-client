@@ -100,7 +100,7 @@ if ! [ -d "/var/log/insights-client" ]; then
 mkdir /var/log/insights-client
 fi
 setfacl -Rd -m g:insights:rwX /var/log/insights-client
-setfacl -d -m g:insights:rwX /var/log/insights-client
+setfacl -m g:insights:rwX /var/log/insights-client
 
 # if the library directory for eggs and such isn't present
 # make it AND
@@ -119,6 +119,7 @@ setfacl -m g:insights:r -m m:r /etc/insights-client/redhattools.pub.gpg
 setfacl -m g:insights:rw -m m:rw /etc/insights-client/insights-client.conf
 setfacl -m g:insights:r -m m:r /etc/insights-client/rpm.egg
 setfacl -m g:insights:r -m m:r /etc/insights-client/rpm.egg.asc
+setfacl -m g:insights:rwx /etc/insights-client
 
 # if ansible is present
 # make the fact directory AND
@@ -162,7 +163,6 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(0600, root, root)
-%dir /etc/insights-client
 %config(noreplace) /etc/insights-client/*.conf
 /etc/insights-client/.fallback.json
 /etc/insights-client/.fallback.json.asc
