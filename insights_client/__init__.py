@@ -96,7 +96,8 @@ def _main():
     """
     try:
         # flake8 complains because these imports aren't at the top
-        from insights.client import InsightsClient, get_phases  # noqa E402
+        from insights.client import InsightsClient
+        from insights.client.phase.v1 import get_phases
 
         # handle client instantation here so that it isn't done multiple times in __init__
         client = InsightsClient(True, False)  # read config, but dont setup logging
