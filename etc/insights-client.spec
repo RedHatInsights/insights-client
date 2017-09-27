@@ -183,6 +183,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) %{python_sitelib}/insights_client/*.py*
 
 %doc
+%defattr(-, root, root)
 /usr/share/man/man8/*.8.gz
 /usr/share/man/man5/*.5.gz
 
