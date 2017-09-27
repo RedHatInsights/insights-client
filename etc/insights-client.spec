@@ -175,7 +175,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) /etc/insights-client/rpm.egg
 %attr(644,root,root) /etc/insights-client/rpm.egg.asc
 
-%attr(655,root,root) %dir %{python_sitelib}/insights_client*.egg-info
+%attr(755,root,root) %dir %{python_sitelib}/insights_client*.egg-info
 %attr(644,root,root) %{python_sitelib}/insights_client*.egg-info/*
 %attr(644,root,root) %{python_sitelib}/insights_client/*.py*
 
