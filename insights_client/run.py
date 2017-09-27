@@ -11,4 +11,4 @@ try:
     phase = getattr(client, os.environ["INSIGHTS_PHASE"])
     sys.exit(phase())
 except KeyboardInterrupt:
-    sys.exit('Aborting.')
+    sys.exit(1)
