@@ -36,7 +36,9 @@ def log(msg):
     print(msg, file=sys.stderr)
 
 
-def demote(uid, gid, phase):
+def demote(uid, gid, run_as_root):
+    if (run_as_root):
+        return None
     if os.geteuid() != 0:
         def result():
             os.setgid(gid)
@@ -61,18 +63,24 @@ def run_phase(phase, client):
             log("WARNING: GPG verification failed.  Not loading egg: %s" % egg)
             continue
         if debug:
-            log("Attempting %s with egg: %s" % (phase, egg))
+            log("Attempting %s with egg: %s" % (phase['name'], egg))
 
         # setup the env
         insights_env = {
-            "INSIGHTS_PHASE": str(phase),
+            "INSIGHTS_PHASE": str(phase['name']),
             "PYTHONPATH": str(egg)
         }
         env = os.environ
         env.update(insights_env)
 
+        try:
+            run_as_root = phase['run_as_root']
+        except KeyError:
+            run_as_root = False
+
         process = subprocess.Popen(insights_command,
-                                   preexec_fn=demote(insights_uid, insights_gid, phase),
+                                   preexec_fn=demote(
+                                       insights_uid, insights_gid, run_as_root),
                                    env=env)
         stdout, stderr = process.communicate()
         if process.returncode == 0:
