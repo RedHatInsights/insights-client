@@ -62,11 +62,15 @@ def run_phase(phase, client):
             continue
         if debug:
             log("Attempting %s with egg: %s" % (phase, egg))
-        env = {
+
+        # setup the env
+        insights_env = {
             "INSIGHTS_PHASE": str(phase),
-            "PYTHONPATH": str(egg),
-            "PATH": os.environ["PATH"]
+            "PYTHONPATH": str(egg)
         }
+        env = os.environ
+        env.update(insights_env)
+
         process = subprocess.Popen(insights_command,
                                    preexec_fn=demote(insights_uid, insights_gid, phase),
                                    env=env)
