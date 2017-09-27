@@ -29,6 +29,9 @@ Requires: libcgroup
 Requires: tar
 Requires: gpg
 Requires: pciutils
+%if 0%{?rhel} && 0%{?rhel} == 6
+Requires: python-argparse
+%endif
 %if 0%{?rhel} && 0%{?rhel} > 6
 Requires: libcgroup-tools
 %endif
