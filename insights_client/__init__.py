@@ -39,7 +39,7 @@ def log(msg):
 def demote(uid, gid, run_as_root):
     if (run_as_root):
         return None
-    if os.geteuid() != 0:
+    if os.geteuid() == 0:
         def result():
             os.setgid(gid)
             os.setuid(uid)
