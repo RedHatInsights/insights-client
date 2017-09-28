@@ -188,5 +188,5 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man5/*.5.gz
 
 %changelog
-* Wed Sep 27 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.0-2
+* Wed Sep 27 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.0-4
 - Initial build
