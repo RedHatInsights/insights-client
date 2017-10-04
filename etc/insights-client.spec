@@ -6,8 +6,8 @@
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                3.0.0
-Release:                4%{?dist}
+Version:                3.0.1
+Release:                5%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -188,5 +188,10 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man5/*.5.gz
 
 %changelog
+* Wed Oct 4 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.1-5
+- Resolves BZ1498581
+- Fixes sys.path issues
+- Includes Insights Core 3.0.1-6
+
 * Wed Sep 27 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.0-4
 - Initial build
