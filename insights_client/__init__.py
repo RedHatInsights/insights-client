@@ -20,7 +20,7 @@ EGGS = [ENV_EGG, NEW_EGG, STABLE_EGG, RPM_EGG]
 
 logger = logging.getLogger(__name__)
 
-sys.path = [STABLE_EGG, RPM_EGG] + sys.path
+sys.path = [ENV_EGG, NEW_EGG, STABLE_EGG, RPM_EGG] + sys.path
 
 # handle user/group permissions
 try:
