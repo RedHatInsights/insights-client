@@ -191,7 +191,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 * Wed Oct 4 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.1-5
 - Resolves BZ1498581
 - Fixes sys.path issues
-- Includes Insights Core 3.0.1-6
+- Includes Insights Core 3.0.2-6
 
 * Wed Sep 27 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.0-4
 - Initial build
