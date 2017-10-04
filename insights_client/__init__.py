@@ -20,8 +20,6 @@ EGGS = [ENV_EGG, NEW_EGG, STABLE_EGG, RPM_EGG]
 
 logger = logging.getLogger(__name__)
 
-sys.path = [STABLE_EGG, RPM_EGG] + sys.path
-
 # handle user/group permissions
 try:
     insights_uid = pwd.getpwnam("insights").pw_uid
@@ -104,6 +102,7 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+    sys.path = [STABLE_EGG, RPM_EGG] + sys.path
     try:
         # flake8 complains because these imports aren't at the top
         from insights.client import InsightsClient
