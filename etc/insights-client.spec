@@ -78,8 +78,6 @@ fi
 if [ -f "/etc/redhat-access-insights/.lastupload" ]; then
 mv /etc/redhat-access-insights/.lastupload /etc/insights-client/.lastupload
 fi
-# Create symlinks to old name
-ln -sf %{_bindir}/insights-client %{_bindir}/redhat-access-insights
 if ! [ -d "/etc/redhat-access-insights" ]; then
 mkdir /etc/redhat-access-insights
 fi
@@ -172,6 +170,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(440,root,root) /etc/insights-client/redhattools.pub.gpg
 
 %attr(755,root,root) %{_bindir}/insights-client
+%attr(755,root,root) %{_bindir}/redhat-access-insights
 %attr(755,root,root) %{_bindir}/insights-client-run
 %attr(755,root,root) /etc/insights-client/insights-client.cron
 
