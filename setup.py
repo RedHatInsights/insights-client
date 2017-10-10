@@ -43,6 +43,7 @@ if __name__ == "__main__":
         extras_require={'develop': requires + ['flake8']},
         include_package_data=True,
         entry_points={'console_scripts': [
+            'redhat-access-insights = insights_client:_main',
             'insights-client = insights_client:_main',
             'insights-client-run = insights_client.run:_main'
         ]},
