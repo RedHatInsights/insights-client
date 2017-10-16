@@ -131,6 +131,12 @@ def _main():
             log("ERROR: user not in 'insights' group AND not root. Exiting.")
             return
 
+        if config["version"]:
+            from insights_client.constants import InsightsConstants as constants
+            print("Client: %s" % constants.version)
+            print("Core: %s" % client.version())
+            return
+
         for p in get_phases():
             run_phase(p, client)
     except KeyboardInterrupt:
