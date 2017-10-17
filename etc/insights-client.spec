@@ -76,6 +76,9 @@ if  [ $1 -eq 1  ]; then
 	if [ -f "/etc/redhat-access-insights/.registered" ]; then
 		mv /etc/redhat-access-insights/.registered /etc/insights-client/.registered
 	fi
+	if [ -f "/etc/redhat-access-insights/.unregistered" ]; then
+		mv /etc/redhat-access-insights/.unregistered /etc/insights-client/.unregistered
+	fi
 	#Migrate last upload record
 	if [ -f "/etc/redhat-access-insights/.lastupload" ]; then
 		mv /etc/redhat-access-insights/.lastupload /etc/insights-client/.lastupload
@@ -88,11 +91,6 @@ if  [ $1 -eq 1  ]; then
 		rm -f /etc/cron.daily/redhat-access-insights
 		ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
 	fi 
-	ln -sf /etc/insights-client/insights-client.conf /etc/redhat-access-insights/redhat-access-insights.conf
-	ln -sf /etc/insights-client/insights-client.cron /etc/redhat-access-insights/redhat-access-insights.cron
-	ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
-	ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
-	ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
 fi
 
 # if the logging directory isnt created then make it
@@ -136,6 +134,25 @@ touch /etc/ansible/facts.d/insights.fact
 touch /etc/ansible/facts.d/insights_machine_id.fact
 setfacl -m g:insights:rw /etc/ansible/facts.d/insights.fact
 setfacl -m g:insights:rw /etc/ansible/facts.d/insights_machine_id.fact
+fi
+
+# always perform legacy symlinks
+%posttrans
+mkdir -p /etc/redhat-access-insights
+ln -sf /etc/insights-client/insights-client.conf /etc/redhat-access-insights/redhat-access-insights.conf
+ln -sf /etc/insights-client/insights-client.cron /etc/redhat-access-insights/redhat-access-insights.cron
+ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
+ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
+ln -sf /etc/insights-client/.lastupload /etc/redhat-access-insights/.lastupload
+ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
+if [ -f "/etc/insights-client/.lastupload" ]; then
+	setfacl -m g:insights:rwx /etc/insights-client/.lastupload
+fi
+if [ -f "/etc/insights-client/.registered" ]; then
+	setfacl -m g:insights:rwx /etc/insights-client/.registered
+fi
+if [ -f "/etc/insights-client/.unregistered" ]; then
+	setfacl -m g:insights:rwx /etc/insights-client/.unregistered
 fi
 
 %postun
