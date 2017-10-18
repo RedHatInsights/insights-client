@@ -7,7 +7,7 @@
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.0.2
-Release:                1%{?dist}
+Release:                2%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -207,7 +207,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man5/*.5.gz
 
 %changelog
-* Wed Oct 18 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.2-1
+* Wed Oct 18 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.2-2
 - Resolves BZ1498650, BZ1500008, BZ1501545, BZ1501552, BZ1501556, BZ1501561, BZ1501565, BZ1501566
 - Fixes version migration logic
 - Fixes symlink issues to old binary
