@@ -7,7 +7,7 @@
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.0.2
-Release:                6%{?dist}
+Release:                1%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -207,10 +207,16 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man5/*.5.gz
 
 %changelog
-* Tue Oct 10 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.2-6
-- Resolves BZ1500008
+* Wed Oct 18 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.2-1
+- Resolves BZ1498650, BZ1500008, BZ1501545, BZ1501552, BZ1501556, BZ1501561, BZ1501565, BZ1501566
+- Fixes version migration logic
 - Fixes symlink issues to old binary
-- Includes Insights Core 3.0.2-6
+- Fixes short ID analysis for images and containers
+- Fixes Docker library detection
+- Fixes image and container detection
+- Fixes registration execution flow
+- Fixes --version flag to print to stdout and include additional versioning information
+- Includes Insights Core 3.0.3-1
 
 * Wed Oct 4 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.1-5
 - Resolves BZ1498581
