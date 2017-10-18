@@ -61,27 +61,27 @@ getent passwd insights > /dev/null || \
 if  [ $1 -eq 1  ]; then
 	#Migrate existing machine-id
 	if  [ -f "/etc/redhat_access_proactive/machine-id" ]; then
-		mv /etc/redhat_access_proactive/machine-id /etc/insights-client/machine-id
+		cp /etc/redhat_access_proactive/machine-id /etc/insights-client/machine-id
 	fi
 	#Migrate OTHER existing machine-id
 	if [ -f "/etc/redhat-access-insights/machine-id" ]; then
-		mv /etc/redhat-access-insights/machine-id /etc/insights-client/machine-id
+		cp /etc/redhat-access-insights/machine-id /etc/insights-client/machine-id
 	fi
 	#Migrate existing config
 	if [ -f "/etc/redhat-access-insights/redhat-access-insights.conf" ]; then
-		mv /etc/redhat-access-insights/redhat-access-insights.conf /etc/insights-client/insights-client.conf
+		cp /etc/redhat-access-insights/redhat-access-insights.conf /etc/insights-client/insights-client.conf
 		sed -i 's/\[redhat-access-insights\]/\[insights-client\]/' /etc/insights-client/insights-client.conf
 	fi
 	#Migrate registration record
 	if [ -f "/etc/redhat-access-insights/.registered" ]; then
-		mv /etc/redhat-access-insights/.registered /etc/insights-client/.registered
+		cp /etc/redhat-access-insights/.registered /etc/insights-client/.registered
 	fi
 	if [ -f "/etc/redhat-access-insights/.unregistered" ]; then
-		mv /etc/redhat-access-insights/.unregistered /etc/insights-client/.unregistered
+		cp /etc/redhat-access-insights/.unregistered /etc/insights-client/.unregistered
 	fi
 	#Migrate last upload record
 	if [ -f "/etc/redhat-access-insights/.lastupload" ]; then
-		mv /etc/redhat-access-insights/.lastupload /etc/insights-client/.lastupload
+		cp /etc/redhat-access-insights/.lastupload /etc/insights-client/.lastupload
 	fi
 	if ! [ -d "/etc/redhat-access-insights" ]; then
 		mkdir /etc/redhat-access-insights
