@@ -28,6 +28,8 @@ Requires: libcgroup
 Requires: tar
 Requires: gpg
 Requires: pciutils
+Requires: python-magic
+Requires: python-six
 %if 0%{?rhel} && 0%{?rhel} == 6
 Requires: python-argparse
 %endif
