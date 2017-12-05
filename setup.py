@@ -19,7 +19,7 @@ LONG_DESC = """
 Uploads insightful information to Red Hat
 """
 
-requires = ['requests', 'PyYaml', 'six', 'pyOpenSSL']
+requires = ['requests', 'six', 'pyOpenSSL']
 
 if __name__ == "__main__":
 
