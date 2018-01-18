@@ -61,38 +61,38 @@ getent passwd insights > /dev/null || \
 %post
 # Only perform migration from redhat-access-insights to insights-client
 if  [ $1 -eq 1  ]; then
-	#Migrate existing machine-id
-	if  [ -f "/etc/redhat_access_proactive/machine-id" ]; then
-		cp /etc/redhat_access_proactive/machine-id /etc/insights-client/machine-id
-	fi
-	#Migrate OTHER existing machine-id
-	if [ -f "/etc/redhat-access-insights/machine-id" ]; then
-		cp /etc/redhat-access-insights/machine-id /etc/insights-client/machine-id
-	fi
-	#Migrate existing config
-	if [ -f "/etc/redhat-access-insights/redhat-access-insights.conf" ]; then
-		cp /etc/redhat-access-insights/redhat-access-insights.conf /etc/insights-client/insights-client.conf
-		sed -i 's/\[redhat-access-insights\]/\[insights-client\]/' /etc/insights-client/insights-client.conf
-	fi
-	#Migrate registration record
-	if [ -f "/etc/redhat-access-insights/.registered" ]; then
-		cp /etc/redhat-access-insights/.registered /etc/insights-client/.registered
-	fi
-	if [ -f "/etc/redhat-access-insights/.unregistered" ]; then
-		cp /etc/redhat-access-insights/.unregistered /etc/insights-client/.unregistered
-	fi
-	#Migrate last upload record
-	if [ -f "/etc/redhat-access-insights/.lastupload" ]; then
-		cp /etc/redhat-access-insights/.lastupload /etc/insights-client/.lastupload
-	fi
-	if ! [ -d "/etc/redhat-access-insights" ]; then
-		mkdir /etc/redhat-access-insights
-	fi
-	# Symlink new cron job if the old one exists. Remove the old one
-	if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
-		rm -f /etc/cron.daily/redhat-access-insights
-		ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
-	fi 
+    #Migrate existing machine-id
+    if  [ -f "/etc/redhat_access_proactive/machine-id" ]; then
+        cp /etc/redhat_access_proactive/machine-id /etc/insights-client/machine-id
+    fi
+    #Migrate OTHER existing machine-id
+    if [ -f "/etc/redhat-access-insights/machine-id" ]; then
+        cp /etc/redhat-access-insights/machine-id /etc/insights-client/machine-id
+    fi
+    #Migrate existing config
+    if [ -f "/etc/redhat-access-insights/redhat-access-insights.conf" ]; then
+        cp /etc/redhat-access-insights/redhat-access-insights.conf /etc/insights-client/insights-client.conf
+        sed -i 's/\[redhat-access-insights\]/\[insights-client\]/' /etc/insights-client/insights-client.conf
+    fi
+    #Migrate registration record
+    if [ -f "/etc/redhat-access-insights/.registered" ]; then
+        cp /etc/redhat-access-insights/.registered /etc/insights-client/.registered
+    fi
+    if [ -f "/etc/redhat-access-insights/.unregistered" ]; then
+        cp /etc/redhat-access-insights/.unregistered /etc/insights-client/.unregistered
+    fi
+    #Migrate last upload record
+    if [ -f "/etc/redhat-access-insights/.lastupload" ]; then
+        cp /etc/redhat-access-insights/.lastupload /etc/insights-client/.lastupload
+    fi
+    if ! [ -d "/etc/redhat-access-insights" ]; then
+        mkdir /etc/redhat-access-insights
+    fi
+    # Symlink new cron job if the old one exists. Remove the old one
+    if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
+        rm -f /etc/cron.daily/redhat-access-insights
+        ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
+    fi 
 fi
 
 # if the logging directory isnt created then make it
@@ -148,13 +148,13 @@ ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregiste
 ln -sf /etc/insights-client/.lastupload /etc/redhat-access-insights/.lastupload
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
 if [ -f "/etc/insights-client/.lastupload" ]; then
-	setfacl -m g:insights:rwx /etc/insights-client/.lastupload
+    setfacl -m g:insights:rwx /etc/insights-client/.lastupload
 fi
 if [ -f "/etc/insights-client/.registered" ]; then
-	setfacl -m g:insights:rwx /etc/insights-client/.registered
+    setfacl -m g:insights:rwx /etc/insights-client/.registered
 fi
 if [ -f "/etc/insights-client/.unregistered" ]; then
-	setfacl -m g:insights:rwx /etc/insights-client/.unregistered
+    setfacl -m g:insights:rwx /etc/insights-client/.unregistered
 fi
 
 %postun
