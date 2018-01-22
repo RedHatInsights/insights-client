@@ -2,13 +2,9 @@
 
 from setuptools import setup, find_packages
 import subprocess
+from insights_client.major_version import major_version
 
-with open("/etc/redhat-release") as fp:
-    r = fp.read().strip()
-
-release = r.split("release")[1].strip()
-rhel_version = int(release.split()[0].split(".")[0])
-print("RHEL VERSION: %d" % rhel_version)
+rhel_version = int(major_version())
 
 
 def get_version():
