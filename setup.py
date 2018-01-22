@@ -3,6 +3,13 @@
 from setuptools import setup, find_packages
 import subprocess
 
+with open("/etc/redhat-release") as fp:
+    r = fp.read().strip()
+
+release = r.split("release")[1].strip()
+rhel_version = int(release.split()[0].split(".")[0])
+print("RHEL VERSION: %d" % rhel_version)
+
 
 def get_version():
     f = open('insights_client/constants.py')
@@ -29,8 +36,36 @@ if __name__ == "__main__":
     # where stuff lands
     logpath = "/var/log/insights-client"
     confpath = "/etc/insights-client"
+    systemdpath = "/usr/lib/systemd/system"
     man5path = "/usr/share/man/man5/"
     man8path = "/usr/share/man/man8/"
+    conf_files = ['etc/insights-client.conf',
+                  'etc/.fallback.json',
+                  'etc/.fallback.json.asc',
+                  'etc/redhattools.pub.gpg',
+                  'etc/cert-api.access.redhat.com.pem',
+                  'etc/.exp.sed',
+                  'etc/rpm.egg',
+                  'etc/rpm.egg.asc']
+
+    if rhel_version == 6:
+        conf_files.append('etc/insights-client.cron')
+
+    data_files = [
+        # config files
+        (confpath, conf_files),
+
+        # man pages
+        (man5path, ['docs/insights-client.conf.5']),
+        (man8path, ['docs/insights-client.8']),
+
+        (logpath, []),
+    ]
+
+    if rhel_version >= 7:
+        data_files.append(
+            (systemdpath, ['etc/insights-client.service', 'etc/insights-client.timer'])
+        )
 
     setup(
         name="insights-client",
@@ -47,24 +82,7 @@ if __name__ == "__main__":
             'insights-client = insights_client:_main',
             'insights-client-run = insights_client.run:_main'
         ]},
-        data_files=[
-            # config files
-            (confpath, ['etc/insights-client.conf',
-                        'etc/.fallback.json',
-                        'etc/.fallback.json.asc',
-                        'etc/redhattools.pub.gpg',
-                        'etc/cert-api.access.redhat.com.pem',
-                        'etc/.exp.sed',
-                        'etc/insights-client.cron',
-                        'etc/rpm.egg',
-                        'etc/rpm.egg.asc']),
-
-            # man pages
-            (man5path, ['docs/insights-client.conf.5']),
-            (man8path, ['docs/insights-client.8']),
-
-            (logpath, [])
-        ],
+        data_files=data_files,
         description=SHORT_DESC,
         long_description=LONG_DESC
     )

@@ -4,6 +4,7 @@ PKGNAME=insights-client
 SRPM=$(RPMTOP)/SRPMS/$(PKGNAME)-*.src.rpm
 TARBALL=$(RPMTOP)/$(PKGNAME)-*.tar.gz
 RPM=$(RPMTOP)/RPMS/noarch/$(PKGNAME)*.rpm
+OS_MAJOR_VER=$(shell python major_version.py)
 PY_SDIST=python setup.py sdist
 
 
@@ -12,7 +13,13 @@ all: rpm
 .PHONY: tarball
 tarball: $(TARBALL)
 $(TARBALL): Makefile
+	if [ "$(OS_MAJOR_VER)" == "6" ]; then\
+		cp MANIFEST.rhel6 MANIFEST.in;\
+	else\
+		cp MANIFEST.rhel7 MANIFEST.in;\
+	fi
 	$(PY_SDIST)
+	rm MANIFEST.in
 
 
 .PHONY: srpm rpm 

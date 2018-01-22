@@ -32,9 +32,9 @@ Requires: python-magic
 Requires: python-six
 %if 0%{?rhel} && 0%{?rhel} == 6
 Requires: python-argparse
-%endif
-%if 0%{?rhel} && 0%{?rhel} > 6
-Requires: libcgroup-tools
+%else
+%{?systemd_requires}
+Requires: systemd
 %endif
 BuildArch: noarch
 
@@ -90,7 +90,9 @@ if  [ $1 -eq 1  ]; then
     # Symlink new cron job if the old one exists. Remove the old one
     if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
         rm -f /etc/cron.daily/redhat-access-insights
+%if 0%{?rhel} && 0%{?rhel} == 6
         ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
+%endif
     fi 
 fi
 
@@ -137,6 +139,10 @@ setfacl -m g:insights:rw /etc/ansible/facts.d/insights.fact
 setfacl -m g:insights:rw /etc/ansible/facts.d/insights_machine_id.fact
 fi
 
+%if 0%{?rhel} != 6
+%systemd_post %{name}.timer
+%endif
+
 # always perform legacy symlinks
 %posttrans
 mkdir -p /etc/redhat-access-insights
@@ -156,8 +162,18 @@ if [ -f "/etc/insights-client/.unregistered" ]; then
     setfacl -m g:insights:rwx /etc/insights-client/.unregistered
 fi
 
+%preun
+%if 0%{?rhel} != 6
+%systemd_preun %{name}.timer
+%systemd_preun %{name}.service
+%endif
+
 %postun
 if [ "$1" -eq 0 ]; then
+# One run on removal, not upgrade
+%if 0%{?rhel} != 6
+%_bindir/systemctl daemon-reload > /dev/null 2>&1
+%endif
 rm -f /etc/cron.daily/insights-client
 rm -f /etc/cron.weekly/insights-client
 rm -f /etc/insights-client/.cache*
@@ -187,13 +203,21 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /etc/insights-client/.fallback.json.asc
 /etc/insights-client/.exp.sed
 
+%if 0%{?rhel} != 6
+%attr(644,root,root) %{_unitdir}/insights-client.service
+%attr(644,root,root) %{_unitdir}/insights-client.timer
+%endif
+
 %attr(440,root,root) /etc/insights-client/*.pem
 %attr(440,root,root) /etc/insights-client/redhattools.pub.gpg
 
 %attr(755,root,root) %{_bindir}/insights-client
 %attr(755,root,root) %{_bindir}/redhat-access-insights
 %attr(755,root,root) %{_bindir}/insights-client-run
+
+%if 0%{?rhel} && 0%{?rhel} == 6
 %attr(755,root,root) /etc/insights-client/insights-client.cron
+%endif
 
 %attr(644,root,root) /etc/insights-client/rpm.egg
 %attr(644,root,root) /etc/insights-client/rpm.egg.asc
@@ -208,6 +232,11 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man5/*.5.gz
 
 %changelog
+* Thu Jan 18 2018 Kyle Lape <klape@redhat.com> - 3.0.3
+- RHEL 7 RPM now uses systemd service and timer instead of cron
+- Addition of IO and CPU cgroup constraints
+- Fixed memory cgroup constraint
+
 * Wed Oct 18 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.2-2
 - Resolves BZ1498650, BZ1500008, BZ1501545, BZ1501552, BZ1501556, BZ1501561, BZ1501565, BZ1501566
 - Fixes version migration logic
