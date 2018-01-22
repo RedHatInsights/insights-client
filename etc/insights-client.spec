@@ -23,6 +23,7 @@ Obsoletes: redhat-access-insights
 Requires: python
 Requires: python-setuptools
 Requires: python-requests >= 2.6
+Requires: PyYAML
 Requires: pyOpenSSL
 Requires: libcgroup
 Requires: tar
