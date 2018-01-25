@@ -96,11 +96,11 @@ if  [ $1 -eq 1  ]; then
     # Symlink new cron job if the old one exists. Remove the old one
     if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
         rm -f /etc/cron.daily/redhat-access-insights
-%if 0%{?rhel} && 0%{?rhel} == 6
-        ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
-%else
-        %_bindir/systemctl start insights-client.timer
-%endif
+        %if 0%{?rhel} && 0%{?rhel} == 6
+            ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
+        %else
+            %_bindir/systemctl start insights-client.timer
+        %endif
     fi 
 fi
 
