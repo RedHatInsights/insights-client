@@ -59,6 +59,11 @@ getent passwd insights > /dev/null || \
     -c "Red Hat Insights" -d /var/lib/insights
 
 %post
+
+%if 0%{?rhel} != 6
+%systemd_post %{name}.timer
+%endif
+
 # Only perform migration from redhat-access-insights to insights-client
 if  [ $1 -eq 1  ]; then
     #Migrate existing machine-id
@@ -93,6 +98,8 @@ if  [ $1 -eq 1  ]; then
         rm -f /etc/cron.daily/redhat-access-insights
 %if 0%{?rhel} && 0%{?rhel} == 6
         ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
+%else
+        %_bindir/systemctl start insights-client.timer
 %endif
     fi 
 fi
@@ -140,9 +147,6 @@ setfacl -m g:insights:rw /etc/ansible/facts.d/insights.fact
 setfacl -m g:insights:rw /etc/ansible/facts.d/insights_machine_id.fact
 fi
 
-%if 0%{?rhel} != 6
-%systemd_post %{name}.timer
-%endif
 
 # always perform legacy symlinks
 %posttrans
