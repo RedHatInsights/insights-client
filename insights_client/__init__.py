@@ -27,7 +27,7 @@ try:
     insights_grpid = grp.getgrnam("insights").gr_gid
     curr_user_grps = os.getgroups()
 except:
-    sys.exit("User and group 'insights' not found. Exiting.")
+    insights_uid = insights_gid = insights_grpid = None
 
 
 def log(msg):
@@ -102,7 +102,12 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+
+    if not all(map(None, [insights_uid, insights_gid, insights_grpid])):
+        sys.exit("User and/or group 'insights' not found. Exiting.")
+
     sys.path = [STABLE_EGG, RPM_EGG] + sys.path
+
     try:
         # flake8 complains because these imports aren't at the top
         from insights.client import InsightsClient

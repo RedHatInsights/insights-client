@@ -1,0 +1,12 @@
+include etc/insights-client.service
+include etc/insights-client.timer
+include etc/insights-client.spec
+include etc/insights-client.conf
+include etc/.exp.sed
+include etc/*.pem
+include etc/.fallback.json
+include etc/.fallback.json.asc
+include etc/redhattools.pub.gpg
+include etc/rpm.egg
+include etc/rpm.egg.asc
+include docs/*

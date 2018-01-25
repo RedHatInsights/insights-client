@@ -1,0 +1,11 @@
+[Unit]
+Description=Insights Client Timer Task
+Documentation=man:insights-client(8)
+After=network.target
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=14400
+
+[Install]
+WantedBy=multi-user.target
