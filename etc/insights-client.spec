@@ -41,6 +41,9 @@ BuildArch: noarch
 
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
+%if 0%{?rhel} != 6
+BuildRequires: systemd
+%endif
 
 %description
 Sends insightful information to Red Hat for automated analysis
