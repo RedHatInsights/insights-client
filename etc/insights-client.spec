@@ -6,8 +6,8 @@
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                3.0.2
-Release:                2%{?dist}
+Version:                3.0.3
+Release:                1%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -237,7 +237,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man5/*.5.gz
 
 %changelog
-* Thu Jan 18 2018 Kyle Lape <klape@redhat.com> - 3.0.3
+* Thu Jan 18 2018 Kyle Lape <klape@redhat.com> - 3.0.3-1
 - RHEL 7 RPM now uses systemd service and timer instead of cron
 - Addition of IO and CPU cgroup constraints
 - Fixed memory cgroup constraint
