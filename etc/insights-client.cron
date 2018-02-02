@@ -2,14 +2,17 @@
 name=insights-client
 path=/usr/bin/${name}
 
-# Make sure this runs as root
-/bin/chmod +x ${path}
-if [[ $(/sbin/service cgconfig status 2>/dev/null) == *Running* ]];
+/sbin/service cgconfig status > /dev/null 2>&1
+if [ $? == 0 ];
 then
-    /bin/cgcreate -g memory:redhataccessinsights
-    /bin/cgset -r memory.limit_in_bytes=536870912 redhataccessinsights
-    exec /bin/cgexec -g memory:redhataccessinsights ${name} --retry 3 --quiet
-    /bin/cgdelete memory:redhataccessinsights
+    /bin/cgcreate -g memory,cpu,blkio:insights
+    /bin/cgset -r memory.limit_in_bytes=2147483648 insights
+    /bin/cgset -r memory.soft_limit_in_bytes=1073741824 insights
+    /bin/cgset -r memory.memsw.limit_in_bytes=2147483648 insights
+    /bin/cgset -r cpu.cfs_quota_us=30000 -r cpu.cfs_period_us=100000 insights
+    /bin/cgset -r blkio.weight=100 insights
+    /bin/cgexec -g memory,cpu,blkio:insights /usr/bin/timeout 10m ${path} --retry 3 --quiet
+    /bin/cgdelete memory,cpu,blkio:insights
 else
-    exec ${name} --quiet
+    /usr/bin/timeout 10m ${path} --quiet
 fi
