@@ -16,9 +16,10 @@ Group:                  Applications/System
 Vendor:                 Red Hat, Inc.
 
 Provides: redhat-access-insights = 1.0.13-3
+Provides: redhat-access-insights = %{version}-%{release}%{?dist}
 
-Obsoletes: redhat-access-insights <= 1.0.13-2
-Obsoletes: redhat-access-proactive <= 0.3.3-0
+Obsoletes: redhat-access-insights <= 1.0.13-2%{?dist}
+Obsoletes: redhat-access-proactive <= 0.3.3-0%{?dist}
 
 Requires: python
 Requires: python-setuptools
