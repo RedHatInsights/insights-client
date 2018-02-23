@@ -9,9 +9,14 @@ import grp
 import os
 import sys
 import subprocess
+from subprocess import PIPE
+import shlex
 import logging
 import logging.handlers
 
+GPG_KEY = "/etc/insights-client/redhattools.pub.gpg"
+
+BYPASS_GPG = os.environ.get("BYPASS_GPG", "").lower() == "true"
 ENV_EGG = os.environ.get("EGG")
 NEW_EGG = "/var/lib/insights/newest.egg"
 STABLE_EGG = "/var/lib/insights/last_stable.egg"
@@ -42,6 +47,17 @@ def demote(uid, gid, run_as_root):
             os.setgid(gid)
             os.setuid(uid)
         return result
+
+
+def gpg_validate(path):
+    if BYPASS_GPG:
+        return True
+
+    gpg_template = '/usr/bin/gpg --verify --keyring %s %s %s'
+    cmd = gpg_template % (GPG_KEY, path + '.asc', path)
+    proc = subprocess.Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    proc.communicate()
+    return proc.returncode == 0
 
 
 def run_phase(phase, client):
@@ -106,10 +122,16 @@ def _main():
     if not all(map(None, [insights_uid, insights_gid, insights_grpid])):
         sys.exit("User and/or group 'insights' not found. Exiting.")
 
-    sys.path = [STABLE_EGG, RPM_EGG] + sys.path
+    validated_eggs = filter(gpg_validate, [STABLE_EGG, RPM_EGG])
+
+    if not validated_eggs:
+        sys.exit("No GPG-verified eggs can be found")
+
+    sys.path = validated_eggs + sys.path
 
     try:
         # flake8 complains because these imports aren't at the top
+        import insights
         from insights.client import InsightsClient
         from insights.client.phase.v1 import get_phases
 
@@ -124,6 +146,7 @@ def _main():
             log_handler.doRollover()
         # we now have access to the clients logging mechanism instead of using print
         client.set_up_logging()
+        logging.root.debug("Loaded initial egg: %s", os.path.dirname(insights.__file__))
 
         # check for insights user/group
         if not (insights_uid or insights_gid):
