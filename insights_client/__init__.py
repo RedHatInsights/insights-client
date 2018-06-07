@@ -82,7 +82,9 @@ def run_phase(phase, client):
         # setup the env
         insights_env = {
             "INSIGHTS_PHASE": str(phase['name']),
-            "PYTHONPATH": str(egg)
+            "PYTHONPATH": str(egg),
+            # get the binary name so we can use the appropriate conf dir for .registered files
+            "INSIGHTS_SFR": sys.argv[0].rsplit('/', 1)[1]
         }
         env = os.environ
         env.update(insights_env)

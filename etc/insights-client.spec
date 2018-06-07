@@ -157,10 +157,9 @@ fi
 mkdir -p /etc/redhat-access-insights
 ln -sf /etc/insights-client/insights-client.conf /etc/redhat-access-insights/redhat-access-insights.conf
 ln -sf /etc/insights-client/insights-client.cron /etc/redhat-access-insights/redhat-access-insights.cron
-ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
-ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
 ln -sf /etc/insights-client/.lastupload /etc/redhat-access-insights/.lastupload
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
+
 if [ -f "/etc/insights-client/.lastupload" ]; then
     setfacl -m g:insights:rwx /etc/insights-client/.lastupload
 fi
