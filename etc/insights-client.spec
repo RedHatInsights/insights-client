@@ -191,6 +191,7 @@ rm -f /etc/insights-client/.unregistered
 rm -f /etc/insights-client/.lastupload
 rm -f /etc/insights-client/rpm.egg
 rm -f /etc/insights-client/rpm.egg.asc
+rm -f /etc/insights-client/.insights-core*.etag
 rm -rf /var/lib/insights
 rm -f /etc/ansible/facts.d/insights.fact
 rm -f /etc/ansible/facts.d/insights_machine_id.fact
