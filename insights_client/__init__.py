@@ -119,7 +119,7 @@ def _main():
     if an egg fails a phase never try it again
     """
 
-    if not all(map(None, [insights_uid, insights_gid, insights_grpid])):
+    if not all([insights_uid, insights_gid, insights_grpid]):
         sys.exit("User and/or group 'insights' not found. Exiting.")
 
     validated_eggs = filter(gpg_validate, [STABLE_EGG, RPM_EGG])
