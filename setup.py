@@ -23,6 +23,7 @@ Uploads insightful information to Red Hat
 """
 
 requires = ['requests', 'PyYaml', 'six', 'pyOpenSSL']
+develop = ['flake8', 'pytest']
 
 if __name__ == "__main__":
 
@@ -71,7 +72,7 @@ if __name__ == "__main__":
         version=VERSION,
         packages=find_packages(),
         install_requires=requires,
-        extras_require={'develop': requires + ['flake8']},
+        extras_require={'develop': requires + develop},
         include_package_data=True,
         entry_points={'console_scripts': [
             'redhat-access-insights = insights_client:_main',
