@@ -26,17 +26,17 @@ else
   fi
 fi
 
-python setup.py -q bdist_egg
+./build_client_egg.sh
 
 if [[ $DO_INSTALL = true ]]; then
-  mv dist/*.egg $CWD/etc/rpm.egg
+  mv insights.zip $CWD/etc/rpm.egg
   cd $CWD
   touch etc/rpm.egg.asc
   sudo yum remove -y insights-client
   make clean
   make install
 else
-  mv dist/*.egg /etc/insights-client/rpm.egg
+  mv insights.zip /etc/insights-client/rpm.egg
   cd $CWD
 fi
 exit
