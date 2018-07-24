@@ -122,7 +122,7 @@ def _main():
     if not all([insights_uid, insights_gid, insights_grpid]):
         sys.exit("User and/or group 'insights' not found. Exiting.")
 
-    validated_eggs = filter(gpg_validate, [STABLE_EGG, RPM_EGG])
+    validated_eggs = list(filter(gpg_validate, [STABLE_EGG, RPM_EGG]))
 
     if not validated_eggs:
         sys.exit("No GPG-verified eggs can be found")
