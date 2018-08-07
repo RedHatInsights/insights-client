@@ -45,70 +45,70 @@ Environment configuration can be used by setting environment variables with name
 ### `/etc/insights-client/insights-client.conf` File
 Configuration variables available in the configuration file and their explanations:
 
-`loglevel` - set the Python logger's default level (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default DEBUG
-`trace` - log each line executed.  Default False
-`auto_config` - attempt to auto-configure the network connection with Satellite or RHSM.  Default True
-`authmethod` - authentication method for the Portal (BASIC, CERT). Default is BASIC
+- `loglevel` - set the Python logger's default level (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default DEBUG
+- `trace` - log each line executed.  Default False
+- `auto_config` - attempt to auto-configure the network connection with Satellite or RHSM.  Default True
+- `authmethod` - authentication method for the Portal (BASIC, CERT). Default is BASIC
 Note: when `auto_config` is enabled, CERT will be used if RHSM or Satellite is detected
-`username` - username for basic auth. Blank by default
-`password` - password for basic auth. Blank by default
-`base_url` - base url for the Insights API (cert-api.access.redhat.com:443/r/insights). This shouldn't ever need to be changed
-`proxy` - proxy URL. Blank by default
-`auto_update` - whether to update the rule spec file (insights.json). Default True
-`obfuscate` - whether to obfuscate IP addresses in collected data. Default False
-`obfuscate_hostname` - whether to obfuscate hostnames in collected data. Default False
-`no_schedule` - whether to disable creation of Insights cronjob on register. Default False
-`display_name` - custom display name to appear in the Insights web UI. Only used on machine registration. Blank by default
+- `username` - username for basic auth. Blank by default
+- `password` - password for basic auth. Blank by default
+- `base_url` - base url for the Insights API (cert-api.access.redhat.com:443/r/insights). This shouldn't ever need to be changed
+- `proxy` - proxy URL. Blank by default
+- `auto_update` - whether to update the rule spec file (insights.json). Default True
+- `obfuscate` - whether to obfuscate IP addresses in collected data. Default False
+- `obfuscate_hostname` - whether to obfuscate hostnames in collected data. Default False
+- `no_schedule` - whether to disable creation of Insights cronjob on register. Default False
+- `display_name` - custom display name to appear in the Insights web UI. Only used on machine registration. Blank by default
 
 ### Command Line Switches
 Command line switches available and their explanations.
 
-`--register` - Register a system with the Insights API. Required for basic collection & upload, except in the case of certain targets or if `--offline` is specified
-`--display-name` - Display name to appear in the insights web UI. Only used on machine registration. This will override the same option in the insights-client.conf file.
-`--group` - Group to add the system to in the insights web UI. Only used on machine registration.
-`--retry` - Number of times to retry the collection archive upload. Default is 1.
-`--quiet` - Run with limited console output. This will only print ERROR level messages.
-`--silent` - Run with no console output at all.
-`--conf`, `-c` - Load a custom configuration file other than the default `/etc/insights-client/insights-client.conf`
-`--to-stdout` - Dump the archive contents as binary output to stdout.
-`--offline` - Run with no network connectivity at all. Implies `--no-upload` and makes machine registration unnecessary.
-`--logging-file` - Log to a file other than the default `/var/log/insights-client/insights-client.log`
-`--force-reregister` - Force a new registration. This delete's the machine's existing machine-id and registers a new one.
-`--verbose` - Run with all log output. This will print DEBUG level messages.
-`--no-upload` - Collect the archive, but do not upload it.
-`--keep-archive` - Collect the archive, and do not delete it after output.
-`--net-debug` - Show network debug messages in the console output.
-`--analyze-container` - Collect data from the system as if it were a container. Registration is unnecessary for this option. This will upload to a different API endpoint than vanilla system collection.
-`--analyze-file` - Collect data from a tar file, treat as a mountpoint. Upload to the image endpoint.
-`--analyze-mountpoint` - Collect data from a filesystem mountpoint other than the default /
-`--analyze-image-id` - Collect data from a Docker image with the specified ID
+- `--register` - Register a system with the Insights API. Required for basic collection & upload, except in the case of certain targets or if `--offline` is specified
+- `--display-name` - Display name to appear in the insights web UI. Only used on machine registration. This will override the same option in the insights-client.conf file.
+- `--group` - Group to add the system to in the insights web UI. Only used on machine registration.
+- `--retry` - Number of times to retry the collection archive upload. Default is 1.
+- `--quiet` - Run with limited console output. This will only print ERROR level messages.
+- `--silent` - Run with no console output at all.
+- `--conf`, `-c` - Load a custom configuration file other than the default `/etc/insights-client/insights-client.conf`
+- `--to-stdout` - Dump the archive contents as binary output to stdout.
+- `--offline` - Run with no network connectivity at all. Implies `--no-upload` and makes machine registration unnecessary.
+- `--logging-file` - Log to a file other than the default `/var/log/insights-client/insights-client.log`
+- `--force-reregister` - Force a new registration. This delete's the machine's existing machine-id and registers a new one.
+- `--verbose` - Run with all log output. This will print DEBUG level messages.
+- `--no-upload` - Collect the archive, but do not upload it.
+- `--keep-archive` - Collect the archive, and do not delete it after output.
+- `--net-debug` - Show network debug messages in the console output.
+- `--analyze-container` - Collect data from the system as if it were a container. Registration is unnecessary for this option. This will upload to a different API endpoint than vanilla system collection.
+- `--analyze-file` - Collect data from a tar file, treat as a mountpoint. Upload to the image endpoint.
+- `--analyze-mountpoint` - Collect data from a filesystem mountpoint other than the default /
+- `--analyze-image-id` - Collect data from a Docker image with the specified ID
 
 
 #### Switches that exit immediately
 These particular switches supersede normal client operation; they skip collection and exit after printing their necessary output.
 
-`--version` - Print the versions of both the wrapper and egg, then exit.
-`--unregister` - Unregister this system from the Insights API.
-`--validate` - Validate the format of the remove.conf file.
-`--enable-schedule` - Enable the Insights daily cron job.
-`--disable-schedule` - Disable the Insights daily cron job.
-`--test-connection` - Run a test to confirm connectivity from the machine to the Insights API.
-`--support` - Print a log of basic diagnostics such as version, registration status, connectivity, config, etc.
-`--status` - Print the registration status.
+- `--version` - Print the versions of both the wrapper and egg, then exit.
+- `--unregister` - Unregister this system from the Insights API.
+- `--validate` - Validate the format of the remove.conf file.
+- `--enable-schedule` - Enable the Insights daily cron job.
+- `--disable-schedule` - Disable the Insights daily cron job.
+- `--test-connection` - Run a test to confirm connectivity from the machine to the Insights API.
+- `--support` - Print a log of basic diagnostics such as version, registration status, connectivity, config, etc.
+- `--status` - Print the registration status.
  
 
 #### Hidden switches
 These switches are undocumented and for developer use only.
 
-`--compressor` - Compression format to use for the collection archive.
-`--from-stdin` - Load rule collection configuration from stdin (instead of from uploader.json)
-`--from-file` - Load rule collection configuration from a file (instead of from uploader.json)
-`--no-gpg` - Run without verifying the signature of the egg or rule collection spec.
-`--use-docker` - Use the Docker service for image & container collection
-`--use-atomic` - Use the Atomic service for image & container collection
-`--run-these` - Run a specific set of specs
-`--debug-phases` - Print info about phase execution and egg fallback
-`--to-json` - Print the collection results to the console as JSON.
+- `--compressor` - Compression format to use for the collection archive.
+- `--from-stdin` - Load rule collection configuration from stdin (instead of from uploader.json)
+- `--from-file` - Load rule collection configuration from a file (instead of from uploader.json)
+- `--no-gpg` - Run without verifying the signature of the egg or rule collection spec.
+- `--use-docker` - Use the Docker service for image & container collection
+- `--use-atomic` - Use the Atomic service for image & container collection
+- `--run-these` - Run a specific set of specs
+- `--debug-phases` - Print info about phase execution and egg fallback
+- `--to-json` - Print the collection results to the console as JSON.
 
 ## Phases
 The Insights Client runs using **phases** of execution, modularized so that they if one crashes due to a bad egg, they can be resumed at the current phase using the following egg in the priority list.
