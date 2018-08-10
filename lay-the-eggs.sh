@@ -1,5 +1,5 @@
-rm etc/rpm.egg
-rm etc/rpm.egg.asc
+rm -f etc/rpm.egg
+rm -f etc/rpm.egg.asc
 
 CWD=$(pwd)
 DO_INSTALL=false

@@ -8,7 +8,7 @@ To summarize the needs and capabilities of the Insights Client for developer ref
 ## Main Requirements
 - Register the machine with the Insights API (except for containers/images, which are NOT registered)
 - Collect files and run commands based on specs fetched from the Insights API
-- Output collected data as: 
+- Output collected data as:
   - An archive uploaded to the Insights API
   - An archive saved to disk
   - An archive dumped to STDOUT as binary data
@@ -95,7 +95,7 @@ These particular switches supersede normal client operation; they skip collectio
 - `--test-connection` - Run a test to confirm connectivity from the machine to the Insights API.
 - `--support` - Print a log of basic diagnostics such as version, registration status, connectivity, config, etc.
 - `--status` - Print the registration status.
- 
+
 
 #### Hidden switches
 These switches are undocumented and for developer use only.
@@ -176,4 +176,21 @@ insights.tar.gz
 │ └───...
 ├───var
 └───...
+```
+
+# Developers
+
+For local testing, make sure you have 'insights-core' located in '../insights-core' relative to the root of this project.
+After that, run the following:
+
+```
+sudo sh lay-the-eggs.sh
+```
+
+This will install `insights-client` if it was not installed already in your machine, or update the egg in /etc/insights-client/rpm.egg otherwise.
+
+Notice that local installations use eggs that are not GPG signed, therefore you should test your commands using:
+
+```
+sudo BYPASS_GPG=True insights-client --no-gpg <your_command>
 ```
