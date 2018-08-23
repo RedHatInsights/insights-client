@@ -9,8 +9,6 @@ The \fBinsights\-client.conf\fP file contains configuration information for \fBi
 [insights-client]\&
 .IP "loglevel=DEBUG"
 Change log level, valid options DEBUG, INFO, WARNING, ERROR, CRITICAL.
-.IP "trace=False"
-Log each line executed.
 .IP "auto_config=True"
 Automatically attempt to configure connectivity to Red Hat Insights.
 .IP "authmethod=BASIC"
@@ -21,7 +19,22 @@ Username to use when authmethod is BASIC.
 Password to use when authmethod is BASIC.
 .IP "base_url=cert-api.access.redhat.com:443/r/insights"
 Base URL for API Interactions.
-.IP "remove_file=/etc/insights-client/remove.conf"
+.IP "proxy=http://user:pass@192.168.100.50:8080"
+URL for the proxy.
+.IP "auto_update=True"
+Automatically update the dynamic configuration.
+.IP "obfuscate=False"
+Obfuscate IP addresses.
+.IP "obfuscate_hostname=False"
+Obfuscate hostname. Requires obfuscate=True.
+.IP "cmd_timeout=600"
+Timeout for commands run during collection, in seconds.
+.IP "http_timeout=10"
+Timeout for HTTP calls, in seconds.
+
+.SH "REMOVE FILE"
+Located at /etc/insights-client/remove.conf
+.br
 File that can be used to prevent files or commands from being collected or to exclude lines containing a specified word.
 .br
 Each word specified in patterns will exclude the entire line containing the word in all commands and files.
@@ -42,16 +55,6 @@ patterns=password,username
 .br
 keywords=super$ecret,ultra$ecret
 .br
-.IP "auto_update=True"
-Automatically update the dynamic configuration.
-.IP "obfuscate=False"
-Obfuscate IP addresses.
-.IP "obfuscate_hostname=False"
-Obfuscate hostname.
-.IP "proxy=http://user:pass@192.168.100.50:8080"
-URL for the proxy.
-.IP "no_schedule=False"
-Disable automatic scheduling.
 
 .SH "SEE ALSO"
 .BR insights-client (8)

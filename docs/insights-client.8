@@ -17,7 +17,7 @@ Register system to the Red Hat Insights service.
 .IP "--unregister"
 Unregister system from the Red Hat Insights service.
 .IP "--display-name=DISPLAYNAME"
-Display name to use for this system. Must be used with --register.
+Display name to use for this system.
 .IP "--group=GROUP"
 Group to add this system to during registration.
 .IP "--retry=RETRIES"
@@ -40,6 +40,16 @@ Print archive to stdout; sets --silent and --no-upload.
 Specifies the compression algorithm to use. Choices are gz, bz2, xz, and none. Defaults to gz.
 .IP "--offline"
 Collect locally only, do not connect to Insights and do not upload.
+.IP "--analyze-container"
+Treat the current filesystem as a container and upload to the /images endpoint.
+.IP "--analyze-image-id=ID"
+Analyze a docker image with id <ID>.
+.IP "--analyze-file=FILE"
+Analyze an archived filesystem in <FILE>.
+.IP "--analyze-mountpoint=MP"
+Analyze a filesystem at the mountpoint <MP>.
+.IP "--logging-file"
+Specify a logfile other than the default.
 
 .SH "DEBUG OPTIONS"
 .IP "--version"
@@ -60,6 +70,8 @@ Do not delete archive after upload.
 Create a support logfile for Red Hat Insights.
 .IP "--status"
 Check this machine's registration status with Red Hat Insights.
+.IP "--net-debug"
+Log network activity.
 
 .SH "SEE ALSO"
 .BR insights-client.conf (5)
