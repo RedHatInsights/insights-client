@@ -66,6 +66,7 @@ getent passwd insights > /dev/null || \
 
 %if 0%{?rhel} != 6
 %systemd_post %{name}.timer
+%systemd_post insights-compliance.timer
 %endif
 
 # Only perform migration from redhat-access-insights to insights-client
@@ -101,11 +102,12 @@ if  [ $1 -eq 1  ]; then
     if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
         rm -f /etc/cron.daily/redhat-access-insights
         %if 0%{?rhel} && 0%{?rhel} == 6
-            ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
+            ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client
+            ln -sf /etc/insights-client/insights-compliance.cron /etc/cron.daily/insights-compliance
         %else
             %_bindir/systemctl start insights-client.timer
         %endif
-    fi 
+    fi
 fi
 
 # if the logging directory isnt created then make it
@@ -147,6 +149,8 @@ ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
 %if 0%{?rhel} != 6
 %systemd_preun %{name}.timer
 %systemd_preun %{name}.service
+%systemd_preun insights-compliance.timer
+%systemd_preun insights-compliance.service
 %endif
 
 %postun
@@ -157,6 +161,8 @@ if [ "$1" -eq 0 ]; then
 %endif
 rm -f /etc/cron.daily/insights-client
 rm -f /etc/cron.weekly/insights-client
+rm -f /etc/cron.daily/insights-compliance
+rm -f /etc/cron.weekly/insights-compliance
 rm -f /etc/insights-client/.cache*
 rm -f /etc/insights-client/.registered
 rm -f /etc/insights-client/.unregistered
@@ -188,6 +194,8 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %if 0%{?rhel} != 6
 %attr(644,root,root) %{_unitdir}/insights-client.service
 %attr(644,root,root) %{_unitdir}/insights-client.timer
+%attr(644,root,root) %{_unitdir}/insights-compliance.service
+%attr(644,root,root) %{_unitdir}/insights-compliance.timer
 %endif
 
 %attr(440,root,root) /etc/insights-client/*.pem
@@ -199,6 +207,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?rhel} && 0%{?rhel} == 6
 %attr(755,root,root) /etc/insights-client/insights-client.cron
+%attr(755,root,root) /etc/insights-client/insights-compliance.cron
 %endif
 
 %attr(644,root,root) /etc/insights-client/rpm.egg

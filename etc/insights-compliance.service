@@ -1,0 +1,16 @@
+[Unit]
+Description=Insights Compliance Client.
+Documentation=man:insights-client(8)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/insights-client --compliance
+Restart=no
+WatchdogSec=600
+CPUQuota=30%
+MemoryLimit=2G
+TasksMax=20
+BlockIOWeight=100
+ExecStartPost=/bin/bash -c "echo 2G > /sys/fs/cgroup/memory/system.slice/insights-compliance.service/memory.memsw.limit_in_bytes"
+ExecStartPost=/bin/bash -c "echo 1G > /sys/fs/cgroup/memory/system.slice/insights-compliance.service/memory.soft_limit_in_bytes"
