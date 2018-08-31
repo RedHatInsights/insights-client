@@ -2,6 +2,8 @@ include etc/insights-client.service
 include etc/insights-client.timer
 include etc/insights-client.spec
 include etc/insights-client.conf
+include etc/insights-compliance.service
+include etc/insights-compliance.timer
 include etc/.exp.sed
 include etc/*.pem
 include etc/.fallback.json
