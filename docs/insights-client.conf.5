@@ -1,5 +1,5 @@
 .\" insights-client.conf - Red Hat Insights
-.TH "insights-client.conf" "8" "" "Red Hat Insights Configuration" ""
+.TH "insights-client.conf" "5" "" "Red Hat Insights Configuration" ""
 .SH "NAME"
 insights\-client.conf \- Red Hat Insights client configuration
 
@@ -31,10 +31,7 @@ Obfuscate hostname. Requires obfuscate=True.
 Timeout for commands run during collection, in seconds.
 .IP "http_timeout=10"
 Timeout for HTTP calls, in seconds.
-
-.SH "REMOVE FILE"
-Located at /etc/insights-client/remove.conf
-.br
+.IP "remove_file=/etc/insights-client/remove.conf"
 File that can be used to prevent files or commands from being collected or to exclude lines containing a specified word.
 .br
 Each word specified in patterns will exclude the entire line containing the word in all commands and files.
