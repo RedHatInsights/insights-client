@@ -174,6 +174,9 @@ rm -rf /etc/redhat-access-insights/
 rm -f /etc/cron.daily/redhat-access-insights
 rm -f /etc/cron.weekly/redhat-access-insights
 fi
+userdel -rf insights > /dev/null 2>&1
+groupdel insights > /dev/null 2>&1
+exit 0
 
 %clean
 test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT

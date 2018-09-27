@@ -70,7 +70,7 @@ if __name__ == "__main__":
         author_email="rbrantle@redhat.com, jcrafts@redhat.com",
         license="GPL",
         version=VERSION,
-        packages=find_packages(),
+        packages=find_packages(exclude=['insights_client.tests', 'insights_client.tests.*']),
         install_requires=requires,
         extras_require={'develop': requires + develop},
         include_package_data=True,
