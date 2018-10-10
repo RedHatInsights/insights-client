@@ -10,4 +10,4 @@ def major_version():
 
 
 if __name__ == "__main__":
-    print major_version()
+    print(major_version())

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
  Gather and upload Insights data for
  Red Hat Insights
