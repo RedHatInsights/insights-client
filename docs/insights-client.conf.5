@@ -27,14 +27,14 @@ Automatically update the dynamic configuration.
 Obfuscate IP addresses.
 .IP "obfuscate_hostname=False"
 Obfuscate hostname. Requires obfuscate=True.
-.IP "cmd_timeout=180"
+.IP "cmd_timeout=120"
 Timeout for commands run during collection, in seconds.
 .IP "http_timeout=10"
 Timeout for HTTP calls, in seconds.
 .IP "remove_file=/etc/insights-client/remove.conf"
 File that can be used to prevent files or commands from being collected or to exclude lines containing a specified word.
 .br
-Each word specified in patterns will exclude the entire line containing the word in all commands and files.
+Comma-separated regular expressions in the patterns section will omit any matching line from a command output or file.
 .br
 Keywords will be obfuscated to keyword# in all commands and files and require the Obfuscate option to be True.
 .br
