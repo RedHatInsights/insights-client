@@ -4,8 +4,6 @@
  Red Hat Insights
 """
 from __future__ import print_function
-import pwd
-import grp
 import os
 import sys
 import subprocess
@@ -25,28 +23,9 @@ EGGS = [ENV_EGG, NEW_EGG, STABLE_EGG, RPM_EGG]
 
 logger = logging.getLogger(__name__)
 
-# handle user/group permissions
-try:
-    insights_uid = pwd.getpwnam("insights").pw_uid
-    insights_gid = pwd.getpwnam("insights").pw_gid
-    insights_grpid = grp.getgrnam("insights").gr_gid
-    curr_user_grps = os.getgroups()
-except:
-    insights_uid = insights_gid = insights_grpid = None
-
 
 def log(msg):
     print(msg, file=sys.stderr)
-
-
-def demote(uid, gid, run_as_root):
-    if (run_as_root):
-        return None
-    if os.geteuid() == 0:
-        def result():
-            os.setgid(gid)
-            os.setuid(uid)
-        return result
 
 
 def gpg_validate(path):
@@ -87,14 +66,7 @@ def run_phase(phase, client):
         env = os.environ
         env.update(insights_env)
 
-        try:
-            run_as_root = phase['run_as_root']
-        except KeyError:
-            run_as_root = False
-
         process = subprocess.Popen(insights_command,
-                                   preexec_fn=demote(
-                                       insights_uid, insights_gid, run_as_root),
                                    env=env)
         stdout, stderr = process.communicate()
         if process.returncode == 0:
@@ -118,9 +90,6 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
-
-    if not all([insights_uid, insights_gid, insights_grpid]):
-        sys.exit("User and/or group 'insights' not found. Exiting.")
 
     validated_eggs = list(filter(gpg_validate, [STABLE_EGG, RPM_EGG]))
 
@@ -147,17 +116,6 @@ def _main():
         # we now have access to the clients logging mechanism instead of using print
         client.set_up_logging()
         logging.root.debug("Loaded initial egg: %s", os.path.dirname(insights.__file__))
-
-        # check for insights user/group
-        if not (insights_uid or insights_gid):
-            log("WARNING: 'insights' user not found.  Using root to run all phases")
-
-        # check if the user is in the insights group
-        # make sure they are not root
-        in_insights_group = insights_grpid in curr_user_grps
-        if not in_insights_group and os.geteuid() != 0:
-            log("ERROR: user not in 'insights' group AND not root. Exiting.")
-            return
 
         if config["version"]:
             from insights_client.constants import InsightsConstants as constants

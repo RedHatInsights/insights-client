@@ -1,9 +1,6 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %define _binaries_in_noarch_packages_terminate_build 0
 
-%global insights_user  insights
-%global insights_group %{insights_user}
-
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.0.3
@@ -55,12 +52,6 @@ Sends insightful information to Red Hat for automated analysis
 %install
 rm -rf ${RPM_BUILD_ROOT}
 %{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
-
-%pre
-getent group insights > /dev/null || /usr/sbin/groupadd -r %{insights_group}
-getent passwd insights > /dev/null || \
-    /usr/sbin/useradd -g insights -r --shell /sbin/nologin %{insights_user} \
-    -c "Red Hat Insights" -d /var/lib/insights
 
 %post
 
