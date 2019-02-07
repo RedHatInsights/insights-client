@@ -28,7 +28,7 @@ Requires: tar
 Requires: gpg
 Requires: pciutils
 Requires: python-magic
-Requires: python-six
+Requires: python-six >= 1.9.0
 %if 0%{?rhel} && 0%{?rhel} == 6
 Requires: python-argparse
 %else
