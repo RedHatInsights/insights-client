@@ -23,7 +23,7 @@ $ sh lay-the-eggs.sh
 $ sudo BYPASS_GPG=True EGG=/etc/insights-client/rpm.egg insights-client --no-gpg
 ```
 
-4. Repeat steps 2 & 3 upon making code changes. The majority of the client code lives in `insights-core/client`.
+4. Repeat steps 2 & 3 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
 
 ## Architecture Summary
 The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (from here on, referred to as **wrapper**), and the updatable core module (from here on, referred to as **egg**).
