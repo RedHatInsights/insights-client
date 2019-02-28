@@ -2,22 +2,28 @@
 
 **insights-client** is the Client API Wrapper for the Client API that lives in the Insights Core.
 
-## Purpose
-To summarize the needs and capabilities of the Insights Client for developer reference.
+## Developer Setup
+Instructions are for RHSM-subscribed machines only.
+1. Clone this repo and https://github.com/RedHatInsights/insights-core to the same directory.
 
-## Main Requirements
-- Register the machine with the Insights API (except for containers/images, which are NOT registered)
-- Collect files and run commands based on specs fetched from the Insights API
-- Output collected data as: 
-  - An archive uploaded to the Insights API
-  - An archive saved to disk
-  - An archive dumped to STDOUT as binary data
-  - A JSON representation of the collected data
-- Analyze the following types of machines:
-  - Basic RHEL hosts
-  - RHEV hypervisors
-  - Docker images
-  - Docker containers
+```
+$ git clone git@github.com:RedHatInsights/insights-client.git
+$ git clone git@github.com:RedHatInsights/insights-core.git
+```
+2. Build the egg and install the client.
+
+```
+$ cd insights-client
+$ sh lay-the-eggs.sh
+```
+
+3. Run the client with the following options to disable GPG since this egg is unsigned.
+
+```
+$ sudo BYPASS_GPG=True EGG=/etc/insights-client/rpm.egg insights-client --no-gpg
+```
+
+4. Repeat steps 2 & 3 upon making code changes. The majority of the client code lives in `insights-core/client`.
 
 ## Architecture Summary
 The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (from here on, referred to as **wrapper**), and the updatable core module (from here on, referred to as **egg**).
