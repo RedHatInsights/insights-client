@@ -8,7 +8,7 @@ Release:                2%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
-URL:                    http://access.redhat.com/insights
+URL:                    https://cloud.redhat.com/insights
 Group:                  Applications/System
 Vendor:                 Red Hat, Inc.
 
