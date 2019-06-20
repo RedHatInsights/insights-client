@@ -101,13 +101,13 @@ fi
 
 # if the logging directory isnt created then make it
 if ! [ -d "/var/log/insights-client" ]; then
-mkdir /var/log/insights-client
+mkdir -m 640 /var/log/insights-client
 fi
 
 # if the library directory for eggs and such isn't present
 # make it
 if ! [ -d "/var/lib/insights" ]; then
-mkdir /var/lib/insights
+mkdir -m 644 /var/lib/insights
 fi
 
 # if ansible is present
@@ -198,6 +198,9 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %dir %{python_sitelib}/insights_client*.egg-info
 %attr(644,root,root) %{python_sitelib}/insights_client*.egg-info/*
 %attr(644,root,root) %{python_sitelib}/insights_client/*.py*
+
+%attr(640,root,root) /var/log/insights-client
+%attr(644,root,root) /var/lib/insights
 
 %doc
 %defattr(-, root, root)

@@ -32,6 +32,7 @@ if __name__ == "__main__":
 
     # where stuff lands
     logpath = "/var/log/insights-client"
+    libpath = "/var/lib/insights"
     confpath = "/etc/insights-client"
     systemdpath = "/usr/lib/systemd/system"
     man5path = "/usr/share/man/man5/"
@@ -57,6 +58,7 @@ if __name__ == "__main__":
         (man8path, ['docs/insights-client.8']),
 
         (logpath, []),
+        (libpath, []),
     ]
 
     if rhel_version >= 7:
