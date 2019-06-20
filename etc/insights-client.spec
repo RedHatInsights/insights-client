@@ -110,20 +110,6 @@ if ! [ -d "/var/lib/insights" ]; then
 mkdir -m 644 /var/lib/insights
 fi
 
-# if ansible is present
-# make the fact directory AND
-# the fact file AND
-if [ -d "/etc/ansible" ]; then
-if ! [ -d "/etc/ansible/facts.d" ]; then
-mkdir /etc/ansible/facts.d
-fi
-fi
-if [ -d "/etc/ansible/facts.d" ]; then
-touch /etc/ansible/facts.d/insights.fact
-touch /etc/ansible/facts.d/insights_machine_id.fact
-fi
-
-
 # always perform legacy symlinks
 %posttrans
 mkdir -p /etc/redhat-access-insights
@@ -156,6 +142,7 @@ rm -f /etc/insights-client/rpm.egg
 rm -f /etc/insights-client/rpm.egg.asc
 rm -f /etc/insights-client/.insights-core*.etag
 rm -rf /var/lib/insights
+# keep these to remove from previous install
 rm -f /etc/ansible/facts.d/insights.fact
 rm -f /etc/ansible/facts.d/insights_machine_id.fact
 # remove symlink to old name on uninstall
