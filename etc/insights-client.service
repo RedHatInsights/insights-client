@@ -12,5 +12,5 @@ CPUQuota=30%
 MemoryLimit=2G
 TasksMax=20
 BlockIOWeight=100
-ExecStartPost=/bin/bash -c "echo 2G > /sys/fs/cgroup/memory/system.slice/insights-client.service/memory.memsw.limit_in_bytes"
-ExecStartPost=/bin/bash -c "echo 1G > /sys/fs/cgroup/memory/system.slice/insights-client.service/memory.soft_limit_in_bytes"
+ExecStartPost=/bin/bash -c "if [ -d /sys/fs/cgroup/memory ]; then echo 2G > /sys/fs/cgroup/memory/system.slice/insights-client.service/memory.memsw.limit_in_bytes; fi"
+ExecStartPost=/bin/bash -c "if [ -d /sys/fs/cgroup/memory ]; then echo 1G > /sys/fs/cgroup/memory/system.slice/insights-client.service/memory.soft_limit_in_bytes; fi"
