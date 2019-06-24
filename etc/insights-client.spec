@@ -3,8 +3,8 @@
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                3.0.3
-Release:                2%{?dist}
+Version:                3.0.6
+Release:                0%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -119,6 +119,10 @@ ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
 ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
 ln -sf /etc/insights-client/.lastupload /etc/redhat-access-insights/.lastupload
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
+# remove ACLs always
+setfacl -Rb /var/lib/insights
+setfacl -Rb /var/log/insights-client
+setfacl -Rb /etc/insights-client
 
 %preun
 %if 0%{?rhel} != 6
