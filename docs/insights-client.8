@@ -13,13 +13,13 @@ insights\-client \- Red Hat Insights Client tool
 .IP "-h, --help"
 Show this help message and exit.
 .IP "--register"
-Register system to the Red Hat Insights service.
+Register host to the Red Hat Insights service.
 .IP "--unregister"
-Unregister system from the Red Hat Insights service.
+Unregister host from the Red Hat Insights service.
 .IP "--display-name=DISPLAYNAME"
-Display name to use for this system. May be used during registration.
+Display name to use for this host. May be used during registration.
 .IP "--group=GROUP"
-Group to add this system to during registration.
+Group to add this host to during registration.
 .IP "--retry=RETRIES"
 Number of times to retry uploading. 180 seconds between tries.
 .IP "--validate"
@@ -49,7 +49,7 @@ Display version.
 .IP "--test-connection"
 Test connectivity to Red Hat.
 .IP "--force-reregister"
-Forcefully reregister this machine to Red Hat.  Use only as directed.
+Forcefully reregister this host to Red Hat. Will create a new ID for this host and create a new entry. Use only as directed.
 .IP "--verbose"
 DEBUG output to stdout
 .IP "--no-upload"
@@ -59,7 +59,7 @@ Do not delete archive after upload.
 .IP "--support"
 Create a support logfile for Red Hat Insights.
 .IP "--status"
-Check this machine's registration status with Red Hat Insights.
+Check this host's registration status with Red Hat Insights.
 .IP "--net-debug"
 Log network activity.
 
