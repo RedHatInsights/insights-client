@@ -1,4 +1,6 @@
+%if 0%{?rhel} != 8
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%endif
 %define _binaries_in_noarch_packages_terminate_build 0
 
 Name:                   insights-client
@@ -18,28 +20,43 @@ Provides: redhat-access-insights = %{version}-%{release}%{?dist}
 Obsoletes: redhat-access-insights <= 1.0.13-2%{?dist}
 Obsoletes: redhat-access-proactive <= 0.3.3-0%{?dist}
 
+Requires: tar
+Requires: gpg
+Requires: pciutils
+BuildArch: noarch
+
+# RHEL 8
+%if 0%{?rhel} == 8
+%{?__python3:Requires: %{__python3}}
+Requires: platform-python-setuptools
+Requires: python3-requests >= 2.6
+Requires: python3-PyYAML
+Requires: python3-pyOpenSSL
+Requires: python3-magic
+Requires: python3-six
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+
+# RHEL 6-7
+%else
 Requires: python
 Requires: python-setuptools
 Requires: python-requests >= 2.6
 Requires: PyYAML
 Requires: pyOpenSSL
 Requires: libcgroup
-Requires: tar
-Requires: gpg
-Requires: pciutils
 Requires: python-magic
 Requires: python-six >= 1.9.0
-%if 0%{?rhel} && 0%{?rhel} == 6
+BuildRequires: python2-devel
+BuildRequires: python-setuptools
+%endif
+
+# systemd/RHEL 6 deps
+%if 0%{?rhel} == 6
 Requires: python-argparse
 %else
 %{?systemd_requires}
 Requires: systemd
-%endif
-BuildArch: noarch
-
-BuildRequires: python2-devel
-BuildRequires: python-setuptools
-%if 0%{?rhel} != 6
 BuildRequires: systemd
 %endif
 
@@ -51,7 +68,13 @@ Sends insightful information to Red Hat for automated analysis
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
+%if 0%{?rhel} == 8
+%{__python3} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
+sed -i '1s=^#!/usr/bin/env python\($\|\s\)=#!%{__python3}\1=' \
+    %{buildroot}%{python3_sitelib}/insights_client/{__init__.py,major_version.py,run.py}
+%else
 %{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
+%endif
 
 %post
 
@@ -95,7 +118,7 @@ if  [ $1 -eq 1  ]; then
     # Symlink new cron job if the old one exists. Remove the old one
     if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
         rm -f /etc/cron.daily/redhat-access-insights
-        %if 0%{?rhel} && 0%{?rhel} == 6
+        %if 0%{?rhel} == 6
             ln -sf /etc/insights-client/insights-client.cron /etc/cron.daily/insights-client                               
         %else
             %_bindir/systemctl start insights-client.timer
@@ -186,9 +209,17 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) /etc/insights-client/rpm.egg
 %attr(644,root,root) /etc/insights-client/rpm.egg.asc
 
+%if 0%{?rhel} == 8
+%attr(755,root,root) %dir %{python3_sitelib}/insights_client*.egg-info
+%attr(755,root,root) %dir %{python3_sitelib}/insights_client*.egg-info
+%attr(644,root,root) %{python3_sitelib}/insights_client*.egg-info/*
+%attr(644,root,root) %{python3_sitelib}/insights_client/*.py*
+%else
+%attr(755,root,root) %dir %{python_sitelib}/insights_client*.egg-info
 %attr(755,root,root) %dir %{python_sitelib}/insights_client*.egg-info
 %attr(644,root,root) %{python_sitelib}/insights_client*.egg-info/*
 %attr(644,root,root) %{python_sitelib}/insights_client/*.py*
+%endif
 
 %attr(640,root,root) /var/log/insights-client
 %attr(644,root,root) /var/lib/insights
