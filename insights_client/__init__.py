@@ -11,7 +11,6 @@ from subprocess import PIPE
 import shlex
 import logging
 import logging.handlers
-import getpass
 
 GPG_KEY = "/etc/insights-client/redhattools.pub.gpg"
 
@@ -91,7 +90,7 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
-    if getpass.getuser() != 'root':
+    if os.getuid() != 0:
         sys.exit('Insights client must be run as root.')
 
     validated_eggs = list(filter(gpg_validate, [STABLE_EGG, RPM_EGG]))
