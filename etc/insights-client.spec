@@ -85,6 +85,10 @@ if  [ $1 -eq 1  ]; then
     if [ -f "/etc/redhat-access-insights/.lastupload" ]; then
         cp /etc/redhat-access-insights/.lastupload /etc/insights-client/.lastupload
     fi
+    #Migrate remove.conf
+    if [ -f "/etc/redhat-access-insights/remove.conf" ]; then
+        cp /etc/redhat-access-insights/remove.conf /etc/insights-client/remove.conf
+    fi
     if ! [ -d "/etc/redhat-access-insights" ]; then
         mkdir /etc/redhat-access-insights
     fi
@@ -119,10 +123,6 @@ ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
 ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
 ln -sf /etc/insights-client/.lastupload /etc/redhat-access-insights/.lastupload
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
-# remove ACLs always
-setfacl -Rb /var/lib/insights
-setfacl -Rb /var/log/insights-client
-setfacl -Rb /etc/insights-client
 
 %preun
 %if 0%{?rhel} != 6
