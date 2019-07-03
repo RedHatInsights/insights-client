@@ -202,7 +202,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/redhat-access-insights
 %attr(755,root,root) %{_bindir}/insights-client-run
 
-%if 0%{?rhel} && 0%{?rhel} == 6
+%if 0%{?rhel} == 6
 %attr(755,root,root) /etc/insights-client/insights-client.cron
 %endif
 
@@ -210,14 +210,11 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) /etc/insights-client/rpm.egg.asc
 
 %if 0%{?rhel} == 8
-%attr(755,root,root) %dir %{python3_sitelib}/insights_client*.egg-info
-%attr(755,root,root) %dir %{python3_sitelib}/insights_client*.egg-info
-%attr(644,root,root) %{python3_sitelib}/insights_client*.egg-info/*
+%attr(755,root,root) %{python3_sitelib}/insights_client*.egg-info
 %attr(644,root,root) %{python3_sitelib}/insights_client/*.py*
+%attr(644,root,root) %{python3_sitelib}/insights_client/__pycache__
 %else
-%attr(755,root,root) %dir %{python_sitelib}/insights_client*.egg-info
-%attr(755,root,root) %dir %{python_sitelib}/insights_client*.egg-info
-%attr(644,root,root) %{python_sitelib}/insights_client*.egg-info/*
+%attr(755,root,root) %{python_sitelib}/insights_client*.egg-info
 %attr(644,root,root) %{python_sitelib}/insights_client/*.py*
 %endif
 
