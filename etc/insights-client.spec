@@ -1,6 +1,3 @@
-%if 0%{?rhel} != 8
-%{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%endif
 %define _binaries_in_noarch_packages_terminate_build 0
 
 Name:                   insights-client
@@ -70,10 +67,12 @@ Sends insightful information to Red Hat for automated analysis
 rm -rf ${RPM_BUILD_ROOT}
 %if 0%{?rhel} == 8
 %{__python3} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
-sed -i '1s=^#!/usr/bin/env python\($\|\s\)=#!%{__python3}\1=' \
-    %{buildroot}%{python3_sitelib}/insights_client/{__init__.py,major_version.py,run.py}
+pathfix.py -pni "%{__python3}" %{buildroot}%{python3_sitelib}/insights_client/{__init__.py,major_version.py,run.py}
+pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client-run
+pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client
+pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/redhat-access-insights
 %else
-%{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
+%{__python2} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 %endif
 
 %post
@@ -214,8 +213,8 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) %{python3_sitelib}/insights_client/*.py*
 %attr(644,root,root) %{python3_sitelib}/insights_client/__pycache__
 %else
-%attr(755,root,root) %{python_sitelib}/insights_client*.egg-info
-%attr(644,root,root) %{python_sitelib}/insights_client/*.py*
+%attr(755,root,root) %{python2_sitelib}/insights_client*.egg-info
+%attr(644,root,root) %{python2_sitelib}/insights_client/*.py*
 %endif
 
 %attr(640,root,root) /var/log/insights-client
