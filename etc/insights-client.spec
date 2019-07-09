@@ -145,6 +145,10 @@ ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
 ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
 ln -sf /etc/insights-client/.lastupload /etc/redhat-access-insights/.lastupload
 ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
+# remove all ACLs on upgrade, forever and always
+setfacl -Rb /var/lib/insights
+setfacl -Rb /var/log/insights-client
+setfacl -Rb /etc/insights-client
 
 %preun
 %if 0%{?rhel} != 6
