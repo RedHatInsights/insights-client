@@ -920,7 +920,6 @@
                 "httpd",
                 "ironic_wsgi",
                 "iscsid",
-                "mistral-server",
                 "multipath",
                 "nfs-server",
                 "nfsd",
@@ -928,6 +927,7 @@
                 "nova-compute",
                 "nova-conductor",
                 "ntpd",
+                "octavia-worker",
                 "postgres",
                 "python",
                 "smbd",
@@ -1039,6 +1039,11 @@
             "command": "/sbin/sysctl -a",
             "pattern": [],
             "symbolic_name": "sysctl"
+        },
+        {
+            "command": "/bin/systemctl cat rpcbind.socket",
+            "pattern": [],
+            "symbolic_name": "systemctl_cat_rpcbind_socket"
         },
         {
             "command": "/bin/systemctl show openstack-cinder-volume",
@@ -1642,6 +1647,13 @@
             "symbolic_name": "heat_api_log"
         },
         {
+            "file": "/var/log/heat/heat_api.log",
+            "pattern": [
+                "(OperationalError) (1040, 'Too many connections')"
+            ],
+            "symbolic_name": "heat_api_log"
+        },
+        {
             "file": "/var/log/containers/heat/heat_api.log",
             "pattern": [
                 "(OperationalError) (1040, 'Too many connections')"
@@ -1890,6 +1902,7 @@
                 ": segfault at ",
                 ": session replaced: jid=",
                 "Abort command issued",
+                "Broken pipe",
                 "Could not set",
                 "DMA Status error.  Resetting chip",
                 "Detected Tx Unit Hang",
@@ -1897,6 +1910,7 @@
                 "Error deleting EBS Disk volume aws",
                 "Error in FW/Card",
                 "Error running DeviceResume dm_task_run failed",
+                "Exception happened during processing of request from",
                 "Failed to bind socket: No such file or directory",
                 "Failed to extend thin",
                 "Link down",
@@ -1946,6 +1960,7 @@
                 "irq handler for vector (irq -1)",
                 "is beyond advertised capabilities",
                 "is down or the link is down",
+                "kernel/softirq.c:159 local_bh_enable+",
                 "kernel: CIFS VFS: Unexpected SMB signature",
                 "kernel: INFO: task xfsaild/md",
                 "kernel: Memory cgroup out of memory: Kill process",
@@ -2250,7 +2265,10 @@
             "pattern": [
                 "HOSTS:",
                 "Hosts:",
-                "hosts:"
+                "group",
+                "hosts:",
+                "passwd",
+                "shadow"
             ],
             "symbolic_name": "nsswitch_conf"
         },
@@ -2332,7 +2350,6 @@
         {
             "file": "/var/lib/pgsql/data/pg_log/()*postgresql-.+\\.log",
             "pattern": [
-                "ERROR:",
                 "FATAL",
                 "checkpoints are occurring too frequently",
                 "connection limit exceeded for non-superusers",
@@ -3266,5 +3283,5 @@
     "pre_commands": {
         "iface": "/sbin/ip -o link | awk -F ': ' '/.*link\\/ether/ {print $2}'"
     },
-    "version": "2019-06-27T14:36:36.268650"
+    "version": "2019-07-03T14:36:03.366240"
 }
