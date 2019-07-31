@@ -7,7 +7,7 @@ from __future__ import print_function
 import os
 import sys
 import subprocess
-from subprocess import PIPE
+from subprocess import Popen, PIPE
 import shlex
 import logging
 import logging.handlers
@@ -19,7 +19,6 @@ ENV_EGG = os.environ.get("EGG")
 NEW_EGG = "/var/lib/insights/newest.egg"
 STABLE_EGG = "/var/lib/insights/last_stable.egg"
 RPM_EGG = "/etc/insights-client/rpm.egg"
-EGGS = [ENV_EGG, NEW_EGG, STABLE_EGG, RPM_EGG]
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +27,42 @@ def log(msg):
     print(msg, file=sys.stderr)
 
 
+def egg_version(egg):
+    '''
+    Determine the egg version
+    '''
+    if not sys.executable:
+        return None
+    try:
+        proc = Popen([sys.executable, '-c', 'from insights.client import InsightsClient; print(InsightsClient(None, False).version())'],
+                     env={'PYTHONPATH': egg, 'PATH': os.getenv('PATH')}, stdout=PIPE, stderr=PIPE)
+    except OSError as e:
+        logger.root.error(e)
+        return None
+    stdout, stderr = proc.communicate()
+    return stdout
+
+
+def sorted_eggs(eggs):
+    '''
+    Sort eggs to go into sys.path by highest version
+    '''
+    if len(eggs) < 2:
+        # nothing to sort
+        return eggs
+    if egg_version(eggs[0]) > egg_version(eggs[1]):
+        return eggs
+    else:
+        return [eggs[1], eggs[0]]
+
+
 def gpg_validate(path):
     if BYPASS_GPG:
         return True
+
+    # ENV egg might be None, so check if path defined, then check if it exists
+    if not (path and os.path.exists(path) and os.path.exists(path + '.asc')):
+        return False
 
     gpg_template = '/usr/bin/gpg --verify --keyring %s %s %s'
     cmd = gpg_template % (GPG_KEY, path + '.asc', path)
@@ -39,7 +71,7 @@ def gpg_validate(path):
     return proc.returncode == 0
 
 
-def run_phase(phase, client):
+def run_phase(phase, client, validated_eggs):
     """
     Call the run script for the given phase.  If the phase succeeds returns the
     index of the egg that succeeded to be used in the next phase.
@@ -47,7 +79,10 @@ def run_phase(phase, client):
     insights_command = ["insights-client-run"] + sys.argv[1:]
     config = client.get_conf()
     debug = config["debug"]
-    for i, egg in enumerate(EGGS):
+
+    all_eggs = [ENV_EGG, NEW_EGG] + validated_eggs
+
+    for i, egg in enumerate(all_eggs):
         if egg is None or not os.path.isfile(egg):
             if debug:
                 log("Egg does not exist: %s" % egg)
@@ -93,12 +128,22 @@ def _main():
     if os.getuid() != 0:
         sys.exit('Insights client must be run as root.')
 
-    validated_eggs = list(filter(gpg_validate, [STABLE_EGG, RPM_EGG]))
+    # sort rpm and stable eggs after verification
+    validated_eggs = sorted_eggs(
+        list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
+    # if ENV_EGG was specified and it's valid, add that to front of sys.path
+    #  so it can be loaded initially. keep it in its own var so we don't
+    #  pass it to run_phase where we load it again
+    if gpg_validate(ENV_EGG):
+        valid_env_egg = [ENV_EGG]
+    else:
+        valid_env_egg = []
 
-    if not validated_eggs:
+    if not validated_eggs and not valid_env_egg:
         sys.exit("No GPG-verified eggs can be found")
 
-    sys.path = validated_eggs + sys.path
+    # ENV egg comes first
+    sys.path = valid_env_egg + validated_eggs + sys.path
 
     try:
         # flake8 complains because these imports aren't at the top
@@ -126,7 +171,7 @@ def _main():
             return
 
         for p in get_phases():
-            run_phase(p, client)
+            run_phase(p, client, validated_eggs)
     except KeyboardInterrupt:
         sys.exit('Aborting.')
 
