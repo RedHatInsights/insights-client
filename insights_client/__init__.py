@@ -8,6 +8,7 @@ import os
 import sys
 import subprocess
 from subprocess import Popen, PIPE
+from distutils.version import LooseVersion
 import shlex
 import logging
 import logging.handlers
@@ -50,7 +51,11 @@ def sorted_eggs(eggs):
     if len(eggs) < 2:
         # nothing to sort
         return eggs
-    if egg_version(eggs[0]) > egg_version(eggs[1]):
+    # default versions to 0 so LooseVersion doesn't throw a fit
+    egg0_version = egg_version(eggs[0]) or '0'
+    egg1_version = egg_version(eggs[1]) or '0'
+
+    if LooseVersion(egg0_version) > LooseVersion(egg1_version):
         return eggs
     else:
         return [eggs[1], eggs[0]]
