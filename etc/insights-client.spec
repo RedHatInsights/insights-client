@@ -3,7 +3,7 @@
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.0.6
-Release:                0%{?dist}
+Release:                100%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -72,7 +72,7 @@ pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client-run
 pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client
 pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/redhat-access-insights
 %else
-%{__python2} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
+%{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 %endif
 
 %post
@@ -217,8 +217,8 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) %{python3_sitelib}/insights_client/*.py*
 %attr(644,root,root) %{python3_sitelib}/insights_client/__pycache__
 %else
-%attr(755,root,root) %{python2_sitelib}/insights_client*.egg-info
-%attr(644,root,root) %{python2_sitelib}/insights_client/*.py*
+%attr(755,root,root) %{python_sitelib}/insights_client*.egg-info
+%attr(644,root,root) %{python_sitelib}/insights_client/*.py*
 %endif
 
 %attr(640,root,root) /var/log/insights-client
