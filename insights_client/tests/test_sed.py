@@ -10,8 +10,8 @@ def run_sed(stdin):
     Obfuscates given string by SED script.
     """
     pipe = Popen(['sed', '-rf', 'etc/.exp.sed'], stdin=PIPE, stdout=PIPE, stderr=PIPE, env={"LC_ALL": "C"})
-    stdout, stderr = pipe.communicate(input=stdin)
-    return stdout
+    stdout, stderr = pipe.communicate(input=stdin.encode('utf8'))
+    return stdout.decode('utf8')
 
 
 @pytest.mark.parametrize(["stdin", "obfuscated"],
@@ -25,7 +25,10 @@ def run_sed(stdin):
                           ["password --md555 4facade5cafe", "password --md555 ********"],
                           ["password--md5 4facade5cafe", "password--md5 ********"],
                           ["password--sha1", "password********"],
-                          [" (abc=def&password=root&key=value )", " (abc=def&password=******** )"]])
+                          [" (abc=def&password=root&key=value )", " (abc=def&password=******** )"],
+                          ["password: root", "password: ********"],
+                          ["{auth: {password: \"root\"}}", "{auth: {password: \"********\"}}"],
+                          ["<auth \"password\"=\"root\" />", "<auth \"password\"=\"********\" />"]])
 def test_fully_obfuscate(stdin, obfuscated):
     stdout = run_sed(stdin)
     assert stdout == obfuscated
@@ -43,14 +46,6 @@ def test_fully_obfuscate(stdin, obfuscated):
 def test_partially_obfuscate(stdin, obfuscated):
     stdout = run_sed(stdin)
     assert stdout == obfuscated
-
-
-@pytest.mark.parametrize(["stdin"], [["password: root"],
-                                     ["{auth: {password: \"root\"}}"],
-                                     ["<auth \"password\"=\"root\" />"]])
-def test_keep_unobfuscated(stdin):
-    stdout = run_sed(stdin)
-    assert stdout == stdin
 
 
 @pytest.mark.parametrize(["stdin", "obfuscated"], [["password ******** root", "password ******** ********"],
