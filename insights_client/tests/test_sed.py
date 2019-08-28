@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+import six
 
 from subprocess import PIPE, Popen
 
@@ -10,8 +11,12 @@ def run_sed(stdin):
     Obfuscates given string by SED script.
     """
     pipe = Popen(['sed', '-rf', 'etc/.exp.sed'], stdin=PIPE, stdout=PIPE, stderr=PIPE, env={"LC_ALL": "C"})
-    stdout, stderr = pipe.communicate(input=stdin.encode('utf8'))
-    return stdout.decode('utf8')
+    if six.PY3:
+        stdout, stderr = pipe.communicate(input=stdin.encode('utf8'))
+        return stdout.decode('utf8')
+    else:
+        stdout, stderr = pipe.communicate(input=stdin)
+        return stdout
 
 
 @pytest.mark.parametrize(["stdin", "obfuscated"],
