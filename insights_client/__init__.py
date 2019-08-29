@@ -111,6 +111,7 @@ def run_phase(phase, client, validated_eggs):
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             # phase successful, don't try another egg
+            update_motd_message()
             return
         if process.returncode == 1:
             # egg hit an error, try the next
@@ -122,6 +123,20 @@ def run_phase(phase, client, validated_eggs):
             sys.exit(process.returncode % 100)
     # All attemps to run phase have failed
     sys.exit(1)
+
+
+def update_motd_message():
+    """
+    motd displays a message about system not being registered. Once we have retrieved
+    any new egg, that means we've been registered at least once. We make that message
+    go away by removing /etc/motd.d/insights-client
+    It is intentional that message does not reappear if a system is then unregistered.
+    """
+    try:
+        if os.path.isfile(NEW_EGG):
+            os.remove("/etc/motd.d/insights-client")
+    except OSError:
+        pass  # Remove only if exists
 
 
 def _main():

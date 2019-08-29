@@ -74,6 +74,9 @@ pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/redhat-access-insights
 %else
 %{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 %endif
+#Link motd into place. setup.py does not support symlinks
+mkdir -p ${RPM_BUILD_ROOT}/etc/motd.d
+ln -snf /etc/insights-client/insights-client.motd ${RPM_BUILD_ROOT}/etc/motd.d/insights-client
 
 %post
 
@@ -192,6 +195,8 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /etc/insights-client/.fallback.json
 /etc/insights-client/.fallback.json.asc
 /etc/insights-client/.exp.sed
+%config(noreplace) %attr(644,root,root) /etc/motd.d/insights-client
+%config(noreplace) %attr(644,root,root) /etc/insights-client/insights-client.motd
 
 %if 0%{?rhel} != 6
 %attr(644,root,root) %{_unitdir}/insights-client.service
