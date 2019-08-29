@@ -73,7 +73,6 @@ pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/redhat-access-insights
 %else
 %{__python2} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 %endif
-#Link motd into place. setup.py does not support symlinks
 
 %post
 
@@ -136,8 +135,11 @@ if ! [ -d "/var/lib/insights" ]; then
 mkdir -m 644 /var/lib/insights
 fi
 
-# symlink the motd file
-ln -snf /etc/insights-client/insights-client.motd /etc/motd.d/insights-client
+#Link motd into place. Only do so if motd file doesn't exist
+if ! [ -L /etc/motd.d/insights-client ]; then
+    mkdir -p /etc/motd.d
+    ln -snf /etc/insights-client/insights-client.motd /etc/motd.d/insights-client
+fi
 
 # always perform legacy symlinks
 %posttrans
