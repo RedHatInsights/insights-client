@@ -135,10 +135,14 @@ if ! [ -d "/var/lib/insights" ]; then
 mkdir -m 644 /var/lib/insights
 fi
 
-#Link motd into place. Only do so if motd file doesn't exist
-if ! [ -L /etc/motd.d/insights-client ]; then
+#Link motd into place. Only do so if motd file doesn't exist and insights hasn't been used
+if [ ! -e /etc/motd.d/insights-client -a ! -L /etc/motd.d/insights-client ]; then
     mkdir -p /etc/motd.d
-    ln -snf /etc/insights-client/insights-client.motd /etc/motd.d/insights-client
+    if [ -e /var/lib/insights/newest.egg ]; then
+        ln -sn /dev/null /etc/motd.d/insights-client
+    else
+        ln -sn /etc/insights-client/insights-client.motd /etc/motd.d/insights-client
+    fi
 fi
 
 # always perform legacy symlinks
