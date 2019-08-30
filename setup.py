@@ -22,7 +22,7 @@ LONG_DESC = """
 Uploads insightful information to Red Hat
 """
 
-requires = ['requests', 'PyYaml', 'six', 'pyOpenSSL']
+requires = ['requests', 'PyYaml', 'six']
 develop = ['flake8', 'pytest']
 
 if __name__ == "__main__":

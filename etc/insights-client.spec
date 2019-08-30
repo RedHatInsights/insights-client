@@ -2,8 +2,8 @@
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                3.0.6
-Release:                100%{?dist}
+Version:                3.0.7
+Release:                0%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -28,10 +28,10 @@ BuildArch: noarch
 Requires: platform-python-setuptools
 Requires: python3-requests >= 2.6
 Requires: python3-PyYAML
-Requires: python3-pyOpenSSL
 Requires: python3-magic
 Requires: python3-six
 BuildRequires: python3-devel
+BuildRequires: python3-six
 BuildRequires: python3-setuptools
 
 # RHEL 6-7
@@ -40,7 +40,6 @@ Requires: python
 Requires: python-setuptools
 Requires: python-requests >= 2.6
 Requires: PyYAML
-Requires: pyOpenSSL
 Requires: libcgroup
 Requires: python-magic
 Requires: python-six >= 1.9.0
@@ -72,11 +71,9 @@ pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client-run
 pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client
 pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/redhat-access-insights
 %else
-%{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
+%{__python2} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 %endif
 #Link motd into place. setup.py does not support symlinks
-mkdir -p ${RPM_BUILD_ROOT}/etc/motd.d
-ln -snf /etc/insights-client/insights-client.motd ${RPM_BUILD_ROOT}/etc/motd.d/insights-client
 
 %post
 
@@ -139,6 +136,9 @@ if ! [ -d "/var/lib/insights" ]; then
 mkdir -m 644 /var/lib/insights
 fi
 
+# symlink the motd file
+ln -snf /etc/insights-client/insights-client.motd /etc/motd.d/insights-client
+
 # always perform legacy symlinks
 %posttrans
 mkdir -p /etc/redhat-access-insights
@@ -184,6 +184,7 @@ rm -f %{_bindir}/redhat-access-insights
 rm -rf /etc/redhat-access-insights/
 rm -f /etc/cron.daily/redhat-access-insights
 rm -f /etc/cron.weekly/redhat-access-insights
+rm -f /etc/motd.d/insights-client
 fi
 
 %clean
@@ -195,7 +196,6 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /etc/insights-client/.fallback.json
 /etc/insights-client/.fallback.json.asc
 /etc/insights-client/.exp.sed
-%config(noreplace) %attr(644,root,root) /etc/motd.d/insights-client
 %config(noreplace) %attr(644,root,root) /etc/insights-client/insights-client.motd
 
 %if 0%{?rhel} != 6
@@ -219,11 +219,13 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?rhel} == 8
 %attr(755,root,root) %{python3_sitelib}/insights_client*.egg-info
+%attr(644,root,root) %{python3_sitelib}/insights_client*.egg-info/*
 %attr(644,root,root) %{python3_sitelib}/insights_client/*.py*
 %attr(644,root,root) %{python3_sitelib}/insights_client/__pycache__
 %else
-%attr(755,root,root) %{python_sitelib}/insights_client*.egg-info
-%attr(644,root,root) %{python_sitelib}/insights_client/*.py*
+%attr(755,root,root) %{python2_sitelib}/insights_client*.egg-info
+%attr(644,root,root) %{python3_sitelib}/insights_client*.egg-info/*
+%attr(644,root,root) %{python2_sitelib}/insights_client/*.py*
 %endif
 
 %attr(640,root,root) /var/log/insights-client
