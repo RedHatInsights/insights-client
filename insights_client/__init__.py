@@ -6,6 +6,7 @@
 from __future__ import print_function
 import os
 import sys
+import six
 import subprocess
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
@@ -38,10 +39,12 @@ def egg_version(egg):
         proc = Popen([sys.executable, '-c', 'from insights.client import InsightsClient; print(InsightsClient(None, False).version())'],
                      env={'PYTHONPATH': egg, 'PATH': os.getenv('PATH')}, stdout=PIPE, stderr=PIPE)
     except OSError as e:
-        logger.root.error(e)
         return None
     stdout, stderr = proc.communicate()
-    return stdout
+    if six.PY3:
+        return stdout.decode('utf-8')
+    else:
+        return stdout
 
 
 def sorted_eggs(eggs):
