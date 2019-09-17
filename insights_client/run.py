@@ -3,6 +3,8 @@ import os
 import sys
 
 try:
+    if sys.argv[0] == "insights-client-run":
+        sys.exit("Error insights-client-run cannot be run on its own")
     try:
         from insights.client.phase import v1 as client
     except ImportError:
