@@ -39,7 +39,7 @@ def egg_version(egg):
     try:
         proc = Popen([sys.executable, '-c', 'from insights.client import InsightsClient; print(InsightsClient(None, False).version())'],
                      env={'PYTHONPATH': egg, 'PATH': os.getenv('PATH')}, stdout=PIPE, stderr=PIPE)
-    except OSError as e:
+    except OSError:
         return None
     stdout, stderr = proc.communicate()
     if six.PY3:
