@@ -38,7 +38,7 @@ if __name__ == "__main__":
     man5path = "/usr/share/man/man5/"
     man8path = "/usr/share/man/man8/"
     conf_files = ['etc/insights-client.conf',
-                  'etc/insights-client.motd',
+                  # 'etc/insights-client.motd',
                   'etc/.fallback.json',
                   'etc/.fallback.json.asc',
                   'etc/redhattools.pub.gpg',

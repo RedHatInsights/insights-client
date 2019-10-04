@@ -2,8 +2,8 @@
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                3.0.8
-Release:                2%{?dist}
+Version:                3.0.9
+Release:                1%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
@@ -136,7 +136,7 @@ if ! [ -d "/var/lib/insights" ]; then
 mkdir -m 644 /var/lib/insights
 fi
 
-%if 0%{?rhel} != 6
+%if 0%{?rhel} == 8
 #Link motd into place. Only do so if motd file doesn't exist and insights hasn't been used
 if [ ! -e /etc/motd.d/insights-client -a ! -L /etc/motd.d/insights-client ]; then
     mkdir -p /etc/motd.d
@@ -193,7 +193,7 @@ rm -f %{_bindir}/redhat-access-insights
 rm -rf /etc/redhat-access-insights/
 rm -f /etc/cron.daily/redhat-access-insights
 rm -f /etc/cron.weekly/redhat-access-insights
-%if 0%{?rhel} != 6
+%if 0%{?rhel} == 8
 rm -f /etc/motd.d/insights-client
 %endif
 fi
@@ -207,7 +207,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /etc/insights-client/.fallback.json
 /etc/insights-client/.fallback.json.asc
 /etc/insights-client/.exp.sed
-%if 0%{?rhel} != 6
+%if 0%{?rhel} == 8
 %config(noreplace) %attr(644,root,root) /etc/insights-client/insights-client.motd
 %endif
 
