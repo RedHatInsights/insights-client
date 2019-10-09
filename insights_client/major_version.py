@@ -2,7 +2,6 @@
 
 
 def major_version():
-    return 7
     with open("/etc/redhat-release") as fp:
         r = fp.read().strip()
 
