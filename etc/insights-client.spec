@@ -1,3 +1,6 @@
+%if 0%{?rhel} != 8
+%{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%endif
 %define _binaries_in_noarch_packages_terminate_build 0
 
 Name:                   insights-client
@@ -72,7 +75,7 @@ pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client-run
 pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client
 pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/redhat-access-insights
 %else
-%{__python2} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
+%{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 %endif
 
 %post
@@ -236,9 +239,9 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) %{python3_sitelib}/insights_client/*.py*
 %attr(744,root,root) %{python3_sitelib}/insights_client/__pycache__
 %else
-%attr(755,root,root) %{python2_sitelib}/insights_client*.egg-info
-%attr(644,root,root) %{python2_sitelib}/insights_client*.egg-info/*
-%attr(644,root,root) %{python2_sitelib}/insights_client/*.py*
+%attr(755,root,root) %{python_sitelib}/insights_client*.egg-info
+%attr(644,root,root) %{python_sitelib}/insights_client*.egg-info/*
+%attr(644,root,root) %{python_sitelib}/insights_client/*.py*
 %endif
 
 %attr(640,root,root) /var/log/insights-client
