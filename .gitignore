@@ -15,3 +15,5 @@ lib64
 include/
 pip-selfcheck.json
 etc/rpm.egg
+.vscode
+.python-version
