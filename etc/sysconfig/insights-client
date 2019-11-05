@@ -1,0 +1,6 @@
+# Maximum number of seconds to delay before running the insights-client. This
+# value is used as a divisor in a modulo operation to generate a random number,
+# therefore it is an error to set this value to zero.
+# The cron job sleeps for N seconds before running, where N is the randomly
+# generated number.
+RANDOM_DELAY_SEC=14400

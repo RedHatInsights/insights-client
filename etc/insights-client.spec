@@ -228,6 +228,7 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?rhel} == 6
 %attr(755,root,root) /etc/insights-client/insights-client.cron
+%attr(644,root,root) /etc/sysconfig/insights-client
 %endif
 
 %attr(644,root,root) /etc/insights-client/rpm.egg

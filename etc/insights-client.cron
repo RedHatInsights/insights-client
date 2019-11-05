@@ -2,6 +2,15 @@
 name=insights-client
 path=/usr/bin/${name}
 
+RANDOM_DELAY_SEC=14400
+
+if [ -f /etc/sysconfig/insights-client ]; then
+    . /etc/sysconfig/insights-client
+fi
+
+DELAY=$((1 + RANDOM % ${RANDOM_DELAY_SEC}))
+echo "Sleeping for ${DELAY} seconds"
+/bin/sleep ${DELAY}
 /sbin/service cgconfig status > /dev/null 2>&1
 if [ $? == 0 ];
 then
