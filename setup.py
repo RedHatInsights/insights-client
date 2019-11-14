@@ -85,7 +85,6 @@ if __name__ == "__main__":
         entry_points={'console_scripts': [
             'redhat-access-insights = insights_client:_main',
             'insights-client = insights_client:_main',
-            'insights-client-run = insights_client.run:_main'
         ]},
         data_files=data_files,
         description=SHORT_DESC,
