@@ -1,6 +1,7 @@
 include etc/insights-client.spec
 include etc/insights-client.cron
 include etc/insights-client.conf
+include etc/sysconfig/insights-client
 include etc/.exp.sed
 include etc/*.pem
 include etc/.fallback.json

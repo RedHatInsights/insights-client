@@ -37,6 +37,7 @@ if __name__ == "__main__":
     systemdpath = "/usr/lib/systemd/system"
     man5path = "/usr/share/man/man5/"
     man8path = "/usr/share/man/man8/"
+    sysconfigpath = "/etc/sysconfig/"
     conf_files = ['etc/insights-client.conf',
                   # 'etc/insights-client.motd',
                   'etc/.fallback.json',
@@ -65,6 +66,10 @@ if __name__ == "__main__":
     if rhel_version >= 7:
         data_files.append(
             (systemdpath, ['etc/insights-client.service', 'etc/insights-client.timer'])
+        )
+    else:
+        data_files.append(
+            (sysconfigpath, ['etc/sysconfig/insights-client'])
         )
 
     setup(
