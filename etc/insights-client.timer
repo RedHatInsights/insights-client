@@ -1,3 +1,12 @@
+# This file is part of insights-client.
+#
+# Any changes made to this file will be overwritten during a software update. To
+# override a parameter in this file, create a drop-in file, typically located at
+# /etc/systemd/system/insights-client.timer.d/override.conf. Put the desired
+# overrides in that file, reload systemd and restart this timer.
+#
+# For more information about systemd drop-in files, see systemd.unit(5).
+
 [Unit]
 Description=Insights Client Timer Task
 Documentation=man:insights-client(8)
