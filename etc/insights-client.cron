@@ -1,4 +1,11 @@
 #!/bin/sh
+
+# This file is part of insights-client.
+#
+# Any changes made to this file will be overwritten during a software update. To
+# override a value in this file, see /etc/sysconfig/insights-client for variables
+# that can be adjusted by users.
+
 name=insights-client
 path=/usr/bin/${name}
 
