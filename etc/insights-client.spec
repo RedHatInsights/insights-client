@@ -130,13 +130,13 @@ fi
 
 # if the logging directory isnt created then make it
 if ! [ -d "/var/log/insights-client" ]; then
-mkdir -m 640 /var/log/insights-client
+mkdir -m 750 /var/log/insights-client
 fi
 
 # if the library directory for eggs and such isn't present
 # make it
 if ! [ -d "/var/lib/insights" ]; then
-mkdir -m 644 /var/lib/insights
+mkdir -m 755 /var/lib/insights
 fi
 
 %if 0%{?rhel} == 8
@@ -245,8 +245,8 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) %{python_sitelib}/insights_client/*.py*
 %endif
 
-%attr(640,root,root) /var/log/insights-client
-%attr(644,root,root) /var/lib/insights
+%attr(750,root,root) /var/log/insights-client
+%attr(755,root,root) /var/lib/insights
 
 %doc
 %defattr(-, root, root)
