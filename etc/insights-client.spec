@@ -114,9 +114,6 @@ if  [ $1 -eq 1  ]; then
     if [ -f "/etc/redhat-access-insights/remove.conf" ]; then
         cp /etc/redhat-access-insights/remove.conf /etc/insights-client/remove.conf
     fi
-    if ! [ -d "/etc/redhat-access-insights" ]; then
-        mkdir /etc/redhat-access-insights
-    fi
     # Symlink new cron job if the old one exists. Remove the old one
     if [ -f "/etc/cron.daily/redhat-access-insights" ]; then
         rm -f /etc/cron.daily/redhat-access-insights
@@ -153,13 +150,6 @@ fi
 
 # always perform legacy symlinks
 %posttrans
-mkdir -p /etc/redhat-access-insights
-ln -sf /etc/insights-client/insights-client.conf /etc/redhat-access-insights/redhat-access-insights.conf
-ln -sf /etc/insights-client/insights-client.cron /etc/redhat-access-insights/redhat-access-insights.cron
-ln -sf /etc/insights-client/.registered /etc/redhat-access-insights/.registered
-ln -sf /etc/insights-client/.unregistered /etc/redhat-access-insights/.unregistered
-ln -sf /etc/insights-client/.lastupload /etc/redhat-access-insights/.lastupload
-ln -sf /etc/insights-client/machine-id /etc/redhat-access-insights/machine-id
 # remove all ACLs on upgrade, forever and always
 setfacl -Rb /var/lib/insights
 setfacl -Rb /var/log/insights-client
@@ -190,12 +180,6 @@ rm -rf /var/lib/insights
 # keep these to remove from previous install
 rm -f /etc/ansible/facts.d/insights.fact
 rm -f /etc/ansible/facts.d/insights_machine_id.fact
-# remove symlink to old name on uninstall
-rm -f %{_bindir}/redhat-access-insights
-# remove symlinks to old configs
-rm -rf /etc/redhat-access-insights/
-rm -f /etc/cron.daily/redhat-access-insights
-rm -f /etc/cron.weekly/redhat-access-insights
 %if 0%{?rhel} == 8
 rm -f /etc/motd.d/insights-client
 %endif
