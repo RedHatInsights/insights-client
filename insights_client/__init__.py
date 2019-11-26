@@ -85,7 +85,7 @@ def run_phase(phase, client, validated_eggs):
     Call the run script for the given phase.  If the phase succeeds returns the
     index of the egg that succeeded to be used in the next phase.
     """
-    insights_command = ["insights-client-run"] + sys.argv[1:]
+    insights_command = [sys.executable, os.path.join(os.path.dirname(__file__), "run.py")] + sys.argv[1:]
     config = client.get_conf()
     debug = config["debug"]
 
