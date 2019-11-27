@@ -71,7 +71,6 @@ rm -rf ${RPM_BUILD_ROOT}
 %if 0%{?rhel} == 8
 %{__python3} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 pathfix.py -pni "%{__python3}" %{buildroot}%{python3_sitelib}/insights_client/{__init__.py,major_version.py,run.py}
-pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client-run
 pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/insights-client
 pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/redhat-access-insights
 %else
@@ -224,7 +223,6 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 
 %attr(755,root,root) %{_bindir}/insights-client
 %attr(755,root,root) %{_bindir}/redhat-access-insights
-%attr(755,root,root) %{_bindir}/insights-client-run
 
 %if 0%{?rhel} == 6
 %attr(755,root,root) /etc/insights-client/insights-client.cron
