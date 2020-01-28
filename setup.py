@@ -8,13 +8,13 @@ rhel_version = int(major_version())
 
 
 def get_version():
-    f = open('insights_client/constants.py')
+    f = open("insights_client/constants.py")
     for line in f:
-        if 'version' in line:
-            return eval(line.split('=')[-1])
+        if "version" in line:
+            return eval(line.split("=")[-1])
 
 
-VERSION = get_version().split('-')[0]
+VERSION = get_version().split("-")[0]
 MAN_PAGE = "docs/insights-client.8"
 CONF_PAGE = "docs/insights-client.conf.5"
 SHORT_DESC = "Red Hat Insights"
@@ -22,8 +22,8 @@ LONG_DESC = """
 Uploads insightful information to Red Hat
 """
 
-requires = ['requests', 'PyYaml', 'six']
-develop = ['flake8', 'pytest']
+requires = ["requests", "PyYaml", "six"]
+develop = ["flake8", "pytest"]
 
 if __name__ == "__main__":
 
@@ -38,39 +38,37 @@ if __name__ == "__main__":
     man5path = "/usr/share/man/man5/"
     man8path = "/usr/share/man/man8/"
     sysconfigpath = "/etc/sysconfig/"
-    conf_files = ['etc/insights-client.conf',
-                  # 'etc/insights-client.motd',
-                  'etc/.fallback.json',
-                  'etc/.fallback.json.asc',
-                  'etc/redhattools.pub.gpg',
-                  'etc/cert-api.access.redhat.com.pem',
-                  'etc/.exp.sed',
-                  'etc/rpm.egg',
-                  'etc/rpm.egg.asc']
+    conf_files = [
+        "etc/insights-client.conf",
+        # 'etc/insights-client.motd',
+        "etc/.fallback.json",
+        "etc/.fallback.json.asc",
+        "etc/redhattools.pub.gpg",
+        "etc/cert-api.access.redhat.com.pem",
+        "etc/.exp.sed",
+        "etc/rpm.egg",
+        "etc/rpm.egg.asc",
+    ]
 
     if rhel_version == 6:
-        conf_files.append('etc/insights-client.cron')
+        conf_files.append("etc/insights-client.cron")
 
     data_files = [
         # config files
         (confpath, conf_files),
-
         # man pages
-        (man5path, ['docs/insights-client.conf.5']),
-        (man8path, ['docs/insights-client.8']),
-
+        (man5path, ["docs/insights-client.conf.5"]),
+        (man8path, ["docs/insights-client.8"]),
         (logpath, []),
         (libpath, []),
     ]
 
     if rhel_version >= 7:
         data_files.append(
-            (systemdpath, ['etc/insights-client.service', 'etc/insights-client.timer'])
+            (systemdpath, ["etc/insights-client.service", "etc/insights-client.timer"])
         )
     else:
-        data_files.append(
-            (sysconfigpath, ['etc/sysconfig/insights-client'])
-        )
+        data_files.append((sysconfigpath, ["etc/sysconfig/insights-client"]))
 
     setup(
         name="insights-client",
@@ -80,13 +78,15 @@ if __name__ == "__main__":
         version=VERSION,
         packages=find_packages(),
         install_requires=requires,
-        extras_require={'develop': requires + develop},
+        extras_require={"develop": requires + develop},
         include_package_data=True,
-        entry_points={'console_scripts': [
-            'redhat-access-insights = insights_client:_main',
-            'insights-client = insights_client:_main',
-        ]},
+        entry_points={
+            "console_scripts": [
+                "redhat-access-insights = insights_client:_main",
+                "insights-client = insights_client:_main",
+            ]
+        },
         data_files=data_files,
         description=SHORT_DESC,
-        long_description=LONG_DESC
+        long_description=LONG_DESC,
     )
