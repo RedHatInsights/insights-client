@@ -1,12 +1,14 @@
 # !/usr/bin/python
 
 import subprocess
+from distutils.version import LooseVersion
 
 from setuptools import find_packages, setup
 
-from insights_client.major_version import major_version
+from insights_client.major_version import version
 
-rhel_version = int(major_version())
+rhel_version = LooseVersion(version())
+rhel_major_version = rhel_version.version[0]
 
 
 def get_version():
@@ -52,7 +54,7 @@ if __name__ == "__main__":
         "etc/rpm.egg.asc",
     ]
 
-    if rhel_version == 6:
+    if rhel_major_version == 6:
         conf_files.append("etc/insights-client.cron")
 
     data_files = [
@@ -65,7 +67,7 @@ if __name__ == "__main__":
         (libpath, []),
     ]
 
-    if rhel_version >= 7:
+    if rhel_major_version >= 7:
         data_files.append(
             (systemdpath, ["etc/insights-client.service", "etc/insights-client.timer"])
         )
