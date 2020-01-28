@@ -53,7 +53,7 @@ if __name__ == "__main__":
         "etc/rpm.egg.asc",
     ]
 
-    if rhel_version >= 7.8:
+    if rhel_version >= "7.8":
         conf_files.append("etc/insights-client.motd")
 
     if rhel_major_version == 6:
