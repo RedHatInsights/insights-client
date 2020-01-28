@@ -22,6 +22,8 @@ $(TARBALL): Makefile
 	else\
 		cp MANIFEST.rhel7 MANIFEST.in;\
 	fi
+	curl -o etc/.fallback.json https://api.access.redhat.com/r/insights/v1/static/core/uploader.json
+	curl -o etc/.fallback.json.asc https://api.access.redhat.com/r/insights/v1/static/core/uploader.json.asc
 	$(PY_SDIST)
 	rm MANIFEST.in
 
