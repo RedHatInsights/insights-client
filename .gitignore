@@ -15,5 +15,7 @@ lib64
 include/
 pip-selfcheck.json
 etc/rpm.egg
+etc/rpm.egg.asc
 .vscode
 .python-version
+.pytest_cache
