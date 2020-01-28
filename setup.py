@@ -18,7 +18,7 @@ def get_version():
             return eval(line.split("=")[-1])
 
 
-VERSION = get_version().split("-")[0]
+VERSION = get_version()
 MAN_PAGE = "docs/insights-client.8"
 CONF_PAGE = "docs/insights-client.conf.5"
 SHORT_DESC = "Red Hat Insights"
