@@ -24,6 +24,8 @@ $(TARBALL): Makefile
 	fi
 	curl -o etc/.fallback.json https://api.access.redhat.com/r/insights/v1/static/core/uploader.json
 	curl -o etc/.fallback.json.asc https://api.access.redhat.com/r/insights/v1/static/core/uploader.json.asc
+	curl -o etc/rpm.egg https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg
+	curl -o etc/rpm.egg.asc https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc
 	$(PY_SDIST)
 	rm MANIFEST.in
 
