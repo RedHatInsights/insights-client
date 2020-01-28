@@ -1,7 +1,9 @@
 # !/usr/bin/python
 
-from setuptools import setup, find_packages
 import subprocess
+
+from setuptools import find_packages, setup
+
 from insights_client.major_version import major_version
 
 rhel_version = int(major_version())
