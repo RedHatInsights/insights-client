@@ -1,12 +1,21 @@
 #!/usr/bin/python2
 
 
-def major_version():
+def version():
     with open("/etc/redhat-release") as fp:
         r = fp.read().strip()
 
-    release = r.split("release")[1].strip()
-    return release.split()[0].split(".")[0]
+    return r.split("release")[1].strip().split()[0]
+
+
+def major_version():
+    v = version()
+    return v.split(".")[0]
+
+
+def minor_version():
+    v = version()
+    return v.split(".")[1]
 
 
 if __name__ == "__main__":
