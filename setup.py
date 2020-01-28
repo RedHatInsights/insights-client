@@ -44,7 +44,6 @@ if __name__ == "__main__":
     sysconfigpath = "/etc/sysconfig/"
     conf_files = [
         "etc/insights-client.conf",
-        # 'etc/insights-client.motd',
         "etc/.fallback.json",
         "etc/.fallback.json.asc",
         "etc/redhattools.pub.gpg",
@@ -53,6 +52,9 @@ if __name__ == "__main__":
         "etc/rpm.egg",
         "etc/rpm.egg.asc",
     ]
+
+    if rhel_version >= 7.8:
+        conf_files.append("etc/insights-client.motd")
 
     if rhel_major_version == 6:
         conf_files.append("etc/insights-client.cron")
