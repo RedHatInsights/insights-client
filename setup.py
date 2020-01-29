@@ -1,14 +1,8 @@
 # !/usr/bin/python
 
 import subprocess
-from distutils.version import LooseVersion
 
 from setuptools import find_packages, setup
-
-from insights_client.major_version import version
-
-rhel_version = LooseVersion(version())
-rhel_major_version = rhel_version.version[0]
 
 
 def get_version():
@@ -43,6 +37,8 @@ if __name__ == "__main__":
     man8path = "/usr/share/man/man8/"
     sysconfigpath = "/etc/sysconfig/"
     conf_files = [
+        "etc/insights-client.motd",
+        "etc/insights-client.cron",
         "etc/insights-client.conf",
         "etc/.fallback.json",
         "etc/.fallback.json.asc",
@@ -53,12 +49,6 @@ if __name__ == "__main__":
         "etc/rpm.egg.asc",
     ]
 
-    if rhel_version >= "7.8":
-        conf_files.append("etc/insights-client.motd")
-
-    if rhel_major_version == 6:
-        conf_files.append("etc/insights-client.cron")
-
     data_files = [
         # config files
         (confpath, conf_files),
@@ -67,14 +57,9 @@ if __name__ == "__main__":
         (man8path, ["docs/insights-client.8"]),
         (logpath, []),
         (libpath, []),
+        (systemdpath, ["etc/insights-client.service", "etc/insights-client.timer"]),
+        (sysconfigpath, ["etc/sysconfig/insights-client"])
     ]
-
-    if rhel_major_version >= 7:
-        data_files.append(
-            (systemdpath, ["etc/insights-client.service", "etc/insights-client.timer"])
-        )
-    else:
-        data_files.append((sysconfigpath, ["etc/sysconfig/insights-client"]))
 
     setup(
         name="insights-client",
