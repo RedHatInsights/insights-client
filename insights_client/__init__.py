@@ -67,11 +67,14 @@ def sorted_eggs(eggs):
 
 def gpg_validate(path):
     # ENV egg might be None, so check if path defined, then check if it exists
-    if not (path and os.path.exists(path) and os.path.exists(path + '.asc')):
+    if not (path and os.path.exists(path)):
         return False
 
     if BYPASS_GPG:
         return True
+
+    if not os.path.exists(path + ".asc"):
+        return False
 
     gpg_template = '/usr/bin/gpg --verify --keyring %s %s %s'
     cmd = gpg_template % (GPG_KEY, path + '.asc', path)
