@@ -35,11 +35,11 @@ class relocatable_install(install):
         if self.datadir is None:
             self.datadir = os.path.join(self.prefix, "share")
         if self.localstatedir is None:
-            self.localstatedir = os.path.join(self.prefix, "var")
+            self.localstatedir = os.path.join("/", "var")
         if self.mandir is None:
             self.mandir = os.path.join(self.datadir, "man")
         if self.sysconfdir is None:
-            self.sysconfdir = os.path.join(self.prefix, "etc")
+            self.sysconfdir = os.path.join("/", "etc")
         if self.systemdunitdir is None:
             self.systemdunitdir = os.path.join(self.libdir, "systemd", "system")
 

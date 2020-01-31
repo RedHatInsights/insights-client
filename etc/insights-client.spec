@@ -76,6 +76,9 @@ pathfix.py -pni "%{__python3}" %{buildroot}%{_bindir}/redhat-access-insights
 %else
 %{__python} setup.py install --root=${RPM_BUILD_ROOT} $PREFIX
 %endif
+%if 0%{?rhel} == 6
+rm ${RPM_BUILD_ROOT}/%{_sysconfdir}/insights-client/insights-client.motd
+%endif
 
 %post
 

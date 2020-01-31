@@ -1,4 +1,5 @@
 SRCDIR=$(shell bash -c "pwd -P")
+BUILDDIR=$(SRCDIR)/build
 DISTDIR=$(SRCDIR)/dist
 PKGNAME=insights-client
 TARBALL=$(DISTDIR)/$(PKGNAME)-*.tar.gz
@@ -18,18 +19,16 @@ $(TARBALL): Makefile
 	$(PY_SDIST)
 
 .PHONY: srpm 
-srpm: $(SRPM)
-$(SRPM): $(TARBALL) $(SPEC_FILE_IN)
-	mkdir -p $(SRCDIR)/{RPMS,SPECS,SRPMS,SOURCES,BUILD,BUILDROOT}
-	rpmbuild -ts --define="_topdir $(SRCDIR)" --define="_sourcedir dist" $(TARBALL)
+srpm: $(TARBALL) etc/insights-client.spec
+	rpmbuild -bs --define="_topdir $(BUILDDIR)" --define="_sourcedir $(DISTDIR)" etc/insights-client.spec
 
 .PHONY: rpm
-rpm: $(RPM)
-$(RPM): $(SRPM)
-	rpmbuild --buildroot $(DISTDIR)/BUILDROOT --define="_topdir $(DISTDIR)" --rebuild $<
+rpm:
+	rpmbuild -bb --define="_topdir $(BUILDDIR)" --define="_sourcedir $(DISTDIR)" etc/insights-client.spec
 
 .PHONY: clean
 clean:
 	python setup.py clean --all
 	rm -rf $(DISTDIR)
+	rm -rf $(BUILDDIR)
 	rm etc/rpm.egg*
