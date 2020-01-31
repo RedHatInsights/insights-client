@@ -23,7 +23,7 @@ srpm: $(TARBALL) etc/insights-client.spec
 	rpmbuild -bs --define="_topdir $(BUILDDIR)" --define="_sourcedir $(DISTDIR)" etc/insights-client.spec
 
 .PHONY: rpm
-rpm:
+rpm: $(TARBALL)
 	rpmbuild -bb --define="_topdir $(BUILDDIR)" --define="_sourcedir $(DISTDIR)" etc/insights-client.spec
 
 .PHONY: clean
