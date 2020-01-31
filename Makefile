@@ -16,3 +16,9 @@ $(TARBALL): Makefile
 	curl -o etc/rpm.egg https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg
 	curl -o etc/rpm.egg.asc https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc
 	$(PY_SDIST)
+
+.PHONY: clean
+clean:
+	python setup.py clean --all
+	rm -rf $(DISTDIR)
+	rm etc/rpm.egg*
