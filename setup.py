@@ -44,7 +44,10 @@ class relocatable_install(install):
             self.systemdunitdir = os.path.join(self.libdir, "systemd", "system")
 
         config_files = glob.glob("etc/*") + glob.glob("etc/.*")
-        config_files.remove("etc/insights-client.spec")
+        try:
+            config_files.remove("etc/insights-client.spec")
+        except ValueError:
+            pass
         data_files = [
             (os.path.join(self.mandir, "man5"), glob.glob("docs/*.5")),
             (os.path.join(self.mandir, "man8"), glob.glob("docs/*.8")),
