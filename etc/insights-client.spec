@@ -5,7 +5,7 @@
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                3.0.9
+Version:                3.0.10
 Release:                1%{?dist}
 Source0:                https://github.com/redhatinsights/insights-client/archive/insights-client-%{version}.tar.gz
 Epoch:                  0
@@ -252,26 +252,3 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 /usr/share/man/man5/*.5.gz
 
 %changelog
-* Thu Jan 18 2018 Kyle Lape <klape@redhat.com> - 3.0.3-1
-- RHEL 7 RPM now uses systemd service and timer instead of cron
-- Addition of IO and CPU cgroup constraints
-- Fixed memory cgroup constraint
-
-* Wed Oct 18 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.2-2
-- Resolves BZ1498650, BZ1500008, BZ1501545, BZ1501552, BZ1501556, BZ1501561, BZ1501565, BZ1501566
-- Fixes version migration logic
-- Fixes symlink issues to old binary
-- Fixes short ID analysis for images and containers
-- Fixes Docker library detection
-- Fixes image and container detection
-- Fixes registration execution flow
-- Fixes --version flag to print to stdout and include additional versioning information
-- Includes Insights Core 3.0.3-1
-
-* Wed Oct 4 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.1-5
-- Resolves BZ1498581
-- Fixes sys.path issues
-- Includes Insights Core 3.0.2-6
-
-* Wed Sep 27 2017 Richard Brantley <rbrantle@redhat.com> - 3.0.0-4
-- Initial build
