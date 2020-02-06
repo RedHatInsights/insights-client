@@ -46,10 +46,14 @@ class relocatable_install(install):
         data_files = [
             (os.path.join(self.mandir, "man5"), glob.glob("docs/*.5")),
             (os.path.join(self.mandir, "man8"), glob.glob("docs/*.8")),
-            (os.path.join(self.sysconfdir, "insights-client"), glob.glob("etc/*") + glob.glob("etc/.*")),
+            (
+                os.path.join(self.sysconfdir, "insights-client"),
+                glob.glob("etc/*") + glob.glob("etc/.*"),
+            ),
             (os.path.join(self.localstatedir, "lib", "insights"), []),
             (os.path.join(self.localstatedir, "log", "insights-client"), []),
         ]
+
         if os.path.exists(self.systemdunitdir):
             data_files.append(
                 (
@@ -65,6 +69,7 @@ class relocatable_install(install):
                     ["data/sysconfig/insights-client"],
                 )
             )
+
         self.distribution.data_files = data_files
 
 
