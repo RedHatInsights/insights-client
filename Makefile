@@ -18,14 +18,6 @@ $(TARBALL): Makefile
 	curl -o etc/rpm.egg.asc https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc
 	$(PY_SDIST)
 
-.PHONY: srpm 
-srpm: $(TARBALL) etc/insights-client.spec
-	rpmbuild -bs --define="_topdir $(BUILDDIR)" --define="_sourcedir $(DISTDIR)" etc/insights-client.spec
-
-.PHONY: rpm
-rpm: $(TARBALL)
-	rpmbuild -bb --define="_topdir $(BUILDDIR)" --define="_sourcedir $(DISTDIR)" etc/insights-client.spec
-
 .PHONY: clean
 clean:
 	python setup.py clean --all
