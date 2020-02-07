@@ -70,6 +70,14 @@ class relocatable_install(install):
                 )
             )
 
+        if os.path.exists(os.path.join(self.sysconfdir, "motd.d")):
+            data_files.append(
+                (
+                    os.path.join(self.sysconfdir, "insights-client"),
+                    ["data/insights-client.motd"],
+                )
+            )
+
         self.distribution.data_files = data_files
 
 
