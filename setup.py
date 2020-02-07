@@ -145,7 +145,6 @@ setup(
     extras_require={"develop": ["flake8", "pytest"]},
     entry_points={
         "console_scripts": [
-            "redhat-access-insights = insights_client:_main",
             "insights-client = insights_client:_main",
         ]
     },
