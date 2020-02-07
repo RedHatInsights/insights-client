@@ -2,6 +2,9 @@
 
 import glob
 import os
+import shutil
+from distutils import log
+from distutils.command.clean import clean
 
 import requests
 from setuptools import find_packages, setup
@@ -111,6 +114,19 @@ class insights_client_install(install):
         self.distribution.data_files = data_files
 
 
+class insights_client_clean(clean):
+    def run(self):
+        clean.run(self)
+        for p in ["etc/rpm.egg", "etc/rpm.egg.asc"]:
+            if os.path.exists(p):
+                log.info("removing %s" % p)
+                os.remove(p)
+        for d in ["build/", "dist/"]:
+            if os.path.exists(d):
+                log.info("removing %s" % d)
+                shutil.rmtree(d, ignore_errors=True)
+
+
 def get_version():
     f = open("insights_client/constants.py")
     for line in f:
@@ -136,5 +152,9 @@ setup(
     data_files=[],  # Data files should be added to the list inside the finalize_options() method of the relocatable_install class
     description="Red Hat Insights",
     long_description="Uploads insightful information to Red Hat",
-    cmdclass={"install": insights_client_install, "sdist": insights_client_sdist},
+    cmdclass={
+        "install": insights_client_install,
+        "sdist": insights_client_sdist,
+        "clean": insights_client_clean,
+    },
 )

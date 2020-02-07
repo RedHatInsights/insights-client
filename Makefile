@@ -4,6 +4,7 @@ DISTDIR=$(SRCDIR)/dist
 PKGNAME=insights-client
 TARBALL=$(DISTDIR)/$(PKGNAME)-*.tar.gz
 PY_SDIST=python setup.py sdist
+PY_CLEAN=python setup.py clean
 
 .PHONY: tarball
 tarball:
@@ -11,12 +12,9 @@ tarball:
 
 .PHONY: dist
 dist: $(TARBALL)
-$(TARBALL): Makefile
+$(TARBALL):
 	$(PY_SDIST)
 
 .PHONY: clean
 clean:
-	python setup.py clean --all
-	rm -rf $(DISTDIR)
-	rm -rf $(BUILDDIR)
-	rm etc/rpm.egg*
+	$(PY_CLEAN)
