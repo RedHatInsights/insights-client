@@ -37,7 +37,7 @@ class insights_client_sdist(sdist):
                 f.write(r.content)
 
 
-class relocatable_install(install):
+class insights_client_install(install):
     user_options = install.user_options + [
         ("libdir=", None, "installation directory for dynamic libraries"),
         ("datadir=", None, "installation directory for data files"),
@@ -136,5 +136,5 @@ setup(
     data_files=[],  # Data files should be added to the list inside the finalize_options() method of the relocatable_install class
     description="Red Hat Insights",
     long_description="Uploads insightful information to Red Hat",
-    cmdclass={"install": relocatable_install, "sdist": insights_client_sdist},
+    cmdclass={"install": insights_client_install, "sdist": insights_client_sdist},
 )
