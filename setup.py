@@ -3,8 +3,38 @@
 import glob
 import os
 
+import requests
 from setuptools import find_packages, setup
 from setuptools.command.install import install
+from setuptools.command.sdist import sdist
+
+
+class insights_client_sdist(sdist):
+    def finalize_options(self):
+        sdist.finalize_options(self)
+        for (url, dest) in [
+            (
+                "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json",
+                "etc/.fallback.json",
+            ),
+            (
+                "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json.asc",
+                "etc/.fallback.json.asc",
+            ),
+            (
+                "https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg",
+                "etc/rpm.egg",
+            ),
+            (
+                "https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc",
+                "etc/rpm.egg.asc",
+            ),
+        ]:
+            print("downloading %s" % os.path.basename(dest))
+            r = requests.get(url)
+            with open(dest, "w+b") as f:
+                print("writing %s" % os.path.basename(dest))
+                f.write(r.content)
 
 
 class relocatable_install(install):
@@ -106,5 +136,5 @@ setup(
     data_files=[],  # Data files should be added to the list inside the finalize_options() method of the relocatable_install class
     description="Red Hat Insights",
     long_description="Uploads insightful information to Red Hat",
-    cmdclass={"install": relocatable_install},
+    cmdclass={"install": relocatable_install, "sdist": insights_client_sdist},
 )
