@@ -30,10 +30,10 @@ class insights_client_sdist(sdist):
                 "etc/rpm.egg.asc",
             ),
         ]:
-            print("downloading %s" % os.path.basename(dest))
+            log.info("downloading %s" % os.path.basename(dest))
             r = requests.get(url)
             with open(dest, "w+b") as f:
-                print("writing %s" % os.path.basename(dest))
+                log.info("writing %s" % os.path.basename(dest))
                 f.write(r.content)
 
 
