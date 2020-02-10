@@ -4,17 +4,27 @@ import glob
 import os
 import shutil
 from distutils import log
-from distutils.command.clean import clean
+from distutils.command.clean import clean as _clean
+from distutils.command.install_data import install_data as _install_data
 
 import requests
 from setuptools import find_packages, setup
-from setuptools.command.install import install
-from setuptools.command.sdist import sdist
+from setuptools.command.install import install as _install
+from setuptools.command.sdist import sdist as _sdist
+
+COMMON_USER_OPTIONS = [
+    ("with-systemd=", None, "install systemd unit files"),
+    ("libdir=", None, "installation directory for dynamic libraries"),
+    ("datadir=", None, "installation directory for data files"),
+    ("localstatedir=", None, "installation directory for local state files"),
+    ("mandir=", None, "installation directory for man pages"),
+    ("sysconfdir=", None, "installation directory for system configuration files"),
+    ("systemdunitdir=", None, "installation directory for systemd unit files"),
+]
 
 
-class insights_client_sdist(sdist):
-    def finalize_options(self):
-        sdist.finalize_options(self)
+class sdist(_sdist):
+    def run(self):
         for (url, dest) in [
             (
                 "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json",
@@ -38,20 +48,15 @@ class insights_client_sdist(sdist):
             with open(dest, "w+b") as f:
                 log.info("writing %s" % os.path.basename(dest))
                 f.write(r.content)
+        _sdist.run(self)
 
 
-class insights_client_install(install):
-    user_options = install.user_options + [
-        ("libdir=", None, "installation directory for dynamic libraries"),
-        ("datadir=", None, "installation directory for data files"),
-        ("localstatedir=", None, "installation directory for local state files"),
-        ("mandir=", None, "installation directory for man pages"),
-        ("sysconfdir=", None, "installation directory for system configuration files"),
-        ("systemdunitdir=", None, "installation directory for systemd unit files"),
-    ]
+class install(_install):
+    user_options = _install.user_options + COMMON_USER_OPTIONS
 
     def initialize_options(self):
-        install.initialize_options(self)
+        _install.initialize_options(self)
+        self.with_systemd = None
         self.libdir = None
         self.datadir = None
         self.localstatedir = None
@@ -60,7 +65,11 @@ class insights_client_install(install):
         self.systemdunitdir = None
 
     def finalize_options(self):
-        install.finalize_options(self)
+        _install.finalize_options(self)
+        if self.with_systemd is None:
+            self.with_systemd = False
+        else:
+            self.with_systemd = self.with_systemd == "true"
         if self.prefix is None:
             self.prefix = "/usr/local"
         if self.libdir is None:
@@ -76,27 +85,67 @@ class insights_client_install(install):
         if self.systemdunitdir is None:
             self.systemdunitdir = os.path.join(self.libdir, "systemd", "system")
 
-        data_files = [
-            (os.path.join(self.mandir, "man5"), glob.glob("docs/*.5")),
-            (os.path.join(self.mandir, "man8"), glob.glob("docs/*.8")),
+    def run(self):
+        self.run_command("install_data")
+        _install.run(self)
+
+
+class install_data(_install_data):
+    user_options = _install_data.user_options + COMMON_USER_OPTIONS
+
+    def initialize_options(self):
+        _install_data.initialize_options(self)
+        self.with_systemd = None
+        self.libdir = None
+        self.datadir = None
+        self.localstatedir = None
+        self.mandir = None
+        self.sysconfdir = None
+        self.systemdunitdir = None
+
+    def finalize_options(self):
+        _install_data.finalize_options(self)
+        self.set_undefined_options(
+            "install",
+            ("with_systemd", "with_systemd"),
+            ("libdir", "libdir"),
+            ("datadir", "datadir"),
+            ("localstatedir", "localstatedir"),
+            ("mandir", "mandir"),
+            ("sysconfdir", "sysconfdir"),
+            ("systemdunitdir", "systemdunitdir"),
+        )
+
+    def run(self):
+        self.data_files.append(
+            (os.path.join(self.mandir, "man5"), glob.glob("docs/*.5"))
+        )
+        self.data_files.append(
+            (os.path.join(self.mandir, "man8"), glob.glob("docs/*.8"))
+        )
+        self.data_files.append(
             (
                 os.path.join(self.sysconfdir, "insights-client"),
                 glob.glob("etc/*") + glob.glob("etc/.*"),
-            ),
-            (os.path.join(self.localstatedir, "lib", "insights"), []),
-            (os.path.join(self.localstatedir, "log", "insights-client"), []),
-        ]
+            )
+        )
+        self.data_files.append(
+            (os.path.join(self.localstatedir, "lib", "insights"), [])
+        )
+        self.data_files.append(
+            (os.path.join(self.localstatedir, "log", "insights-client"), [])
+        )
 
-        if os.path.exists(self.systemdunitdir):
-            data_files.append(
+        if self.with_systemd:
+            self.data_files.append(
                 (
                     self.systemdunitdir,
                     ["data/insights-client.timer", "data/insights-client.service"],
                 )
             )
-
-        if os.path.exists(os.path.join(self.sysconfdir, "sysconfig")):
-            data_files.append(
+            self.data_files.remove((self.sysconfdir, ["etc/insights-client.cron"]))
+        else:
+            self.data_files.append(
                 (
                     os.path.join(self.sysconfdir, "sysconfig"),
                     ["data/sysconfig/insights-client"],
@@ -104,17 +153,17 @@ class insights_client_install(install):
             )
 
         if os.path.exists(os.path.join(self.sysconfdir, "motd.d")):
-            data_files.append(
+            self.data_files.append(
                 (
                     os.path.join(self.sysconfdir, "insights-client"),
                     ["data/insights-client.motd"],
                 )
             )
 
-        self.distribution.data_files = data_files
+        _install_data.run(self)
 
 
-class insights_client_clean(clean):
+class clean(_clean):
     def run(self):
         clean.run(self)
         for p in ["etc/rpm.egg", "etc/rpm.egg.asc"]:
@@ -143,17 +192,14 @@ setup(
     packages=find_packages(),
     install_requires=["requests", "PyYaml", "six"],
     extras_require={"develop": ["flake8", "pytest"]},
-    entry_points={
-        "console_scripts": [
-            "insights-client = insights_client:_main",
-        ]
-    },
-    data_files=[],  # Data files should be added to the list inside the finalize_options() method of the relocatable_install class
+    entry_points={"console_scripts": ["insights-client = insights_client:_main"]},
+    data_files=[],  # Data files should be added dynamically in the install_data.run() method
     description="Red Hat Insights",
     long_description="Uploads insightful information to Red Hat",
     cmdclass={
-        "install": insights_client_install,
-        "sdist": insights_client_sdist,
-        "clean": insights_client_clean,
+        "install": install,
+        "install_data": install_data,
+        "sdist": sdist,
+        "clean": clean,
     },
 )
