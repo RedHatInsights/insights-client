@@ -48,6 +48,12 @@ class sdist(_sdist):
             with open(dest, "w+b") as f:
                 log.info("writing %s" % os.path.basename(dest))
                 f.write(r.content)
+        self.distribution.data_files += [
+            "etc/.fallback.json",
+            "etc/.fallback.json.asc",
+            "etc/rpm.egg",
+            "etc/rpm.egg.asc",
+        ]
         _sdist.run(self)
 
 
