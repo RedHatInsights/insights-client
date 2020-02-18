@@ -23,37 +23,48 @@ COMMON_USER_OPTIONS = [
 ]
 
 
+def _download_extra_dist_files(cmd):
+    """
+    _download_extra_dist_files downloads extra files necessary for inclusion
+    in source distributions that are not shipped as part of the insights-client
+    repository.
+
+    - cmd: an instance of a setuptools/distutils Command subclass, such as sdist
+    """
+    for (url, dest) in [
+        (
+            "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json",
+            "etc/.fallback.json",
+        ),
+        (
+            "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json.asc",
+            "etc/.fallback.json.asc",
+        ),
+        (
+            "https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg",
+            "etc/rpm.egg",
+        ),
+        (
+            "https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc",
+            "etc/rpm.egg.asc",
+        ),
+    ]:
+        log.info("downloading %s" % os.path.basename(dest))
+        r = requests.get(url)
+        with open(dest, "w+b") as f:
+            log.info("writing %s" % os.path.basename(dest))
+            f.write(r.content)
+    cmd.distribution.data_files += [
+        "etc/.fallback.json",
+        "etc/.fallback.json.asc",
+        "etc/rpm.egg",
+        "etc/rpm.egg.asc",
+    ]
+
+
 class sdist(_sdist):
     def run(self):
-        for (url, dest) in [
-            (
-                "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json",
-                "etc/.fallback.json",
-            ),
-            (
-                "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json.asc",
-                "etc/.fallback.json.asc",
-            ),
-            (
-                "https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg",
-                "etc/rpm.egg",
-            ),
-            (
-                "https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc",
-                "etc/rpm.egg.asc",
-            ),
-        ]:
-            log.info("downloading %s" % os.path.basename(dest))
-            r = requests.get(url)
-            with open(dest, "w+b") as f:
-                log.info("writing %s" % os.path.basename(dest))
-                f.write(r.content)
-        self.distribution.data_files += [
-            "etc/.fallback.json",
-            "etc/.fallback.json.asc",
-            "etc/rpm.egg",
-            "etc/rpm.egg.asc",
-        ]
+        _download_extra_dist_files(self)
         _sdist.run(self)
 
 
@@ -92,6 +103,7 @@ class install(_install):
             self.systemdunitdir = os.path.join(self.libdir, "systemd", "system")
 
     def run(self):
+        _download_extra_dist_files(self)
         self.run_command("install_data")
         _install.run(self)
 
