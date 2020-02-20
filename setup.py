@@ -21,13 +21,14 @@ COMMON_USER_OPTIONS = [
 ]
 
 
-def _download_extra_dist_files(cmd):
+def _download_extra_dist_files(cmd, force=False):
     """
     _download_extra_dist_files downloads extra files necessary for inclusion
     in source distributions that are not shipped as part of the insights-client
     repository.
 
     - cmd: an instance of a setuptools/distutils Command subclass, such as sdist
+    - force: always download the extra files, even if they already exist
     """
     for (url, dest) in [
         (
@@ -47,11 +48,12 @@ def _download_extra_dist_files(cmd):
             "etc/rpm.egg.asc",
         ),
     ]:
-        log.info("downloading %s" % os.path.basename(dest))
-        r = requests.get(url)
-        with open(dest, "w+b") as f:
-            log.info("writing %s" % os.path.basename(dest))
-            f.write(r.content)
+        if not os.path.exists(dest) or force:
+            log.info("downloading %s" % os.path.basename(dest))
+            r = requests.get(url)
+            with open(dest, "w+b") as f:
+                log.info("writing %s" % os.path.basename(dest))
+                f.write(r.content)
     cmd.distribution.data_files += [
         "etc/.fallback.json",
         "etc/.fallback.json.asc",
@@ -62,7 +64,7 @@ def _download_extra_dist_files(cmd):
 
 class sdist(_sdist):
     def run(self):
-        _download_extra_dist_files(self)
+        _download_extra_dist_files(self, force=True)
         _sdist.run(self)
 
 
