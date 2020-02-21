@@ -11,7 +11,6 @@ from setuptools.command.install import install as _install
 from setuptools.command.sdist import sdist as _sdist
 
 COMMON_USER_OPTIONS = [
-    ("with-systemd=", None, "install systemd unit files"),
     ("libdir=", None, "installation directory for dynamic libraries"),
     ("datadir=", None, "installation directory for data files"),
     ("localstatedir=", None, "installation directory for local state files"),
@@ -21,7 +20,7 @@ COMMON_USER_OPTIONS = [
 ]
 
 
-def _download_extra_dist_files(cmd, force=False):
+def _download_extra_dist_files(cmd, force=False, install_dir=None):
     """
     _download_extra_dist_files downloads extra files necessary for inclusion
     in source distributions that are not shipped as part of the insights-client
@@ -55,10 +54,10 @@ def _download_extra_dist_files(cmd, force=False):
                 log.info("writing %s" % os.path.basename(dest))
                 f.write(r.content)
     cmd.distribution.data_files += [
-        "etc/.fallback.json",
-        "etc/.fallback.json.asc",
-        "etc/rpm.egg",
-        "etc/rpm.egg.asc",
+        (install_dir, ["etc/.fallback.json"]),
+        (install_dir, ["etc/.fallback.json.asc"]),
+        (install_dir, ["etc/rpm.egg"]),
+        (install_dir, ["etc/rpm.egg.asc"]),
     ]
 
 
@@ -73,7 +72,6 @@ class install(_install):
 
     def initialize_options(self):
         _install.initialize_options(self)
-        self.with_systemd = None
         self.libdir = None
         self.datadir = None
         self.localstatedir = None
@@ -83,10 +81,6 @@ class install(_install):
 
     def finalize_options(self):
         _install.finalize_options(self)
-        if self.with_systemd is None:
-            self.with_systemd = False
-        else:
-            self.with_systemd = self.with_systemd == "true"
         if self.prefix is None:
             self.prefix = "/usr/local"
         if self.libdir is None:
@@ -103,7 +97,9 @@ class install(_install):
             self.systemdunitdir = os.path.join(self.libdir, "systemd", "system")
 
     def run(self):
-        _download_extra_dist_files(self)
+        _download_extra_dist_files(
+            self, install_dir=os.path.join(self.sysconfdir, "insights-client")
+        )
         self.run_command("install_data")
         _install.run(self)
 
@@ -113,7 +109,6 @@ class install_data(_install_data):
 
     def initialize_options(self):
         _install_data.initialize_options(self)
-        self.with_systemd = None
         self.libdir = None
         self.datadir = None
         self.localstatedir = None
@@ -125,7 +120,6 @@ class install_data(_install_data):
         _install_data.finalize_options(self)
         self.set_undefined_options(
             "install",
-            ("with_systemd", "with_systemd"),
             ("libdir", "libdir"),
             ("datadir", "datadir"),
             ("localstatedir", "localstatedir"),
@@ -154,15 +148,20 @@ class install_data(_install_data):
             (os.path.join(self.localstatedir, "log", "insights-client"), [])
         )
 
-        if self.with_systemd:
+        if os.path.exists(self.systemdunitdir):
             self.data_files.append(
                 (
                     self.systemdunitdir,
                     ["data/insights-client.timer", "data/insights-client.service"],
                 )
             )
-            self.data_files.remove((self.sysconfdir, ["etc/insights-client.cron"]))
         else:
+            self.data_files.append(
+                (
+                    os.path.join(self.sysconfdir, "insights-client"),
+                    ["data/insights-client.cron"],
+                )
+            )
             self.data_files.append(
                 (
                     os.path.join(self.sysconfdir, "sysconfig"),
@@ -210,6 +209,8 @@ setup(
     packages=find_packages(),
     install_requires=["requests", "PyYaml", "six"],
     extras_require={"develop": ["flake8", "pytest"]},
+    setup_requires=["setuptools_scm", "requests"],
+    use_scm_version=False,
     entry_points={"console_scripts": ["insights-client = insights_client:_main"]},
     data_files=[],  # Data files should be added dynamically in the install_data.run() method
     description="Red Hat Insights",
