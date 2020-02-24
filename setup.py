@@ -182,7 +182,7 @@ class install_data(_install_data):
 
 class clean(_clean):
     def run(self):
-        clean.run(self)
+        _clean.run(self)
         for p in ["etc/rpm.egg", "etc/rpm.egg.asc"]:
             if os.path.exists(p):
                 log.info("removing %s" % p)
