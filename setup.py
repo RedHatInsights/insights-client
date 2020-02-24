@@ -209,8 +209,7 @@ setup(
     packages=find_packages(),
     install_requires=["requests", "PyYaml", "six"],
     extras_require={"develop": ["flake8", "pytest"]},
-    setup_requires=["setuptools_scm", "requests"],
-    use_scm_version=False,
+    setup_requires=["requests"],
     entry_points={"console_scripts": ["insights-client = insights_client:_main"]},
     data_files=[],  # Data files should be added dynamically in the install_data.run() method
     description="Red Hat Insights",
