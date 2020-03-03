@@ -1,6 +1,7 @@
 import glob
 import os
 import shutil
+import subprocess
 from distutils import log
 from distutils.command.clean import clean as _clean
 from distutils.command.install_data import install_data as _install_data
@@ -169,13 +170,21 @@ class install_data(_install_data):
                 )
             )
 
-        if os.path.exists(os.path.join(self.sysconfdir, "motd.d")):
-            self.data_files.append(
-                (
-                    os.path.join(self.sysconfdir, "insights-client"),
-                    ["data/insights-client.motd"],
+        for l in ["/usr/lib64/security/pam_motd.so"]:
+            try:
+                output = subprocess.check_output(
+                    ["/usr/bin/strings", l],
+                    stderr=subprocess.STDOUT,
                 )
-            )
+                if b"motd_dir=" in output.splitlines():
+                    self.data_files.append(
+                        (
+                            os.path.join(self.sysconfdir, "insights-client"),
+                            ["data/insights-client.motd"],
+                        )
+                    )
+            except Exception as e:
+                print(e)
 
         _install_data.run(self)
 
