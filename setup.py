@@ -51,6 +51,8 @@ def _download_extra_dist_files(cmd, force=False, install_dir=None):
         if not os.path.exists(dest) or force:
             log.info("downloading %s" % os.path.basename(dest))
             r = requests.get(url)
+            if not r.ok:
+                r.raise_for_status()
             with open(dest, "w+b") as f:
                 log.info("writing %s" % os.path.basename(dest))
                 f.write(r.content)
