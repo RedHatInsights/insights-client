@@ -48,7 +48,7 @@ def _download_extra_dist_files(cmd, force=False, install_dir=None):
             "etc/rpm.egg.asc",
         ),
     ]:
-        if not os.path.exists(dest) or force:
+        if force:
             log.info("downloading %s" % os.path.basename(dest))
             r = requests.get(url)
             if not r.ok:
