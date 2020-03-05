@@ -1,3 +1,8 @@
+graft data
+graft docs
+graft etc
+include README.md
+include LICENSE
 exclude .flake8
 exclude .gitignore
 exclude .travis.yml
