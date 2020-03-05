@@ -32,11 +32,11 @@ def _download_extra_dist_files(cmd, force=False, install_dir=None):
     """
     for (url, dest) in [
         (
-            "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json",
+            "https://api.access.redhat.com/r/insights/v1/static/core/uploader.v2.json",
             "etc/.fallback.json",
         ),
         (
-            "https://api.access.redhat.com/r/insights/v1/static/core/uploader.json.asc",
+            "https://api.access.redhat.com/r/insights/v1/static/core/uploader.v2.json.asc",
             "etc/.fallback.json.asc",
         ),
         (
