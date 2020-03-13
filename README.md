@@ -10,20 +10,21 @@ Instructions are for RHSM-subscribed machines only.
 $ git clone git@github.com:RedHatInsights/insights-client.git
 $ git clone git@github.com:RedHatInsights/insights-core.git
 ```
-2. Build the egg and install the client.
+2. Bootstrap the configuration script. This will run `configure` for you with no options.
 
 ```
 $ cd insights-client
-$ sh lay-the-eggs.sh
+$ ./autogen.sh
+$ make
 ```
 
 3. Run the client with the following options to disable GPG since this egg is unsigned.
 
 ```
-$ sudo BYPASS_GPG=True EGG=/etc/insights-client/rpm.egg insights-client --no-gpg
+$ sudo BYPASS_GPG=True EGG=../insights-core ./src/insights-client --no-gpg
 ```
 
-4. Repeat steps 2 & 3 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
+4. Repeat step 3 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
 
 ## Architecture Summary
 The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (from here on, referred to as **wrapper**), and the updatable core module (from here on, referred to as **egg**).

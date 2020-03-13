@@ -1,0 +1,11 @@
+#!@PYTHON@
+
+import sys
+
+from insights_client import _main
+
+sys.path.insert(1, '@pythondir@')
+
+
+if __name__ == "__main__":
+    _main()

@@ -10,7 +10,7 @@ def run_sed(stdin):
     """
     Obfuscates given string by SED script.
     """
-    pipe = Popen(['sed', '-rf', 'etc/.exp.sed'], stdin=PIPE, stdout=PIPE, stderr=PIPE, env={"LC_ALL": "C"})
+    pipe = Popen(['sed', '-rf', '@top_srcdir@/data/.exp.sed'], stdin=PIPE, stdout=PIPE, stderr=PIPE, env={"LC_ALL": "C"})
     if six.PY3:
         stdout, stderr = pipe.communicate(input=stdin.encode('utf8'))
         return stdout.decode('utf8')

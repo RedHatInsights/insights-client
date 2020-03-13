@@ -1,0 +1,8 @@
+"""
+Constants
+"""
+
+
+class InsightsConstants(object):
+    app_name = '@PACKAGE@'
+    version = '@PACKAGE_VERSION@'
