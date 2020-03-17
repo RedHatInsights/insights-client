@@ -4,6 +4,9 @@ AM_INIT_AUTOMAKE([1.11 foreign])
 AC_CONFIG_MACRO_DIR([m4])
 AM_SILENT_RULES([yes])
 
+pkgsysconfdir=${sysconfdir}/$PACKAGE
+AC_SUBST([pkgsysconfdir])
+
 AC_PROG_SED
 PKG_PROG_PKG_CONFIG
 if test -z "$PKG_CONFIG"; then
