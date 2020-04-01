@@ -22,6 +22,10 @@ AC_PATH_PROG([STRINGS], [strings])
 AS_IF([test -z "$STRINGS"],[
     AC_MSG_ERROR([strings is missing from your system...])
 ])
+AC_PATH_PROG([TIMEOUT], [timeout])
+AS_IF([test -z "$TIMEOUT"],[
+    AC_MSG_ERROR([timeout is missing from your system...])
+])
 AC_PATH_PROG([PYTEST], [pytest])
 AS_IF([test -z "$PYTEST"],[
     AC_MSG_WARN([failed to find pytest, skipping tests...])
