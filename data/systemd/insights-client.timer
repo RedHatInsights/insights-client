@@ -10,7 +10,8 @@
 [Unit]
 Description=Insights Client Timer Task
 Documentation=man:insights-client(8)
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Timer]
 OnCalendar=daily
@@ -18,5 +19,5 @@ Persistent=true
 RandomizedDelaySec=14400
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=timers.target
 Also=insights-client-results.path
