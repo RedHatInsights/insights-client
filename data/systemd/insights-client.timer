@@ -19,3 +19,4 @@ RandomizedDelaySec=14400
 
 [Install]
 WantedBy=multi-user.target
+Also=insights-client-results.path

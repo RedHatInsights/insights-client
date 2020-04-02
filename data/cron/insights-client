@@ -4,3 +4,9 @@
 # The cron job sleeps for N seconds before running, where N is the randomly
 # generated number.
 RANDOM_DELAY_SEC=14400
+
+# Check for insights results after uploading an archive. Setting this variable
+# to any non-empty value will enable a call to insights-client, checking for
+# results from the uploaded archive. Results, if received, are stored in
+# /var/lib/insights/.
+ENABLE_CHECK_RESULTS="yes"
