@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "WARNING: $(basename $0) is deprecated and will be removed in a future release."
+exec @bindir@/insights-client $@
