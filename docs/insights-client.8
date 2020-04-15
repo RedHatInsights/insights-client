@@ -19,7 +19,7 @@ Unregister host from the Red Hat Insights service.
 .IP "--display-name=DISPLAYNAME"
 Display name to use for this host. May be used during registration.
 .IP "--group=GROUP"
-Group to add this host to. Will create the /etc/insights-client/tags.yaml file if it does not exist.
+Group to add this host to. The group will be saved to the tags file.
 .IP "--retry=RETRIES"
 Number of times to retry uploading. 180 seconds between tries.
 .IP "--validate"
@@ -53,9 +53,9 @@ Retrieve analysis results from the Red Hat Insights service.
 .IP "--show-results"
 Display analysis results from the Red Hat Insights service.
 .IP "--output-dir=DIR"
-Do not compress or upload the collection, and write to a specified directory.
+Write the collection to a specified directory. Does not perform an upload.
 .IP "--output-file=FILE"
-Do not upload the archive, and write to a specified file.
+Write the collection to a specified file. Does not perform an upload.
 
 .SH "DEBUG OPTIONS"
 .IP "--version"

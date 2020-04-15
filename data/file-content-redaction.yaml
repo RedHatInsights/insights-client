@@ -1,0 +1,47 @@
+---
+# Omit lines from files and command output in the collection using parameters listed here.
+
+# Using YAML syntax, create lists of "patterns" and "keywords" to omit.
+
+# About the "patterns" section
+# ----------------------------
+# Lines matching the parameters specified will be omitted
+#   in the order that the parameters are given, e.g.,
+
+# patterns:
+# - example_string_1
+# - example_string_2
+
+# Lines containing "example_string_1" or "example_string_2" will be 
+# omitted from output.
+
+# Regular expression matching using egrep are available to use.
+#   Wrap the list with "regex" like in the following example:
+
+# patterns:
+#   regex:
+#   - abc.*
+#   - localhost[[:digit:]]
+
+# Lines matching these regular expressions will be omitted
+# from output.
+
+# NOTE: You cannot mix plain string matching and regular expression matching.
+
+# About the "keywords" section
+# ----------------------------
+# Replace the specified keywords with generic identifiers by the soscleaner module.
+# NOTE: In order to use keyword replacement, the "obfuscate" option must be enabled in
+#   the insights-client.conf file.
+
+# Refer to https://access.redhat.com/articles/4511681 for up-to-date configuration information.
+
+# An example configuration is below.
+
+# patterns:
+#   regex:
+#   - abc.*
+
+# keywords:
+# - 1.1.1.1
+# - keyword_example

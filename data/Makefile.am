@@ -9,6 +9,9 @@ dist_pkgsysconf_DATA = \
 	redhattools.pub.gpg \
 	rpm.egg \
 	rpm.egg.asc \
+	remove.conf \
+	file-redaction.yaml \
+	file-content-redaction.yaml \
 	$(NULL)
 
 if HAVE_MOTDD
