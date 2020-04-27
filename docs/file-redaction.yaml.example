@@ -11,12 +11,12 @@
 # NOTE: The use of .cache.json is subject to change in a future update.
 # Refer to https://access.redhat.com/articles/4511681 for up-to-date configuration information.
 
-# An example configuration is below.
+# An example configuration is provided below.
 
-# commands:
-# - /bin/rpm -qa
-# - /bin/ls
-# - ethtool_i
-# files:
-# - /etc/audit/auditd.conf
-# - cluster_conf
+commands:
+  - /bin/rpm -qa
+  - /bin/ls
+  - ethtool_i
+files:
+  - /etc/audit/auditd.conf
+  - cluster_conf
