@@ -1,0 +1,22 @@
+---
+# Omit entire files and commands from the collection using parameters listed here.
+
+# Using YAML syntax, create lists of "commands" and "files" to omit.
+# For a full list of files and commands run by insights-client,
+#   refer to /etc/insights-client/.cache.json
+
+# The command or file must exactly match either the full command or filename,
+#   or the "symbolic_name" defined in .cache.json.
+
+# NOTE: The use of .cache.json is subject to change in a future update.
+# Refer to https://access.redhat.com/articles/4511681 for up-to-date configuration information.
+
+# An example configuration is provided below.
+
+commands:
+  - /bin/rpm -qa
+  - /bin/ls
+  - ethtool_i
+files:
+  - /etc/audit/auditd.conf
+  - cluster_conf

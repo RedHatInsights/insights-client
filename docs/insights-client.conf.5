@@ -10,7 +10,7 @@ The \fBinsights\-client.conf\fP file contains configuration information for \fBi
 .IP "loglevel=DEBUG"
 Change log level, valid options DEBUG, INFO, WARNING, ERROR, CRITICAL.
 .IP "auto_config=True"
-Automatically attempt to configure connectivity to Red Hat Insights.
+Automatically attempt to configure connectivity to Red Hat Insights. If an RHSM or Satellite subscription is detected, CERT auth will be automatically selected.
 .IP "authmethod=BASIC"
 Change authentication method, valid options BASIC, CERT. Default BASIC.\&
 .IP "username="
@@ -31,28 +31,14 @@ Obfuscate hostname. Requires obfuscate=True.
 Timeout for commands run during collection, in seconds.
 .IP "http_timeout=120"
 Timeout for HTTP calls, in seconds.
-.IP "remove_file=/etc/insights-client/remove.conf"
-File that can be used to prevent files or commands from being collected or to exclude lines containing a specified word.
+.IP "redaction_file=/etc/insights-client/file-redaction.yaml"
+This file can be used to omit files or commands from the collection.
 .br
-Each word specified in patterns will exclude the entire line containing the word in all commands and files.
+See /usr/share/doc/insights-client/file-redaction.yaml.example or https://access.redhat.com/articles/4511681 for information on how to use it.
+.IP "content_redaction_file=/etc/insights-client/file-content-redaction.yaml"
+This file can be used to omit lines or keywords from files and commands in the collection.
 .br
-Keywords will be obfuscated to keyword# in all commands and files and require the Obfuscate option to be True.
-.br
-This file MUST be in the following format, and MUST match exactly what is in the dynamic_config for file or command name.
-.br
-
-.br
-[remove]
-.br
-files=/etc/cluster/cluster.conf,/etc/hosts
-.br
-commands=/bin/dmseg,/bin/hostname
-.br
-patterns=password,username
-.br
-keywords=super$ecret,ultra$ecret
-.br
-
+See /usr/share/doc/insights-client/file-content-redaction.yaml.example or https://access.redhat.com/articles/4511681 for information on how to use it.
 .SH "SEE ALSO"
 .BR insights-client (8)
 \&

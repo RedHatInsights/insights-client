@@ -6,7 +6,7 @@ insights\-client \- Red Hat Insights Client tool
 .SH "SYNOPSIS"
 .B insights-client [options]
 .SH "DESCRIPTION"
-\fBinsights\-client\fP is designed to help customers proactively resolve issues affecting business operations in Red Hat Enterprise Linux and Red Hat Cloud Infrastructure environments. View alerts or learn more at https://cloud.redhat.com/insights/.  Due to the dynamic nature of this application, some options may become available that are not described in the manual.  Please refer to the output of --help for the most up-to-date options.
+\fBinsights\-client\fP is designed to help customers proactively resolve issues affecting business operations in Red Hat Enterprise Linux and Red Hat Cloud Infrastructure environments. View alerts or learn more at https://cloud.redhat.com/insights/.  Due to the dynamic nature of this application, some options may become available that are not described in the manual.  Please refer to the output of --help for the most up-to-date options, or view https://access.redhat.com/articles/4099591 for more details.
 
 
 .SH "OPTIONS"
@@ -19,11 +19,11 @@ Unregister host from the Red Hat Insights service.
 .IP "--display-name=DISPLAYNAME"
 Display name to use for this host. May be used during registration.
 .IP "--group=GROUP"
-Group to add this host to during registration.
+Group to add this host to. The group will be saved to the tags file.
 .IP "--retry=RETRIES"
 Number of times to retry uploading. 180 seconds between tries.
 .IP "--validate"
-Validate remove.conf.
+Validate the contents of the blacklist configuration.
 .IP "--quiet"
 Only display error messages to stdout.
 .IP "--silent"
@@ -34,14 +34,28 @@ Enable automatic scheduling.
 Disable automatic scheduling.
 .IP "-c CONF, --conf=CONF"
 Pass a custom config file.
-.IP "--to-stdout"
-Print archive to stdout; sets --silent and --no-upload.
 .IP "--compressor"
 Specifies the compression algorithm to use. Choices are gz, bz2, xz, and none. Defaults to gz.
 .IP "--offline"
 Collect locally only, do not connect to Insights and do not upload.
 .IP "--logging-file"
 Specify a logfile other than the default.
+.IP "--payload=FILE"
+Skip collection and upload a specified archive. Requires --content-type.
+.IP "--content-type=TYPE"
+Content type of the archive specified with --payload.
+.IP "--diagnosis=ID"
+Retrieve a remediation for this system.
+.IP "--compliance"
+Scan the system with OpenSCAP and upload the report.
+.IP "--check-results"
+Retrieve analysis results from the Red Hat Insights service.
+.IP "--show-results"
+Display analysis results from the Red Hat Insights service.
+.IP "--output-dir=DIR"
+Write the collection to a specified directory. Does not perform an upload.
+.IP "--output-file=FILE"
+Write the collection to a specified file. Does not perform an upload.
 
 .SH "DEBUG OPTIONS"
 .IP "--version"
@@ -61,7 +75,7 @@ Create a support logfile for Red Hat Insights.
 .IP "--status"
 Check this host's registration status with Red Hat Insights.
 .IP "--net-debug"
-Log network activity.
+Log network activity to console.
 
 .SH "MOTD"
 A message will be displayed on login about \fBinsights\-client\fP if installed but has not yet been used at least once. To change or remove this message, edit the \fB/etc/insights-client/insights-client.motd\fP file.
