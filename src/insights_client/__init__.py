@@ -118,7 +118,7 @@ def run_phase(phase, client, validated_eggs):
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             # phase successful, don't try another egg
-            # update_motd_message()
+            update_motd_message()
             return
         if process.returncode == 1:
             # egg hit an error, try the next
@@ -143,8 +143,9 @@ def update_motd_message():
         if os.path.isfile(NEW_EGG):
             os.symlink(os.devnull, MOTD_FILE + ".tmp")
             os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
-    except OSError:
-        pass  # In the case of multiple processes
+    except OSError as e:
+        # In the case of multiple processes
+        logger.debug('Could not modify motd.d file: %s', str(e))
 
 
 def _main():
