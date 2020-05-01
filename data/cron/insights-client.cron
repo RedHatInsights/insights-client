@@ -30,13 +30,13 @@ then
     /bin/cgset -r blkio.weight=100 insights
     /bin/cgexec -g memory,cpu,blkio:insights /usr/bin/timeout 10m ${path} --retry 3 --quiet
     /bin/cgdelete memory,cpu,blkio:insights
-    if [ -n ${ENABLE_CHECK_RESULTS} ]; then
+    if [[ -n ${ENABLE_CHECK_RESULTS} ]]; then
         /bin/sleep 120
         ${path} --check-results
     fi
 else
     /usr/bin/timeout 10m ${path} --quiet
-    if [ -n ${ENABLE_CHECK_RESULTS} ]; then
+    if [[ -n ${ENABLE_CHECK_RESULTS} ]]; then
         /bin/sleep 120
         /usr/bin/timeout 10m ${path} --check-results
     fi
