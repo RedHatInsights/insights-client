@@ -13,6 +13,7 @@ RANDOM_DELAY_SEC=14400
 ENABLE_CHECK_RESULTS="yes"
 
 if [ -f /etc/sysconfig/insights-client ]; then
+    # shellcheck source=insights-client
     . /etc/sysconfig/insights-client
 fi
 
