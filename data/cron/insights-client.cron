@@ -20,7 +20,7 @@ fi
 DELAY=$((1 + RANDOM % ${RANDOM_DELAY_SEC}))
 /bin/sleep ${DELAY}
 /sbin/service cgconfig status > /dev/null 2>&1
-if [ $? == 0 ];
+if ! /sbin/service cgconfig status > /dev/null 2>&1;
 then
     /bin/cgcreate -g memory,cpu,blkio:insights
     /bin/cgset -r memory.limit_in_bytes=2147483648 insights
