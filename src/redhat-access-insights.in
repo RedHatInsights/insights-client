@@ -2,4 +2,4 @@
 
 echo "WARNING: $(basename "$0") is deprecated and will be removed in a future release; use 'insights-client' instead."
 sleep 3
-exec @bindir@/insights-client $@
+exec @bindir@/insights-client "$@"
