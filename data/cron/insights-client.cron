@@ -10,7 +10,7 @@ name=insights-client
 path=/usr/bin/${name}
 
 RANDOM_DELAY_SEC=14400
-ENABLE_CHECK_RESULTS="yes"
+ENABLE_CHECK_RESULTS=""
 
 if [ -f /etc/sysconfig/insights-client ]; then
     # shellcheck source=insights-client
