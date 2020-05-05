@@ -9,4 +9,4 @@ RANDOM_DELAY_SEC=14400
 # to any non-empty value will enable a call to insights-client, checking for
 # results from the uploaded archive. Results, if received, are stored in
 # /var/lib/insights/.
-ENABLE_CHECK_RESULTS="yes"
+ENABLE_CHECK_RESULTS=""
