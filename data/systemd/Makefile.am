@@ -6,12 +6,14 @@ dist_systemdsystemunit_DATA = \
 systemdsystemunit_DATA = \
 	insights-client-results.service \
 	insights-client-results.path \
+	insights-register.service \
 	$(NULL)
 
 CLEANFILES = $(systemdsystemunit_DATA)
 EXTRA_DIST = \
 	insights-client-results.service.in \
 	insights-client-results.path.in \
+	insights-register.service.in \
 	$(NULL)
 
 %: %.in Makefile
