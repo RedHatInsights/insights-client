@@ -10,7 +10,7 @@
 # For more information about systemd drop-in files, see systemd.unit(5).
 
 [Unit]
-Description=Insights Registration
+Description=Automatically Register with Red Hat Insights
 Documentation=man:insights-client(8)
 After=network-online.target
 
@@ -25,3 +25,4 @@ TasksMax=300
 BlockIOWeight=100
 ExecStartPost=-/bin/bash -c "echo 2G >/dev/null 2>&1 > /sys/fs/cgroup/memory/system.slice/insights-register.service/memory.memsw.limit_in_bytes"
 ExecStartPost=-/bin/bash -c "echo 1G >/dev/null 2>&1 > /sys/fs/cgroup/memory/system.slice/insights-register.service/memory.soft_limit_in_bytes"
+ExecStopPost=systemctl mask --now insights-register.path
