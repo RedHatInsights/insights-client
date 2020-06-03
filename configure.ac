@@ -68,6 +68,14 @@ fi
 AC_MSG_RESULT([$have_motdd])
 AM_CONDITIONAL([HAVE_MOTDD], [test x"$have_motdd" = x"yes"])
 
+dnl Optionally install a systemd unit to automatically register insights-client
+dnl when it detects an RHSM subscription.
+AC_ARG_ENABLE([auto-registration],
+    [AS_HELP_STRING([--enable-auto-registration],
+        [enable automatic registration @<:@default: no@:>@])],
+    [auto_registration=${enableval}], [auto_registration=no])
+AM_CONDITIONAL([ENABLE_AUTO_REGISTRATION], [test "x${auto_registration}" = xyes])
+
 AC_CONFIG_FILES([
     Makefile
     data/Makefile

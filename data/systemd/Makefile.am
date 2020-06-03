@@ -6,9 +6,14 @@ dist_systemdsystemunit_DATA = \
 systemdsystemunit_DATA = \
 	insights-client-results.service \
 	insights-client-results.path \
+	$(NULL)
+
+if ENABLE_AUTO_REGISTRATION
+systemdsystemunit_DATA += \
 	insights-register.service \
 	insights-register.path \
 	$(NULL)
+endif
 
 CLEANFILES = $(systemdsystemunit_DATA)
 EXTRA_DIST = \
