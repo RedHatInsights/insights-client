@@ -59,8 +59,8 @@ dnl This is ugly but seems to be the most reliable way to detect which version
 dnl of PAM is available on the system.
 AC_MSG_CHECKING([for motd_d support])
 have_motdd=no
-if test -f /usr/lib64/security/pam_motd.so; then
-    $STRINGS /usr/lib64/security/pam_motd.so | grep -q "motd_dir="
+if test -f $libdir/security/pam_motd.so; then
+    $STRINGS $libdir/security/pam_motd.so | grep -q "motd_dir="
     if test $? -eq 0; then
         have_motdd=yes
     fi
