@@ -17,5 +17,5 @@ ConditionPathExists=!@sysconfdir@/pki/consumer/cert.pem
 
 [Service]
 Type=simple
-ExecStart=@bindir@/insights-client --unregister
+ExecStart=@bindir@/insights-client --unregister --force
 Restart=no
