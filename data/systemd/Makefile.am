@@ -8,12 +8,18 @@ systemdsystemunit_DATA = \
 	insights-client-results.path \
 	$(NULL)
 
+systemdsystempreset_DATA = \
+	$(NULL)
+
 if ENABLE_AUTO_REGISTRATION
 systemdsystemunit_DATA += \
 	insights-register.service \
 	insights-register.path \
 	insights-unregister.service \
 	insights-unregister.path \
+	$(NULL)
+systemdsystempreset_DATA += \
+	80-insights.preset \
 	$(NULL)
 endif
 
@@ -25,6 +31,7 @@ EXTRA_DIST = \
 	insights-register.path.in \
 	insights-unregister.service.in \
 	insights-unregister.path.in \
+	80-insights.preset \
 	$(NULL)
 
 %: %.in Makefile

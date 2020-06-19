@@ -52,7 +52,9 @@ AS_IF([test x"$HAVE_PYMOD_RHSM" = x"no"],[
     AC_MSG_WARN([missing python module: rhsm])
 ])
 
+dnl Set up required systemd directories and automake variables
 SYSTEMD_SYSTEMUNITDIR
+SYSTEMD_SYSTEMPRESETDIR
 
 dnl Check for version of pam_motd.so that supports motd.d.
 dnl This is ugly but seems to be the most reliable way to detect which version
