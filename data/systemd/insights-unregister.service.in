@@ -19,4 +19,5 @@ ConditionPathExists=!@sysconfdir@/pki/consumer/cert.pem
 Type=simple
 ExecStart=@bindir@/insights-client --unregister --force
 ExecStopPost=systemctl unmask --now insights-register.path
+ExecStopPost=systemctl start insights-register.path
 Restart=no
