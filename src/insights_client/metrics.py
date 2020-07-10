@@ -45,6 +45,7 @@ class MetricsHTTPClient(requests.Session):
         """
         if self.base_url == "cert-api.access.redhat.com":
             api_prefix = "/r/insights/platform"
+            self.verify = "/etc/insights-client/cert-api.access.redhat.com.pem"
         else:
             api_prefix = "/api"
         url = "https://{}{}/module-update-router/v1/event".format(
