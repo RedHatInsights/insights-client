@@ -9,8 +9,8 @@
 #   in the order that the parameters are given, e.g.,
 
 # patterns:
-# - example_string_1
-# - example_string_2
+# - "example_string_1"
+# - "example_string_2"
 
 # Lines containing "example_string_1" or "example_string_2" will be 
 # omitted from output.
@@ -20,8 +20,8 @@
 
 # patterns:
 #   regex:
-#   - abc.*
-#   - localhost[[:digit:]]
+#   - "abc.*"
+#   - "localhost[[:digit:]]"
 
 # Lines matching these regular expressions will be omitted
 # from output.
@@ -40,8 +40,8 @@
 
 patterns:
   regex:
-    - abc.*
+    - "abc.*"
 
 keywords:
-  - 1.1.1.1
-  - keyword_example
+  - "1.1.1.1"
+  - "keyword_example"
