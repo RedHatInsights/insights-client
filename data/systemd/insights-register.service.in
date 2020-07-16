@@ -1,0 +1,28 @@
+# This file is part of insights-client.
+#
+# Any changes made to this file will be overwritten during a software update. To
+# override a parameter in this file, create a drop-in file, typically located at
+# /etc/systemd/system/insights-register.service.d/override.conf. Put the desired
+# overrides in that file and reload systemd. The next time this service is run
+# (either manually or via a systemd timer), the overridden values will be in
+# effect.
+#
+# For more information about systemd drop-in files, see systemd.unit(5).
+
+[Unit]
+Description=Automatically Register with Red Hat Insights
+Documentation=man:insights-client(8)
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=@bindir@/insights-client --register
+Restart=no
+WatchdogSec=900
+CPUQuota=30%
+MemoryLimit=2G
+TasksMax=300
+BlockIOWeight=100
+ExecStartPost=-/bin/bash -c "echo 2G >/dev/null 2>&1 > /sys/fs/cgroup/memory/system.slice/insights-register.service/memory.memsw.limit_in_bytes"
+ExecStartPost=-/bin/bash -c "echo 1G >/dev/null 2>&1 > /sys/fs/cgroup/memory/system.slice/insights-register.service/memory.soft_limit_in_bytes"
+ExecStopPost=systemctl mask --now insights-register.path
