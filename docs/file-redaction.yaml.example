@@ -1,18 +1,30 @@
 ---
 # Omit entire files and commands from the collection using parameters listed here.
 
-# Using YAML syntax, create lists of "commands" and "files" to omit.
+# Using YAML syntax, create lists of "components", "commands", and "files" to omit.
+
 # For a full list of files and commands run by insights-client,
-#   refer to /etc/insights-client/.cache.json
+#   refer to /etc/insights-client/.fallback.json
+ 	
+#	This file is deprecated and provided for compatibility only.
+#	It will be removed in a future version.
 
-# The command or file must exactly match either the full command or filename,
-#   or the "symbolic_name" defined in .cache.json.
+# Commands and files are provided here presently for compatibility only.
+# 	The use of components is preferred over commands and files, and any commands
+#	or files that match components will be converted to components during parsing.
+#	These commands and files must match entries in the .fallback.json file.
 
-# NOTE: The use of .cache.json is subject to change in a future update.
-# Refer to https://access.redhat.com/articles/4511681 for up-to-date configuration information.
+# 	For a full list of Insights Core components, refer to the following:
+# 	https://insights-core.readthedocs.io/en/latest/specs_catalog.html
+
+# 	Components must be prefixed with "insights.specs.default.DefaultSpecs."
 
 # An example configuration is provided below.
 
+components:
+  - insights.specs.default.DefaultSpecs.httpd_V
+  - insights.specs.default.DefaultSpecs.mysql_log
+  - insights.specs.default.DefaultSpecs.ifconfig
 commands:
   - /bin/rpm -qa
   - /bin/ls
