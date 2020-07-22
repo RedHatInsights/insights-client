@@ -12,7 +12,7 @@
 # - "example_string_1"
 # - "example_string_2"
 
-# Lines containing "example_string_1" or "example_string_2" will be 
+# Lines containing "example_string_1" or "example_string_2" will be
 # omitted from output.
 
 # Regular expression matching using egrep are available to use.
@@ -45,3 +45,13 @@ patterns:
 keywords:
   - "1.1.1.1"
   - "keyword_example"
+
+# More examples
+# --------
+# patterns:
+#   regex:
+#   # never send up lines with my host name suffix (example.com)
+#   - "[a-zA-Z_.-]*example\.com"
+#
+#   # never send up uncompressed IPv6 addresses
+#   - "([0-9a-fA-F]{0,4}:){7}[0-9a-fA-F]{0,4}"
