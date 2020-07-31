@@ -16,7 +16,9 @@ try:
 
     phase = getattr(client, os.environ["INSIGHTS_PHASE"])
     metrics_client = metrics.MetricsHTTPClient(
-        "/etc/pki/consumer/cert.pem", "/etc/pki/consumer/key.pem"
+        cert_file="/etc/pki/consumer/cert.pem",
+        key_file="/etc/pki/consumer/key.pem",
+        config_file="/etc/insights-client/insights-client.conf",
     )
     code = 0
     with open("/etc/insights-client/machine-id") as f:
@@ -64,4 +66,7 @@ try:
         metrics_client.post(event)
         sys.exit(code)
 except KeyboardInterrupt:
+    sys.exit(1)
+except Exception as e:
+    print("Error: {}".format(e))
     sys.exit(1)
