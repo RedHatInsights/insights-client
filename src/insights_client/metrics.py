@@ -31,6 +31,7 @@ class MetricsHTTPClient(requests.Session):
         rhsm_cfg = rhsm.config.initConfig()
         rhsm_server_hostname = rhsm_cfg.get("server", "hostname")
         rhsm_server_port = rhsm_cfg.get("server", "port")
+        rhsm_rhsm_repo_ca_cert = rhsm_cfg.get("rhsm", "repo_ca_cert")
 
         match = re.match("subscription.rhsm(.stage)?.redhat.com", rhsm_server_hostname)
         if match is None:
@@ -38,6 +39,7 @@ class MetricsHTTPClient(requests.Session):
             self.base_url = rhsm_server_hostname
             self.port = rhsm_server_port
             self.cert = (cert_file, key_file)
+            self.verify = rhsm_rhsm_repo_ca_cert
             self.api_prefix = "/redhat_access/r/insights/platform"
         else:
             try:
