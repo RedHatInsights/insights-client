@@ -16,6 +16,15 @@ CLEANFILES = constants.py
 	$(AM_V_GEN) $(SED) \
 		-e 's,[@]PACKAGE_VERSION[@],$(PACKAGE_VERSION),g' \
 		-e 's,[@]PACKAGE[@],$(PACKAGE),g' \
+		-e 's,[@]PREFIX[@],$(prefix),g' \
+		-e 's,[@]BINDIR[@],$(bindir),g' \
+		-e 's,[@]SBINDIR[@],$(sbindir),g' \
+		-e 's,[@]LIBEXECDIR[@],$(libexecdir),g' \
+		-e 's,[@]DATAROOTDIR[@],$(datarootdir),g' \
+		-e 's,[@]DATADIR[@],$(datadir),g' \
+		-e 's,[@]SYSCONFDIR[@],$(sysconfdir),g' \
+		-e 's,[@]LOCALSTATEDIR[@],$(localstatedir),g' \
+		-e 's,[@]DOCDIR[@],$(docdir),g' \
 		$< > $@.tmp && mv $@.tmp $@
 
 SUBDIRS = tests
