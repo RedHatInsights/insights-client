@@ -3,6 +3,7 @@ insights_clientdir = $(pythondir)/insights_client
 insights_client_PYTHON = \
 	__init__.py \
 	run.py \
+	metrics.py \
 	$(NULL)
 
 nodist_insights_client_PYTHON = \
