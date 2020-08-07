@@ -15,7 +15,12 @@ class MetricsHTTPClient(requests.Session):
     """
 
     def __init__(
-        self, cert_file=None, key_file=None, base_url=None, config_file=None,
+        self,
+        cert_file=None,
+        key_file=None,
+        base_url=None,
+        config_file=None,
+        rhsm_config_file="/etc/rhsm/rhsm.conf",
     ):
         """
         __init__ creates and configures a new MetricsHTTPClient
@@ -28,10 +33,13 @@ class MetricsHTTPClient(requests.Session):
         cfg = configparser.RawConfigParser()
         cfg.read(config_file)
 
-        rhsm_cfg = rhsm.config.initConfig()
+        rhsm_cfg = configparser.RawConfigParser()
+        rhsm_cfg.read(rhsm_config_file)
+
         rhsm_server_hostname = rhsm_cfg.get("server", "hostname")
         rhsm_server_port = rhsm_cfg.get("server", "port")
         rhsm_rhsm_repo_ca_cert = rhsm_cfg.get("rhsm", "repo_ca_cert")
+        rhsm_rhsm_consumerCertDir = rhsm_cfg.get("rhsm", "consumerCertDir")
 
         match = re.match("subscription.rhsm(.stage)?.redhat.com", rhsm_server_hostname)
         if match is None:
