@@ -1,7 +1,7 @@
+import os.path
 import re
 
 import requests
-import rhsm
 from six.moves import configparser
 
 AUTH_METHOD_BASIC = "BASIC"
@@ -40,6 +40,11 @@ class MetricsHTTPClient(requests.Session):
         rhsm_server_port = rhsm_cfg.get("server", "port")
         rhsm_rhsm_repo_ca_cert = rhsm_cfg.get("rhsm", "repo_ca_cert")
         rhsm_rhsm_consumerCertDir = rhsm_cfg.get("rhsm", "consumerCertDir")
+
+        if cert_file is None:
+            cert_file = os.path.join(rhsm_rhsm_consumerCertDir, "cert.pem")
+        if key_file is None:
+            key_file = os.path.join(rhsm_rhsm_consumerCertDir, "key.pem")
 
         match = re.match("subscription.rhsm(.stage)?.redhat.com", rhsm_server_hostname)
         if match is None:
