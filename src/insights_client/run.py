@@ -57,9 +57,12 @@ try:
         "core_path": os.environ["PYTHONPATH"],
     }
     try:
-        code = phase()
+        sys.exit(phase())
     except Exception as e:
         event["exception"] = e
+        code = 1
+    except SystemExit as e:
+        code = e.code
     finally:
         event["exit"] = code
         event["ended_at"] = make_utc_datetime_rfc3339()
