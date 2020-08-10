@@ -74,5 +74,5 @@ try:
 except KeyboardInterrupt:
     sys.exit(1)
 except Exception as e:
-    print("Error: {}".format(e))
+    print("Error: {0}".format(e))
     sys.exit(1)

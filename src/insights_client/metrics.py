@@ -80,7 +80,7 @@ class MetricsHTTPClient(requests.Session):
 
         :param event: a dictionary describing an event object
         """
-        url = "https://{}:{}{}/module-update-router/v1/event".format(
+        url = "https://{0}:{1}{2}/module-update-router/v1/event".format(
             self.base_url, self.port, self.api_prefix
         )
         return super(MetricsHTTPClient, self).post(url, json=event)
