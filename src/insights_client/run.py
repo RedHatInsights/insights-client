@@ -62,7 +62,7 @@ try:
     try:
         sys.exit(phase())
     except Exception as e:
-        event["exception"] = e
+        event["exception"] = "{0}".format(e)
         code = 1
     except SystemExit as e:
         code = e.code
