@@ -2,7 +2,19 @@
 Constants
 """
 
+APP_NAME = '@PACKAGE@'
+VERSION = '@PACKAGE_VERSION@'
+PREFIX = '@PREFIX@'
+BINDIR = '@BINDIR@'
+SBINDIR = '@SBINDIR@'
+LIBEXECDIR = '@LIBEXECDIR@'
+DATAROOTDIR = '@DATAROOTDIR@'
+DATADIR = '@DATADIR@'
+SYSCONFDIR = '@SYSCONFDIR@'
+LOCALSTATEDIR = '@LOCALSTATEDIR@'
+DOCDIR = '@DOCDIR@'
+
 
 class InsightsConstants(object):
-    app_name = '@PACKAGE@'
-    version = '@PACKAGE_VERSION@'
+    app_name = APP_NAME
+    version = VERSION
