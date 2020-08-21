@@ -33,7 +33,7 @@ class MetricsHTTPClient(requests.Session):
         cfg = configparser.RawConfigParser()
         cfg.read(config_file)
 
-        rhsm_cfg = configparser.RawConfigParser()
+        rhsm_cfg = configparser.ConfigParser()
         rhsm_cfg.read(rhsm_config_file)
 
         rhsm_server_hostname = rhsm_cfg.get("server", "hostname")
