@@ -6,14 +6,11 @@ dist_pkgsysconf_DATA = \
 	.fallback.json.asc \
 	cert-api.access.redhat.com.pem \
 	insights-client.conf \
+	insights-client.motd \
 	redhattools.pub.gpg \
 	rpm.egg \
 	rpm.egg.asc \
 	$(NULL)
-
-if HAVE_MOTDD
-pkgsysconf_DATA = insights-client.motd
-endif
 
 AM_V_DL = $(am__v_DL_$(V))
 am__v_DL_ = $(am__v_DL_$(AM_DEFAULT_VERBOSITY))
@@ -26,8 +23,6 @@ rpm.egg.asc:
 	$(AM_V_DL) $(WGET) --no-verbose --output-document $@ https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc
 
 CLEANFILES = rpm.egg rpm.egg.asc
-
-EXTRA_DIST = insights-client.motd
 
 if WITH_SYSTEMDSYSTEMUNITDIR
 SYSTEMDDIR = systemd

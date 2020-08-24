@@ -21,10 +21,6 @@ AC_PATH_PROG([WGET], [wget])
 AS_IF([test -z "$WGET"],[
     AC_MSG_ERROR([wget is missing from your system...])
 ])
-AC_PATH_PROG([STRINGS], [strings])
-AS_IF([test -z "$STRINGS"],[
-    AC_MSG_ERROR([strings is missing from your system...])
-])
 AC_PATH_PROG([TIMEOUT], [timeout])
 AS_IF([test -z "$TIMEOUT"],[
     AC_MSG_ERROR([timeout is missing from your system...])
@@ -55,20 +51,6 @@ AS_IF([test x"$HAVE_PYMOD_RHSM" = x"no"],[
 dnl Set up required systemd directories and automake variables
 SYSTEMD_SYSTEMUNITDIR
 SYSTEMD_SYSTEMPRESETDIR
-
-dnl Check for version of pam_motd.so that supports motd.d.
-dnl This is ugly but seems to be the most reliable way to detect which version
-dnl of PAM is available on the system.
-AC_MSG_CHECKING([for motd_d support])
-have_motdd=no
-if test -f $libdir/security/pam_motd.so; then
-    $STRINGS $libdir/security/pam_motd.so | grep -q "motd_dir="
-    if test $? -eq 0; then
-        have_motdd=yes
-    fi
-fi
-AC_MSG_RESULT([$have_motdd])
-AM_CONDITIONAL([HAVE_MOTDD], [test x"$have_motdd" = x"yes"])
 
 dnl Optionally install a systemd unit to automatically register insights-client
 dnl when it detects an RHSM subscription.
