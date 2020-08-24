@@ -140,7 +140,7 @@ def update_motd_message():
     It is intentional that message does not reappear if a system is then unregistered.
     """
     try:
-        if os.path.isfile(NEW_EGG):
+        if os.path.exists(os.path.dirname(MOTD_FILE)) and os.path.isfile(NEW_EGG):
             os.symlink(os.devnull, MOTD_FILE + ".tmp")
             os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
     except OSError as e:
