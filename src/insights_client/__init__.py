@@ -24,6 +24,7 @@ UNREGISTERED_FILE = "/etc/insights-client/.unregistered"
 STABLE_EGG = "/var/lib/insights/last_stable.egg"
 RPM_EGG = "/etc/insights-client/rpm.egg"
 MOTD_FILE = "/etc/motd.d/insights-client"
+MOTD_SRC = "/etc/insights-client/insights-client.motd"
 
 logger = logging.getLogger(__name__)
 
@@ -141,14 +142,17 @@ def update_motd_message():
     /etc/motd.d/insights-client at an empty file.
 
     It is intentional that the message does not reappear if a system is then
-    unregistered.
+    unregistered. Only if both the unregistered and the registered stamp files
+    do not exist is an motd symlink created.
     """
     try:
-        if os.path.exists(os.path.dirname(MOTD_FILE)) and (
-            os.path.isfile(REGISTERED_FILE) or os.path.isfile(UNREGISTERED_FILE)
-        ):
-            os.symlink(os.devnull, MOTD_FILE + ".tmp")
-            os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
+        if os.path.exists(os.path.dirname(MOTD_FILE)):
+            if (os.path.isfile(REGISTERED_FILE) or os.path.isfile(UNREGISTERED_FILE)):
+                os.symlink(os.devnull, MOTD_FILE + ".tmp")
+                os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
+            else:
+                os.symlink(MOTD_SRC, MOTD_FILE + ".tmp")
+                os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
     except OSError as e:
         # In the case of multiple processes
         logger.debug("Could not modify motd.d file: %s", str(e))
