@@ -4,6 +4,7 @@ import sys
 from insights import package_info
 
 import metrics
+import utc
 
 try:
     try:
@@ -27,31 +28,9 @@ try:
     except:
         machine_id = "00000000-0000-0000-0000-000000000000"
 
-    class UTC(datetime.tzinfo):
-        """
-        UTC is a concrete subclass of datetime.tzinfo representing the UTC
-        time zone.
-        """
-
-        def utcoffset(self, dt):
-            return datetime.timedelta(0)
-
-        def tzname(self, dt):
-            return "UTC"
-
-        def dst(self, dt):
-            return datetime.timedelta(0)
-
-    def make_utc_datetime_rfc3339():
-        return (
-            datetime.datetime.utcnow()
-            .replace(microsecond=0, tzinfo=UTC())
-            .isoformat("T")
-        )
-
     event = {
         "phase": os.environ["INSIGHTS_PHASE"],
-        "started_at": make_utc_datetime_rfc3339(),
+        "started_at": utc.make_utc_datetime_rfc3339(),
         "exit": code,
         "exception": None,
         "ended_at": None,
@@ -68,7 +47,7 @@ try:
         code = e.code
     finally:
         event["exit"] = code
-        event["ended_at"] = make_utc_datetime_rfc3339()
+        event["ended_at"] = utc.make_utc_datetime_rfc3339()
         metrics_client.post(event)
         sys.exit(code)
 except KeyboardInterrupt:
