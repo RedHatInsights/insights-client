@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 """
  Gather and upload Insights data for
  Red Hat Insights
