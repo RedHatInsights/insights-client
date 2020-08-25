@@ -18,9 +18,12 @@ GPG_KEY = "/etc/insights-client/redhattools.pub.gpg"
 BYPASS_GPG = os.environ.get("BYPASS_GPG", "").lower() == "true"
 ENV_EGG = os.environ.get("EGG")
 NEW_EGG = "/var/lib/insights/newest.egg"
+REGISTERED_FILE = "/etc/insights-client/.registered"
+UNREGISTERED_FILE = "/etc/insights-client/.unregistered"
 STABLE_EGG = "/var/lib/insights/last_stable.egg"
 RPM_EGG = "/etc/insights-client/rpm.egg"
 MOTD_FILE = "/etc/motd.d/insights-client"
+MOTD_SRC = "/etc/insights-client/insights-client.motd"
 
 logger = logging.getLogger(__name__)
 
@@ -133,18 +136,25 @@ def run_phase(phase, client, validated_eggs):
 
 def update_motd_message():
     """
-    motd displays a message about system not being registered. Once we have retrieved
-    any new egg, that means we've been used at least once. We make that message
-    go away by pointing /etc/motd.d/insights-client at an empty file
-    It is intentional that message does not reappear if a system is then unregistered.
+    motd displays a message about system not being registered. Once a
+    registration stamp file exists, we make that message go away by pointing
+    /etc/motd.d/insights-client at an empty file.
+
+    It is intentional that the message does not reappear if a system is then
+    unregistered. Only if both the unregistered and the registered stamp files
+    do not exist is an motd symlink created.
     """
     try:
-        if os.path.isfile(NEW_EGG):
-            os.symlink(os.devnull, MOTD_FILE + ".tmp")
-            os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
+        if os.path.exists(os.path.dirname(MOTD_FILE)):
+            if (os.path.isfile(REGISTERED_FILE) or os.path.isfile(UNREGISTERED_FILE)):
+                os.symlink(os.devnull, MOTD_FILE + ".tmp")
+                os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
+            else:
+                os.symlink(MOTD_SRC, MOTD_FILE + ".tmp")
+                os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
     except OSError as e:
         # In the case of multiple processes
-        logger.debug('Could not modify motd.d file: %s', str(e))
+        logger.debug("Could not modify motd.d file: %s", str(e))
 
 
 def _main():
