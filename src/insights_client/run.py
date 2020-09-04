@@ -16,11 +16,7 @@ try:
         )
 
     phase = getattr(client, os.environ["INSIGHTS_PHASE"])
-    metrics_client = metrics.MetricsHTTPClient(
-        cert_file="/etc/pki/consumer/cert.pem",
-        key_file="/etc/pki/consumer/key.pem",
-        config_file="/etc/insights-client/insights-client.conf",
-    )
+    metrics_client = metrics.MetricsHTTPClient()
     code = 0
     try:
         with open("/etc/insights-client/machine-id") as f:
