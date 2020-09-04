@@ -44,10 +44,13 @@ try:
     finally:
         event["exit"] = code
         event["ended_at"] = utc.make_utc_datetime_rfc3339()
-        metrics_client.post(event)
+        try:
+            metrics_client.post(event)
+        except OSError as e:
+            print("Error: Could not submit event: {0}".format(e))
         sys.exit(code)
 except KeyboardInterrupt:
     sys.exit(1)
 except Exception as e:
-    print("Error: {0}".format(e))
+    print("Fatal: {0}".format(e))
     sys.exit(1)
