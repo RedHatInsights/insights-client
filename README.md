@@ -21,7 +21,7 @@ $ make
 3. Run the client with the following options to disable GPG since this egg is unsigned.
 
 ```
-$ sudo BYPASS_GPG=True EGG=../insights-core ./src/insights-client --no-gpg
+$ sudo BYPASS_GPG=True EGG=../insights-core/insights.zip ./src/insights-client --no-gpg
 ```
 
 4. Repeat step 3 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
