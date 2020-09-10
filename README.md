@@ -21,7 +21,7 @@ $ make
 3. Run the client with the following options to disable GPG since this egg is unsigned.
 
 ```
-$ sudo BYPASS_GPG=True EGG=../insights-core ./src/insights-client --no-gpg
+$ sudo BYPASS_GPG=True EGG=../insights-core/insights.zip ./src/insights-client --no-gpg
 ```
 
 4. Repeat step 3 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
@@ -44,6 +44,9 @@ The egg is the bundle that contains the Insights Core module, which has all the 
 Summary of the client's run, from start to finish.
 
 ## Configuration
+The configuration file uses INI format (see [configparser](https://docs.python.org/3/library/configparser.html)).
+The main section for configuration variables is `[insights-client]`.
+
 Configuration follows a precedence hierarchy of CLI -> `/etc/insights-client/insights-client.conf` file -> environment variable.
 
 ### Environment Variables
