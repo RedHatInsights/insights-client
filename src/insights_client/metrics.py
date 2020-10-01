@@ -19,7 +19,7 @@ class MetricsHTTPClient(requests.Session):
         cert_file=None,
         key_file=None,
         base_url=None,
-        config_file=None,
+        config_file="/etc/insights-client/insights-client.conf",
         rhsm_config_file="/etc/rhsm/rhsm.conf",
     ):
         """
