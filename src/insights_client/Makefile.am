@@ -11,6 +11,10 @@ nodist_insights_client_PYTHON = \
 	constants.py \
 	$(NULL)
 
+BUILT_SOURCES = \
+	constants.py \
+	$(NULL)
+
 EXTRA_DIST = constants.py.in
 CLEANFILES = constants.py
 
