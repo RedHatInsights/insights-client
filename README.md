@@ -18,13 +18,19 @@ $ ./autogen.sh
 $ make
 ```
 
-3. Run the client with the following options to disable GPG since this egg is unsigned.
+3. To build an insights-core egg from source, run `./build_client_egg.sh` in the insights-core repo.
+
+```
+$ ../insights-core/build_client_egg.sh
+```
+
+4. Run the client with the following options to disable GPG since this egg is unsigned.
 
 ```
 $ sudo BYPASS_GPG=True EGG=../insights-core/insights.zip ./src/insights-client --no-gpg
 ```
 
-4. Repeat step 3 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
+5. Repeat steps 3 and 4 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
 
 ## Architecture Summary
 The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (from here on, referred to as **wrapper**), and the updatable core module (from here on, referred to as **egg**).
@@ -52,46 +58,47 @@ Configuration follows a precedence hierarchy of CLI -> `/etc/insights-client/ins
 ### Environment Variables
 Environment configuration can be used by setting environment variables with names in the format INSIGHTS_xxxxxx, where xxxxxx is the configuration variable name, in all caps.
 
-### `/etc/insights-client/insights-client.conf` File
+### `insights-client.conf` File
 Configuration variables available in the configuration file and their explanations:
 
-- `loglevel` - set the Python logger's default level (DEBUG, INFO, WARNING, ERROR, CRITICAL). Default DEBUG
-- `trace` - log each line executed.  Default False
-- `auto_config` - attempt to auto-configure the network connection with Satellite or RHSM.  Default True
-- `authmethod` - authentication method for the Portal (BASIC, CERT). Default is BASIC
-Note: when `auto_config` is enabled, CERT will be used if RHSM or Satellite is detected
+- `loglevel` - set the Python logger's default level (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). Default `DEBUG`
+- `auto_config` - attempt to auto-configure the network connection with Satellite or RHSM.  Default `True`
+- `authmethod` - authentication method for the Portal (BASIC, CERT). Default is `BASIC`
+Note: when `auto_config` is enabled, `CERT` will be used if RHSM or Satellite is detected
 - `username` - username for basic auth. Blank by default
 - `password` - password for basic auth. Blank by default
-- `base_url` - base url for the Insights API (cert-api.access.redhat.com:443/r/insights). This shouldn't ever need to be changed
+- `base_url` - base url for the Insights API. Default `cert-api.access.redhat.com:443/r/insights`
+- `cert_verify` - path to CA cert to verify SSL against. Default `/etc/insights-client/cert-api.access.redhat.com.pem`
 - `proxy` - proxy URL. Blank by default
-- `auto_update` - whether to update the rule spec file (insights.json). Default True
-- `obfuscate` - whether to obfuscate IP addresses in collected data. Default False
-- `obfuscate_hostname` - whether to obfuscate hostnames in collected data. Default False
-- `no_schedule` - whether to disable creation of Insights cronjob on register. Default False
-- `display_name` - custom display name to appear in the Insights web UI. Only used on machine registration. Blank by default
+- `auto_update` - whether to update the rule spec file (uploader.json) and the insights-core egg. Default `True`
+- `obfuscate` - whether to obfuscate IP addresses in collected data. Default `False`
+- `obfuscate_hostname` - whether to obfuscate hostnames in collected data. Default `False`
+- `cmd_timeout` - how many seconds to allow a command to run before issuing a termination or kill signal. Default 120
+- `http_timeout` - how many seconds to allow an HTTP call to execute before timing out. Default 120
+- `core_collect` - if `True`, use insights-core to run collection instead of commands/files from uploader.json. Default `False`
+- `redaction_file` - location of the redaction file. Default `/etc/insights-client/file-redaction.yaml`
+- `content_redaction_file` - location of the content redaction file. Default `/etc/insights-client/file-content-redaction.yaml`
+- `legacy_upload` - Use legacy HTTP configuration to perform the upload. Default `True`
 
 ### Command Line Switches
 Command line switches available and their explanations.
 
 - `--register` - Register a system with the Insights API. Required for basic collection & upload, except in the case of certain targets or if `--offline` is specified
-- `--display-name` - Display name to appear in the insights web UI. Only used on machine registration. This will override the same option in the insights-client.conf file.
-- `--group` - Group to add the system to in the insights web UI. Only used on machine registration.
-- `--retry` - Number of times to retry the collection archive upload. Default is 1.
+- `--display-name=DISPLAYNAME` - Display name to appear in the insights web UI. This can be used at registration time, or standalone to change the display name any time.
+- `--group=GROUP` - Group to add the system to in the insights web UI. Only used on machine registration.
+- `--retry=RETRIES` - Number of times to retry the collection archive upload. Default is 1.
 - `--quiet` - Run with limited console output. This will only print ERROR level messages.
 - `--silent` - Run with no console output at all.
 - `--conf`, `-c` - Load a custom configuration file other than the default `/etc/insights-client/insights-client.conf`
-- `--to-stdout` - Dump the archive contents as binary output to stdout.
 - `--offline` - Run with no network connectivity at all. Implies `--no-upload` and makes machine registration unnecessary.
 - `--logging-file` - Log to a file other than the default `/var/log/insights-client/insights-client.log`
 - `--force-reregister` - Force a new registration. This delete's the machine's existing machine-id and registers a new one.
 - `--verbose` - Run with all log output. This will print DEBUG level messages.
 - `--no-upload` - Collect the archive, but do not upload it.
-- `--keep-archive` - Collect the archive, and do not delete it after output.
+- `--keep-archive` - Collect the archive, and do not delete it after upload.
 - `--net-debug` - Show network debug messages in the console output.
-- `--analyze-container` - Collect data from the system as if it were a container. Registration is unnecessary for this option. This will upload to a different API endpoint than vanilla system collection.
-- `--analyze-file` - Collect data from a tar file, treat as a mountpoint. Upload to the image endpoint.
-- `--analyze-mountpoint` - Collect data from a filesystem mountpoint other than the default /
-- `--analyze-image-id` - Collect data from a Docker image with the specified ID
+- `--output-dir=DIR` - Write the collected data to a specified directory without compression. Does not upload.
+- `--output-file=FILE` - Write the collected data to a specified archive. Does not upload.
 
 
 #### Switches that exit immediately
@@ -99,26 +106,98 @@ These particular switches supersede normal client operation; they skip collectio
 
 - `--version` - Print the versions of both the wrapper and egg, then exit.
 - `--unregister` - Unregister this system from the Insights API.
+- `--display-name=DISPLAYNAME` - When used without `--register`, change the display name and exit.
 - `--validate` - Validate the format of the remove.conf file.
-- `--enable-schedule` - Enable the Insights daily cron job.
-- `--disable-schedule` - Disable the Insights daily cron job.
+- `--enable-schedule` - Enable the Insights systemd job.
+- `--disable-schedule` - Disable the Insights systemd job.
 - `--test-connection` - Run a test to confirm connectivity from the machine to the Insights API.
 - `--support` - Print a log of basic diagnostics such as version, registration status, connectivity, config, etc.
 - `--status` - Print the registration status.
- 
+- `--payload=PAYLOAD` - Upload a specified file `PAYLOAD`. Requires `--content-type`
+- `--content-type=CONTENTTYPE` - Specify the cloud.redhat.com platform-specific content type for `--payload` option.
+- `--diagnosis=ID` - Retrieve remediations for this host, optionally providing a diagnosis ID.
+- `--compliance` - Perform a compliance upload.
+- `--show-results` - Log the cached system profile to console. See also: `--check-results` under **Hidden switches**
 
 #### Hidden switches
 These switches are undocumented and for developer use only.
 
-- `--compressor` - Compression format to use for the collection archive.
-- `--from-stdin` - Load rule collection configuration from stdin (instead of from uploader.json)
-- `--from-file` - Load rule collection configuration from a file (instead of from uploader.json)
 - `--no-gpg` - Run without verifying the signature of the egg or rule collection spec.
-- `--use-docker` - Use the Docker service for image & container collection
-- `--use-atomic` - Use the Atomic service for image & container collection
-- `--run-these` - Run a specific set of specs
 - `--debug-phases` - Print info about phase execution and egg fallback
-- `--to-json` - Print the collection results to the console as JSON.
+- `--to-json` - Print the collection results to the console as JSON. Deprecated as rule results are no longer returned by the upload service.
+- `--check-results` - Fetch the system profile and cache it. Produces no output to console. Not meant to be run as a standalone option but rather as part of a regular systemd job that refreshes the cached data.
+
+## Recommended Developer Config
+For convenience, some sample configs are provided here for developers for connecting to the different environments the client can interface with. These configurations can be defined via config file or via environment variables using the naming described under **Environment Variables**. The following are in config file notation and can be used as drop-in configuration.
+
+### CI (Basic Auth)
+**Note:** CI requires basic auth.
+```
+[insights-client]
+auto_config=False
+username=<username>
+password=<password>
+legacy_upload=False
+base_url=ci.cloud.redhat.com/api
+cert_verify=False
+```
+### QA (Basic Auth)
+**Note:** QA requires basic auth.
+```
+[insights-client]
+auto_config=False
+username=<username>
+password=<password>
+legacy_upload=False
+base_url=qa.cloud.redhat.com/api
+cert_verify=False
+```
+### Stage (RHSM Auth)
+**Note:** This configuration assumes that the system is registered to Stage RHSM. Insights Client will autoconfigure to interface with stage.
+```
+[insights-client]
+proxy=http://squid.corp.redhat.com:3128
+```
+### Stage (Basic Auth)
+```
+[insights-client]
+auto_config=False
+username=<username>
+password=<password>
+legacy_upload=False
+base_url=cert.cloud.stage.redhat.com/api
+cert_verify=True
+proxy=http://squid.corp.redhat.com:3128
+```
+### Prod (RHSM Auth)
+```
+[insights-client]
+auto_config=False
+authmethod=CERT
+legacy_upload=False
+base_url=cert.cloud.redhat.com/api
+cert_verify=True
+```
+### Prod (Basic Auth)
+```
+[insights-client]
+auto_config=False
+username=<username>
+password=<password>
+legacy_upload=False
+base_url=cert.cloud.redhat.com/api
+cert_verify=True
+```
+### Prod [classic API] (RHSM Auth)
+No additional configuration is required beyond the defaults. Insights Client will autoconfigure to interface with classic prod.
+
+### Prod [classic API] (Basic Auth)
+```
+[insights-client]
+auto_config=False
+username=<username>
+password=<password>
+```
 
 ## Phases
 The Insights Client runs using **phases** of execution, modularized so that they if one crashes due to a bad egg, they can be resumed at the current phase using the following egg in the priority list.
@@ -129,7 +208,7 @@ Execute any "switches that exit immediately" that were specified (except `--stat
 
 ### Phase II: Update
 Establish a connection to Insights and update the egg if the egg available upstream is newer than newest.egg (check etags).
-Download the newest version of `uploader.json` for file collection.
+Download the newest version of `uploader.json` for file collection (legacy collection only).
 
 ### Phase III: Post-Update
 Process registration options.
@@ -139,51 +218,88 @@ Check registration.  If unregistered and operating in a mode in which registrati
 Run the collection.
 Output to the desired format; default is archive uploaded to Insights.
 
-
 ## Collection
-Insights Client has two modes of collection: files and commands. Both are implemented in `insights-core/insights/client/insights-spec.py`.
 
+Insights Client utilizes **insights-core** to perform data collection. Details on the workings of insights-core can be found here: https://github.com/RedHatInsights/insights-core#documentation
 
-### Files
-Files are collected using sed to scrape file contents, with the following caveats:
-- Files defined in the `files` section of `remove.conf` are skipped completely
-- Lines containing anything in the `patterns` section of `remove.conf` will be omitted from the file content
-- Keywords defined in the `keywords` section of `remove.conf` will be replaced with `keyword#` in the file content.
-The file contents are copied to a path within the archive defined from the `uploader.json`, which in most cases is similar or identical to its path on the filesystem mountpoint, i.e. `/etc/cluster/cluster.conf`.
-
-
-
-
-### Commands
-Commands are run such that their output is collected by the client, with the following caveats:
-- Commands `rm`, `kill`, `reboot`, `shutdown` are never run
-- Commands defined in the `commands` section of `remove.conf` are skipped completely
-- Lines containing anything in the `patterns` section of `remove.conf` will be omitted from command output
-- Keywords defined in the `keywords` section of `remove.conf` will be replaced with `keyword#` in the command output
-- If a command does not exist, the client will gracefully report as such, and continue.
-Command outputs are copied to a path within the archive `insights_commands/<command>` where `<command>` is an escaped format of the full command syntax, including arguments, i.e., `/insights_commands/df_-alP`. **In the case of container & image collection these paths may be slightly different.**
-
-
-
-## Archive Structure
-The Insights archive, regardless of collection target type (host, image, container) has the following structure:
+### Archive Structure
+The Insights archive has the following structure:
 
 ```
 insights.tar.gz
 │
+├───blacklist_report    <-- Usage metrics for file redaction
+├───branch_info         <-- Satellite metadata
+├───collection_stats    <-- Collection execution metrics (e.g., elapsed time, command exit codes)
+├───data
+│   ├───boot
+│   │   └───...
+│   ├───etc
+│   │   ├───insights-client
+│   │   │   └───machine-id  <-- unique identifier for this system
+│   │   └───...
+│   ├───insights_commands   <-- output dumps of commands
+│   │   └───...
+│   ├───proc
+│   │   └───...
+│   ├───sys
+│   │   └───...
+│   └───var
+│       └───...
+├───display_name        <-- Display name of this host, if specified
+├───egg_release         <-- Record of the egg release channel
+├───metadata            <-- Metadata generated by insights-core
+│   └───...
+├───tags.json           <-- Tags for this host
+└───version_info        <-- Record of the client and core versions
+```
+
+## Legacy Collection
+**Note:** This method of collection is deprecated in favor of **core collection** and is planned to be removed in a future release.
+
+Insights Client's classic collection has two parts: files and commands. Both are implemented in `insights-core/insights/client/insights_spec.py`.
+
+### Files
+Files are collected using sed to scrape file contents, with the following caveats:
+- Files defined in the `files` section of `file-redaction.yaml` are skipped completely
+- Lines containing anything in the `patterns` section of `file-content-redaction.yaml` will be omitted from the file content
+- Keywords defined in the `keywords` section of `file-content-redaction.yaml` will be replaced with `keyword#` in the file content.
+The file contents are copied to a path within the archive defined from the `uploader.json`, which in most cases is similar or identical to its path on the filesystem mountpoint, i.e. `/etc/cluster/cluster.conf`.
+
+### Commands
+Commands are run such that their output is collected by the client, with the following caveats:
+- Commands `rm`, `kill`, `reboot`, `shutdown` are never run
+- Commands defined in the `commands` section of `file-redaction.yaml` are skipped completely
+- Lines containing anything in the `patterns` section of `file-content-redaction.yaml` will be omitted from command output
+- Keywords defined in the `keywords` section of `file-content-redaction.yaml` will be replaced with `keyword#` in the command output
+- If a command does not exist, the client will gracefully report as such, and continue.
+Command outputs are copied to a path within the archive `insights_commands/<command>` where `<command>` is an escaped format of the full command syntax, including arguments, i.e., `/insights_commands/df_-alP`.
+
+### Archive Structure (Legacy)
+The **legacy** Insights archive has the following structure:
+
+```
+insights.tar.gz
+│
+├───blacklist_report    <-- Usage metrics for file redaction
 ├───boot
-│ └───...
-├───branch_info <-- Satellite metadata
+│   └───...
+├───branch_info         <-- Satellite metadata
+├───collection_stats    <-- Collection execution metrics (e.g., elapsed time, command exit codes)
+├───display_name        <-- Display name of this host, if specified
+├───egg_release         <-- Record of the egg release channel
 ├───etc
-│ ├───redhat-access-insights
-│ │ └───machine-id <-- unique identifier for this system
-│ └───...
-├───insights_commands <-- output dumps of commands run by the client
-│ └───...
+│   ├───insights-client
+│   │   └───machine-id    <-- unique identifier for this system
+│   └───...
+├───insights_commands   <-- output dumps of commands
+│   └───...
 ├───proc
-│ └───...
+│   └───...
 ├───sys
-│ └───...
+│   └───...
+├───tags.json           <-- Tags for this host
 ├───var
-└───...
+│   └───...
+└───version_info        <-- Record of the client and core versions
 ```
