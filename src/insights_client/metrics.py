@@ -42,6 +42,8 @@ class MetricsHTTPClient(requests.Session):
                 p = cfg.get("insights-client", "password")
             except:
                 print("Could not read username and password from %s" % config_file)
+                u = None
+                p = None
             self.auth = (u, p)
             self.api_prefix = "/api"
             return
