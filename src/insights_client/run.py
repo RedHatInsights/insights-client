@@ -15,8 +15,18 @@ try:
             % (os.environ["INSIGHTS_PHASE"], os.environ["PYTHONPATH"], e)
         )
 
+    try:
+        # import config file constant so it can be read for a non-root user
+        # TODO: prefer --conf option
+        # TODO: autogenerate local user config file
+        from insights.client.constants import InsightsConstants
+        default_conf_file = InsightsConstants.default_conf_file
+    except ImportError as e:
+        print('Error importing constants from insights-core, using defaults.')
+        default_conf_file = "/etc/insights-client/insights-client.conf"
+
     phase = getattr(client, os.environ["INSIGHTS_PHASE"])
-    metrics_client = metrics.MetricsHTTPClient()
+    metrics_client = metrics.MetricsHTTPClient(config_file=default_conf_file)
     code = 0
     try:
         with open("/etc/insights-client/machine-id") as f:

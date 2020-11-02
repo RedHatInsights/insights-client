@@ -33,6 +33,19 @@ class MetricsHTTPClient(requests.Session):
         cfg = configparser.RawConfigParser()
         cfg.read(config_file)
 
+        if os.getuid() != 0:
+            # force basic auth for non-root
+            self.base_url = "cloud.redhat.com"
+            self.port = 443
+            try:
+                u = cfg.get("insights-client", "username")
+                p = cfg.get("insights-client", "password")
+            except:
+                print("Could not read username and password from %s" % config_file)
+            self.auth = (u, p)
+            self.api_prefix = "/api"
+            return
+
         rhsm_cfg = configparser.ConfigParser()
         rhsm_cfg.read(rhsm_config_file)
 
