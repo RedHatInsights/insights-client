@@ -18,7 +18,6 @@ try:
     try:
         # import config file constant so it can be read for a non-root user
         # TODO: prefer --conf option
-        # TODO: autogenerate local user config file
         from insights.client.constants import InsightsConstants
         default_conf_file = InsightsConstants.default_conf_file
     except ImportError as e:
