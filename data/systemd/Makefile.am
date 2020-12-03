@@ -25,7 +25,7 @@ endif
 
 CLEANFILES = $(systemdsystemunit_DATA)
 EXTRA_DIST = \
-	insights-checkin.service.in \
+	insights-client-checkin.service.in \
 	insights-client-results.service.in \
 	insights-client-results.path.in \
 	insights-register.service.in \

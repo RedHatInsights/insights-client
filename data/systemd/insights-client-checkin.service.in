@@ -2,20 +2,20 @@
 #
 # Any changes made to this file will be overwritten during a software update. To
 # override a parameter in this file, create a drop-in file, typically located at
-# /etc/systemd/system/insights-register.service.d/override.conf. Put the desired
-# overrides in that file and reload systemd. The next time this service is run
-# (either manually or via a systemd timer), the overridden values will be in
-# effect.
+# /etc/systemd/system/insights-client-results.service.d/override.conf. Put the
+# desired overrides in that file and reload systemd. The next time this service
+# is run (either manually or via another systemd unit), the overridden values
+# will be in effect.
 #
 # For more information about systemd drop-in files, see systemd.unit(5).
 
 [Unit]
-Description=Automatically Register with Red Hat Insights
+Description=Check-in with the platform
 Documentation=man:insights-client(8)
 After=network-online.target
 
 [Service]
-Type=simple
+Type=oneshot
 RemainAfterExit=no
 ExecStart=@bindir@/insights-client --checkin
 Restart=no
