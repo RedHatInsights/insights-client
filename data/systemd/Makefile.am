@@ -4,6 +4,7 @@ dist_systemdsystemunit_DATA = \
 	$(NULL)
 
 systemdsystemunit_DATA = \
+	insights-client-checkin.service \
 	insights-client-results.service \
 	insights-client-results.path \
 	$(NULL)
