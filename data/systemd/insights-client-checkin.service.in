@@ -13,6 +13,7 @@
 Description=Check-in with the platform
 Documentation=man:insights-client(8)
 After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
