@@ -1,6 +1,7 @@
 dist_systemdsystemunit_DATA = \
 	insights-client.service \
 	insights-client.timer \
+	insights-client-checkin.timer \
 	$(NULL)
 
 systemdsystemunit_DATA = \
