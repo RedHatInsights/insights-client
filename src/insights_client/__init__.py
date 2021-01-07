@@ -97,7 +97,7 @@ def run_phase(phase, client, validated_eggs):
     all_eggs = [ENV_EGG, NEW_EGG] + validated_eggs
 
     for i, egg in enumerate(all_eggs):
-        if egg is None or not os.path.isfile(egg):
+        if egg is None:
             if debug:
                 log("Egg does not exist: %s" % egg)
             continue
