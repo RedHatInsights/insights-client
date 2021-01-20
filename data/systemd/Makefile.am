@@ -1,9 +1,11 @@
 dist_systemdsystemunit_DATA = \
 	insights-client.service \
 	insights-client.timer \
+	insights-client-checkin.timer \
 	$(NULL)
 
 systemdsystemunit_DATA = \
+	insights-client-checkin.service \
 	insights-client-results.service \
 	insights-client-results.path \
 	$(NULL)
@@ -25,6 +27,7 @@ endif
 
 CLEANFILES = $(systemdsystemunit_DATA)
 EXTRA_DIST = \
+	insights-client-checkin.service.in \
 	insights-client-results.service.in \
 	insights-client-results.path.in \
 	insights-register.service.in \
