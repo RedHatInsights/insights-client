@@ -163,9 +163,6 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
-    if os.getuid() != 0:
-        sys.exit('Insights client must be run as root.')
-
     # sort rpm and stable eggs after verification
     validated_eggs = sorted_eggs(
         list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
