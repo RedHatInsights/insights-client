@@ -91,7 +91,7 @@ class MetricsHTTPClient(requests.Session):
 
         # @TODO: Do it more like Core insight.client.connection: RHSM if auto_config, fallback to conf and then to ENV.
         #   Use NO_PROXY, custom Core proxy auth etc.
-        auto_config = cfg.get("insights-client", "auto_config")
+        auto_config = cfg.getboolean("insights-client", "auto_config", fallback=True)
         if auto_config:
             self.proxies = _proxy_settings(rhsm_cfg)
         else:
