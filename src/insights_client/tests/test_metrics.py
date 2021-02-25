@@ -2,6 +2,7 @@ from configparser import ConfigParser
 from tempfile import NamedTemporaryFile
 
 from pytest import fixture
+from mock.mock import ANY
 from mock.mock import patch
 
 from insights_client.metrics import MetricsHTTPClient
@@ -126,3 +127,18 @@ def test_proxy_settings_with_auth(rhsm_config_file_factory):
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings == {"https": "http://user:password@localhost:3128"}
+
+
+@patch("insights_client.metrics.requests.Session.post")
+def test_http_metrics_client_post_proxies(post, config_file_factory, rhsm_config_file_factory):
+    config_file = config_file_factory("")
+    rhsm_config_file = rhsm_config_file_factory()
+
+    metrics_client = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    metrics_client.base_url = "localhost"
+
+    proxies = {"https": "http://user:password@localhost:3128"}
+    metrics_client.proxies = proxies
+
+    metrics_client.post({})
+    post.assert_called_once_with(ANY, json=ANY, proxies=proxies)
