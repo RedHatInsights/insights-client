@@ -43,7 +43,7 @@ proxy_user = %s
 proxy_password = %s
 
 [rhsm]
-repo_ca_cert = 
+repo_ca_cert =
 consumerCertDir =
 """ % (
             config.get("proxy_hostname", ""),
