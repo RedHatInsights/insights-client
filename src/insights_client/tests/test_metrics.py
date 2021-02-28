@@ -157,7 +157,7 @@ def test_metrics_post_event_no_proxy(post, config_file_factory, rhsm_config_file
     post.assert_called_once_with(
         "https://cert-api.access.redhat.com:443/redhat_access/r/insights/platform/module-update-router/v1/event",
         json=event,
-        proxies=None
+        proxies=None,
     )
 
 
@@ -175,5 +175,5 @@ def test_metrics_post_event_proxy(post, config_file_factory, rhsm_config_file_fa
     post.assert_called_once_with(
         "https://cert-api.access.redhat.com:443/redhat_access/r/insights/platform/module-update-router/v1/event",
         json=event,
-        proxies={"https": "http://user:password@localhost:3128"}
+        proxies={"https": "http://user:password@localhost:3128"},
     )
