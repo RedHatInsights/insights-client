@@ -3,6 +3,7 @@ from tempfile import NamedTemporaryFile
 
 from pytest import fixture
 from mock.mock import ANY
+from mock.mock import Mock
 from mock.mock import patch
 
 from insights_client.metrics import MetricsHTTPClient
@@ -34,8 +35,8 @@ def config_file_factory():
 def rhsm_config_file_factory():
     def factory(**config):
         config = u"""[server]
-hostname = 
-port = 
+hostname = cert-api.access.redhat.com
+port = 443
 proxy_hostname = %s
 proxy_port = %s
 proxy_user = %s
@@ -142,3 +143,37 @@ def test_http_metrics_client_post_proxies(post, config_file_factory, rhsm_config
 
     metrics_client.post({})
     post.assert_called_once_with(ANY, json=ANY, proxies=proxies)
+
+
+@patch("insights_client.metrics.requests.Session.post")
+def test_metrics_post_event_no_proxy(post, config_file_factory, rhsm_config_file_factory):
+    config_file = config_file_factory("")
+    rhsm_config_file = rhsm_config_file_factory()
+    metrics_client = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+
+    event = Mock()
+    metrics_client.post(event)
+
+    post.assert_called_once_with(
+        "https://cert-api.access.redhat.com:443/redhat_access/r/insights/platform/module-update-router/v1/event",
+        json=event,
+        proxies=None
+    )
+
+
+@patch("insights_client.metrics.requests.Session.post")
+def test_metrics_post_event_proxy(post, config_file_factory, rhsm_config_file_factory):
+    config_file = config_file_factory("")
+    rhsm_config_file = rhsm_config_file_factory(
+        proxy_hostname="localhost", proxy_port=3128, proxy_user="user", proxy_password="password"
+    )
+    metrics_client = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+
+    event = Mock()
+    metrics_client.post(event)
+
+    post.assert_called_once_with(
+        "https://cert-api.access.redhat.com:443/redhat_access/r/insights/platform/module-update-router/v1/event",
+        json=event,
+        proxies={"https": "http://user:password@localhost:3128"}
+    )
