@@ -6,8 +6,7 @@ TESTS = pytest.sh
 endif
 
 pytest.sh: test_sed.py
-	echo 'pip install mock' > $@
-	echo 'PYTHONPATH=$(top_srcdir)/src $(PYTEST) $(PYTEST_FLAGS) ./*.py' >> $@
+	echo 'PYTHONPATH=$(top_srcdir)/src $(PYTEST) $(PYTEST_FLAGS) ./*.py' > $@
 	chmod +x $@
 
 CLEANFILES = pytest.sh test_sed.py
