@@ -8,6 +8,21 @@ AUTH_METHOD_BASIC = "BASIC"
 AUTH_METHOD_CERT = "CERT"
 
 
+def _proxy_settings(rhsm_config):
+    hostname = rhsm_config.get("server", "proxy_hostname").strip()
+    port = rhsm_config.get("server", "proxy_port").strip()
+    user = rhsm_config.get("server", "proxy_user").strip()
+    password = rhsm_config.get("server", "proxy_password").strip()
+
+    if not hostname:
+        return None
+
+    auth = "%s:%s@" % (user, password) if user and password else ""
+    proxy = "http://%s%s:%s" % (auth, hostname, port)
+
+    return {"https": proxy}
+
+
 class MetricsHTTPClient(requests.Session):
     """
     MetricsHTTPClient is a `requests.Session` subclass, configured to transmit
@@ -74,6 +89,18 @@ class MetricsHTTPClient(requests.Session):
                 self.cert = (cert_file, key_file)
                 self.api_prefix = "/api"
 
+        # @TODO: Do it more like Core insight.client.connection: RHSM if auto_config, fallback to conf and then to ENV.
+        #   Use NO_PROXY, custom Core proxy auth etc.
+        try:
+            auto_config = cfg.getboolean("insights-client", "auto_config")
+        except configparser.NoOptionError:
+            auto_config = True
+
+        if auto_config:
+            self.proxies = _proxy_settings(rhsm_cfg)
+        else:
+            self.proxies = None
+
     def post(self, event):
         """
         post sends `event` to the Insights Platform.
@@ -83,4 +110,4 @@ class MetricsHTTPClient(requests.Session):
         url = "https://{0}:{1}{2}/module-update-router/v1/event".format(
             self.base_url, self.port, self.api_prefix
         )
-        return super(MetricsHTTPClient, self).post(url, json=event)
+        return super(MetricsHTTPClient, self).post(url, json=event, proxies=self.proxies)
