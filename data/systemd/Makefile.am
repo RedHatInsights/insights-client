@@ -25,6 +25,12 @@ systemdsystempreset_DATA += \
 	$(NULL)
 endif
 
+if ENABLE_CHECKIN
+systemdsystemunit_DATA += \
+	insights-client-checkin.service \
+	insights-client-checkin.timer \
+endif
+
 CLEANFILES = $(systemdsystemunit_DATA)
 EXTRA_DIST = \
 	insights-client-checkin.service.in \

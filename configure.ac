@@ -60,6 +60,14 @@ AC_ARG_ENABLE([auto-registration],
     [auto_registration=${enableval}], [auto_registration=no])
 AM_CONDITIONAL([ENABLE_AUTO_REGISTRATION], [test "x${auto_registration}" = xyes])
 
+dnl Optionally install a systemd unit to check-in hourly with the Inventory with
+dnl a ultralight POST request.
+AC_ARG_ENABLE([checkin],
+    [AS_HELP_STRING([--enable-checkin],
+        [enable hourly check-in @<:@default: no@:>@])],
+    [checkin=${enableval}], [checkin=no])
+AM_CONDITIONAL([ENABLE_CHECKIN], [test "x${checkin}" = xyes])
+
 AC_CONFIG_FILES([
     Makefile
     data/Makefile
