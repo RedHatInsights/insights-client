@@ -29,6 +29,7 @@ if ENABLE_CHECKIN
 systemdsystemunit_DATA += \
 	insights-client-checkin.service \
 	insights-client-checkin.timer \
+	$(NULL)
 endif
 
 CLEANFILES = $(systemdsystemunit_DATA)
