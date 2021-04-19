@@ -24,7 +24,7 @@ TasksMax=300
 BlockIOWeight=100
 ExecStartPost=-/bin/bash -c "echo 2G >/dev/null 2>&1 > /sys/fs/cgroup/memory/system.slice/insights-client.service/memory.memsw.limit_in_bytes"
 ExecStartPost=-/bin/bash -c "echo 1G >/dev/null 2>&1 > /sys/fs/cgroup/memory/system.slice/insights-client.service/memory.soft_limit_in_bytes"
-ExecStartPost=-rm /etc/insights-client/.run_insights_client_next_boot
+ExecStartPost=rm -f /etc/insights-client/.run_insights_client_next_boot
 
 [Install]
 Wants=multi-user.target
