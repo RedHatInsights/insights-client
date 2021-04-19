@@ -19,7 +19,6 @@ ExecStart=/usr/bin/insights-client --retry 3
 Restart=no
 WatchdogSec=900
 CPUQuota=30%
-MemoryLimit=2G
 MemoryHigh=1G
 MemoryMax=2G
 TasksMax=300
