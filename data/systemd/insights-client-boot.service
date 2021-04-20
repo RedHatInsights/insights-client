@@ -10,7 +10,7 @@
 [Unit]
 Description=Run Insights Client at boot
 Documentation=man:insights-client(8)
-After=network.target
+After=network-online.target
 ConditionPathExists=/etc/insights-client/.run_insights_client_next_boot
 
 [Service]
@@ -21,10 +21,10 @@ WatchdogSec=900
 CPUQuota=30%
 MemoryHigh=1G
 MemoryMax=2G
-MemoryLimit=2G # For compatability with RHEL7
+MemoryLimit=2G
 TasksMax=300
 BlockIOWeight=100
-ExecStartPost=/bin/rm /etc/insights-client/.run_insights_client_next_boot
+ExecStartPre=/bin/rm -f /etc/insights-client/.run_insights_client_next_boot
 
 [Install]
-Wants=multi-user.target
+WantedBy=multi-user.target
