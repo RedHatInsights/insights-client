@@ -1,5 +1,5 @@
 AC_PREREQ(2.63)
-AC_INIT([Insights Client], [3.1.2])
+AC_INIT([Insights Client], [3.1.3])
 AM_INIT_AUTOMAKE([1.11 foreign])
 AC_CONFIG_MACRO_DIR([m4])
 AM_SILENT_RULES([yes])
