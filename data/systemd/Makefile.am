@@ -12,6 +12,10 @@ systemdsystemunit_DATA = \
 systemdsystempreset_DATA = \
 	$(NULL)
 
+dist_systemdsystempreset_DATA = \
+	80-insights.preset \
+	$(NULL)
+
 CLEANFILES = \
 	insights-client-results.service \
 	insights-client-results.path \
@@ -26,7 +30,7 @@ EXTRA_DIST = \
 	insights-register.path.in \
 	insights-unregister.service.in \
 	insights-unregister.path.in \
-	80-insights.preset \
+	80-insights-register.preset \
 	$(NULL)
 
 if ENABLE_AUTO_REGISTRATION
@@ -37,7 +41,7 @@ systemdsystemunit_DATA += \
 	insights-unregister.path \
 	$(NULL)
 systemdsystempreset_DATA += \
-	80-insights.preset \
+	80-insights-register.preset \
 	$(NULL)
 CLEANFILES += \
 	insights-register.service \
