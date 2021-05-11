@@ -25,6 +25,8 @@ systemdsystempreset_DATA += \
 endif
 
 EXTRA_DIST = \
+	insights-client-checkin.timer \
+	insights-client-checkin.service.in \
 	insights-client-results.service.in \
 	insights-client-results.path.in \
 	insights-register.service.in \
@@ -35,16 +37,9 @@ EXTRA_DIST = \
 	$(NULL)
 
 if ENABLE_CHECKIN
-dist_systemdsystemunit_DATA += \
-	insights-client-checkin.timer \
-	$(NULL)
-
 systemdsystemunit_DATA += \
+	insights-client-checkin.timer \
 	insights-client-checkin.service \
-	$(NULL)
-
-EXTRA_DIST += \
-	insights-client-checkin.service.in \
 	$(NULL)
 endif
 
