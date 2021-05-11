@@ -12,17 +12,10 @@ systemdsystemunit_DATA = \
 systemdsystempreset_DATA = \
 	$(NULL)
 
-if ENABLE_AUTO_REGISTRATION
-systemdsystemunit_DATA += \
-	insights-register.service \
-	insights-register.path \
-	insights-unregister.service \
-	insights-unregister.path \
+CLEANFILES = \
+	insights-client-results.service \
+	insights-client-results.path \
 	$(NULL)
-systemdsystempreset_DATA += \
-	80-insights.preset \
-	$(NULL)
-endif
 
 EXTRA_DIST = \
 	insights-client-checkin.timer \
@@ -36,14 +29,33 @@ EXTRA_DIST = \
 	80-insights.preset \
 	$(NULL)
 
+if ENABLE_AUTO_REGISTRATION
+systemdsystemunit_DATA += \
+	insights-register.service \
+	insights-register.path \
+	insights-unregister.service \
+	insights-unregister.path \
+	$(NULL)
+systemdsystempreset_DATA += \
+	80-insights.preset \
+	$(NULL)
+CLEANFILES += \
+	insights-register.service \
+	insights-register.path \
+	insights-unregister.service \
+	insights-unregister.path \
+	$(NULL)
+endif
+
 if ENABLE_CHECKIN
 systemdsystemunit_DATA += \
 	insights-client-checkin.timer \
 	insights-client-checkin.service \
 	$(NULL)
+CLEANFILES += \
+	insights-client-checkin.service \
+	$(NULL)
 endif
-
-CLEANFILES = $(systemdsystemunit_DATA)
 
 %: %.in Makefile
 	$(AM_V_GEN) $(SED) \
