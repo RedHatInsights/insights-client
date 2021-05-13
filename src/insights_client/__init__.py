@@ -147,8 +147,9 @@ def update_motd_message():
     try:
         if os.path.exists(os.path.dirname(MOTD_FILE)):
             if (os.path.isfile(REGISTERED_FILE) or os.path.isfile(UNREGISTERED_FILE)):
-                os.symlink(os.devnull, MOTD_FILE + ".tmp")
-                os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
+                if not os.path.samefile(os.devnull, MOTD_FILE):
+                    os.symlink(os.devnull, MOTD_FILE + ".tmp")
+                    os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
             else:
                 os.symlink(MOTD_SRC, MOTD_FILE + ".tmp")
                 os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
