@@ -113,7 +113,6 @@ class MetricsHTTPClient(requests.Session):
         else:
             self.proxies = None
 
-
     def post(self, event):
         """
         post sends `event` to the Insights Platform.
