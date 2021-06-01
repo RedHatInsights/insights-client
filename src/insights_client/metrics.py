@@ -51,25 +51,34 @@ class MetricsHTTPClient(requests.Session):
         rhsm_cfg = configparser.ConfigParser()
         rhsm_cfg.read(rhsm_config_file)
 
-        rhsm_server_hostname = rhsm_cfg.get("server", "hostname")
-        rhsm_server_port = rhsm_cfg.get("server", "port")
-        rhsm_rhsm_repo_ca_cert = rhsm_cfg.get("rhsm", "repo_ca_cert")
-        rhsm_rhsm_consumerCertDir = rhsm_cfg.get("rhsm", "consumerCertDir")
+        try:
+            rhsm_server_hostname = rhsm_cfg.get("server", "hostname")
+            rhsm_server_port = rhsm_cfg.get("server", "port")
+            rhsm_rhsm_repo_ca_cert = rhsm_cfg.get("rhsm", "repo_ca_cert")
+            rhsm_rhsm_consumerCertDir = rhsm_cfg.get("rhsm", "consumerCertDir")
 
-        if cert_file is None:
-            cert_file = os.path.join(rhsm_rhsm_consumerCertDir, "cert.pem")
-        if key_file is None:
-            key_file = os.path.join(rhsm_rhsm_consumerCertDir, "key.pem")
+            if cert_file is None:
+                cert_file = os.path.join(rhsm_rhsm_consumerCertDir, "cert.pem")
+            if key_file is None:
+                key_file = os.path.join(rhsm_rhsm_consumerCertDir, "key.pem")
 
-        match = re.match("subscription.rhsm(.stage)?.redhat.com", rhsm_server_hostname)
-        if match is None:
-            # Assume Satellite-managed and configure for Satellite-proxied access
-            self.base_url = rhsm_server_hostname
-            self.port = rhsm_server_port
-            self.cert = (cert_file, key_file)
-            self.verify = rhsm_rhsm_repo_ca_cert
-            self.api_prefix = "/redhat_access/r/insights/platform"
-        else:
+            match = re.match("subscription.rhsm(.stage)?.redhat.com", rhsm_server_hostname)
+            if match is None:
+                # Assume Satellite-managed and configure for Satellite-proxied access
+                self.base_url = rhsm_server_hostname
+                self.port = rhsm_server_port
+                self.cert = (cert_file, key_file)
+                self.verify = rhsm_rhsm_repo_ca_cert
+                self.api_prefix = "/redhat_access/r/insights/platform"
+                is_satellite = True
+            else:
+                is_satellite = False
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            # cannot read RHSM conf, go straight to insights-client conf parsing
+            # set is_satellite=False to enter the insights-client.conf parsing block
+            is_satellite = False
+
+        if not is_satellite:
             try:
                 auth_method = cfg.get("insights-client", "authmethod")
             except configparser.NoOptionError:
@@ -100,6 +109,7 @@ class MetricsHTTPClient(requests.Session):
             self.proxies = _proxy_settings(rhsm_cfg)
         else:
             self.proxies = None
+
 
     def post(self, event):
         """
