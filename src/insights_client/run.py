@@ -3,9 +3,12 @@ import sys
 
 from insights import package_info
 
+import logging
 import metrics
 import utc
 from requests import ConnectionError
+
+logger = logging.getLogger(__name__)
 
 try:
     try:
@@ -47,8 +50,8 @@ try:
         event["ended_at"] = utc.make_utc_datetime_rfc3339()
         try:
             metrics_client.post(event)
-        except (OSError, ConnectionError) as e:
-            print("Error: Could not submit event: {0}".format(e))
+        except (OSError, IOError, ConnectionError) as e:
+            logger.debug("Could not submit event: {0}".format(e))
         sys.exit(code)
 except KeyboardInterrupt:
     sys.exit(1)
