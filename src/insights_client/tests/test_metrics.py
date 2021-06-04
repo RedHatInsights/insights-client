@@ -37,19 +37,19 @@ def rhsm_config_file_factory():
         config = u"""[server]
 hostname = cert-api.access.redhat.com
 port = 443
-proxy_hostname = %s
-proxy_port = %s
-proxy_user = %s
-proxy_password = %s
+%s
+%s
+%s
+%s
 
 [rhsm]
 repo_ca_cert =
 consumerCertDir =
 """ % (
-            config.get("proxy_hostname", ""),
-            config.get("proxy_port", ""),
-            config.get("proxy_user", ""),
-            config.get("proxy_password", ""),
+            "proxy_hostname = %s" % config.get("proxy_hostname") if config.get("proxy_hostname") else "",
+            "proxy_port = %s" % config.get("proxy_port") if config.get("proxy_port") else "",
+            "proxy_user = %s" % config.get("proxy_user") if config.get("proxy_user") else "",
+            "proxy_password = %s" % config.get("proxy_password") if config.get("proxy_password") else "",
         )
         return _tempfile(config)
 
