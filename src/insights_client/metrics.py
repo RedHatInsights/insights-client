@@ -59,7 +59,11 @@ class MetricsHTTPClient(requests.Session):
             rhsm_server_port = rhsm_cfg.get("server", "port")
             rhsm_rhsm_repo_ca_cert = rhsm_cfg.get("rhsm", "repo_ca_cert")
             rhsm_rhsm_consumerCertDir = rhsm_cfg.get("rhsm", "consumerCertDir")
-
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            # cannot read RHSM conf, go straight to insights-client conf parsing
+            # set is_satellite=False to enter the insights-client.conf parsing block
+            is_satellite = False
+        else:
             if cert_file is None:
                 cert_file = os.path.join(rhsm_rhsm_consumerCertDir, "cert.pem")
             if key_file is None:
@@ -76,12 +80,6 @@ class MetricsHTTPClient(requests.Session):
                 is_satellite = True
             else:
                 is_satellite = False
-        except (configparser.NoSectionError, configparser.NoOptionError):
-            # cannot read RHSM conf, go straight to insights-client conf parsing
-            # set is_satellite=False to enter the insights-client.conf parsing block
-            is_satellite = False
-
-        if not is_satellite:
             try:
                 auth_method = cfg.get("insights-client", "authmethod")
             except configparser.NoOptionError:
