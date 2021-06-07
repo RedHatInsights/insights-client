@@ -80,6 +80,8 @@ class MetricsHTTPClient(requests.Session):
                 is_satellite = True
             else:
                 is_satellite = False
+
+        if not is_satellite:
             try:
                 auth_method = cfg.get("insights-client", "authmethod")
             except configparser.NoOptionError:
