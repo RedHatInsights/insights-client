@@ -120,6 +120,14 @@ def test_proxy_settings_without_auth(rhsm_config_file_factory):
     assert proxy_settings == {"https": "http://localhost:3128"}
 
 
+def test_proxy_settings_with_empty_auth(rhsm_config_file_factory):
+    rhsm_config_file = rhsm_config_file_factory(proxy_hostname="localhost", proxy_port=3128, proxy_user="", proxy_password="")
+    rhsm_config = ConfigParser()
+    rhsm_config.read(rhsm_config_file.name)
+    proxy_settings = _proxy_settings(rhsm_config)
+    assert proxy_settings == {"https": "http://localhost:3128"}
+
+
 def test_proxy_settings_with_auth(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(
         proxy_hostname="localhost", proxy_port=3128, proxy_user="user", proxy_password="password"
