@@ -9,10 +9,10 @@ AUTH_METHOD_CERT = "CERT"
 
 
 def _proxy_settings(rhsm_config):
-    hostname = rhsm_config.get("server", "proxy_hostname", fallback=None)
-    port = rhsm_config.get("server", "proxy_port", fallback="")
-    user = rhsm_config.get("server", "proxy_user", fallback="")
-    password = rhsm_config.get("server", "proxy_password", fallback="")
+    hostname = rhsm_config.get("server", "proxy_hostname", fallback="").strip()
+    port = rhsm_config.get("server", "proxy_port", fallback="").strip()
+    user = rhsm_config.get("server", "proxy_user", fallback="").strip()
+    password = rhsm_config.get("server", "proxy_password", fallback="").strip()
 
     if not hostname:
         return None
