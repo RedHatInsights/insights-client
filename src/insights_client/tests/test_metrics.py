@@ -46,10 +46,10 @@ port = 443
 repo_ca_cert =
 consumerCertDir =
 """ % (
-            "proxy_hostname = %s" % config.get("proxy_hostname") if config.get("proxy_hostname") else "",
-            "proxy_port = %s" % config.get("proxy_port") if config.get("proxy_port") else "",
-            "proxy_user = %s" % config.get("proxy_user") if config.get("proxy_user") else "",
-            "proxy_password = %s" % config.get("proxy_password") if config.get("proxy_password") else "",
+            "proxy_hostname = %s" % config["proxy_hostname"] if "proxy_hostname" in config else "",
+            "proxy_port = %s" % config["proxy_port"] if "proxy_port" in config else "",
+            "proxy_user = %s" % config["proxy_user"] if "proxy_user" in config else "",
+            "proxy_password = %s" % config["proxy_password"] if "proxy_password" in config else "",
         )
         return _tempfile(config)
 
