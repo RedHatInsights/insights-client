@@ -11,13 +11,12 @@ AUTH_METHOD_CERT = "CERT"
 def _proxy_settings(rhsm_config):
     try:
         hostname = rhsm_config.get("server", "proxy_hostname").strip()
+        if not hostname:
+            return None
         port = rhsm_config.get("server", "proxy_port").strip()
         user = rhsm_config.get("server", "proxy_user").strip()
         password = rhsm_config.get("server", "proxy_password").strip()
     except (configparser.NoSectionError, configparser.NoOptionError):
-        return None
-
-    if not hostname:
         return None
 
     auth = "%s:%s@" % (user, password) if user and password else ""
@@ -55,10 +54,10 @@ class MetricsHTTPClient(requests.Session):
         rhsm_cfg.read(rhsm_config_file)
 
         try:
-            rhsm_server_hostname = rhsm_cfg.get("server", "hostname")
-            rhsm_server_port = rhsm_cfg.get("server", "port")
-            rhsm_rhsm_repo_ca_cert = rhsm_cfg.get("rhsm", "repo_ca_cert")
-            rhsm_rhsm_consumerCertDir = rhsm_cfg.get("rhsm", "consumerCertDir")
+            rhsm_server_hostname = rhsm_cfg.get("server", "hostname").strip()
+            rhsm_server_port = rhsm_cfg.get("server", "port").strip()
+            rhsm_rhsm_repo_ca_cert = rhsm_cfg.get("rhsm", "repo_ca_cert").strip()
+            rhsm_rhsm_consumerCertDir = rhsm_cfg.get("rhsm", "consumerCertDir").strip()
         except (configparser.NoSectionError, configparser.NoOptionError):
             # cannot read RHSM conf, go straight to insights-client conf parsing
             # set is_satellite=False to enter the insights-client.conf parsing block
