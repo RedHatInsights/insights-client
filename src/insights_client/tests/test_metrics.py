@@ -1,3 +1,4 @@
+
 from configparser import ConfigParser
 from tempfile import NamedTemporaryFile
 
@@ -37,20 +38,16 @@ def rhsm_config_file_factory():
         config = u"""[server]
 hostname = cert-api.access.redhat.com
 port = 443
-proxy_hostname = %s
-proxy_port = %s
-proxy_user = %s
-proxy_password = %s
-
+%s
+%s
+%s
+%s
 [rhsm]
 repo_ca_cert =
 consumerCertDir =
-""" % (
-            config.get("proxy_hostname", ""),
-            config.get("proxy_port", ""),
-            config.get("proxy_user", ""),
-            config.get("proxy_password", ""),
-        )
+""" % tuple(
+            "%s = %s" % (key, config[key]) if key in config else ""
+            for key in ("proxy_hostname", "proxy_port", "proxy_user", "proxy_password"))
         return _tempfile(config)
 
     return factory
@@ -114,6 +111,14 @@ def test_proxy_settings_only_hostname(rhsm_config_file_factory):
 
 def test_proxy_settings_without_auth(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(proxy_hostname="localhost", proxy_port=3128)
+    rhsm_config = ConfigParser()
+    rhsm_config.read(rhsm_config_file.name)
+    proxy_settings = _proxy_settings(rhsm_config)
+    assert proxy_settings == {"https": "http://localhost:3128"}
+
+
+def test_proxy_settings_with_empty_auth(rhsm_config_file_factory):
+    rhsm_config_file = rhsm_config_file_factory(proxy_hostname="localhost", proxy_port=3128, proxy_user="", proxy_password="")
     rhsm_config = ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)

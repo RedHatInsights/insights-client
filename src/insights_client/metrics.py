@@ -9,18 +9,27 @@ AUTH_METHOD_CERT = "CERT"
 
 
 def _proxy_settings(rhsm_config):
+    conf = {"hostname": None,
+            "port": None,
+            "user": None,
+            "password": None}
+
     try:
-        hostname = rhsm_config.get("server", "proxy_hostname").strip()
-        if not hostname:
-            return None
-        port = rhsm_config.get("server", "proxy_port").strip()
-        user = rhsm_config.get("server", "proxy_user").strip()
-        password = rhsm_config.get("server", "proxy_password").strip()
-    except (configparser.NoSectionError, configparser.NoOptionError):
+        for key in conf:
+            try:
+                conf[key] = rhsm_config.get("server", "proxy_" + key).strip()
+                if key == "hostname" and conf[key] is None:
+                    # hostname is the only required value. return None if empty
+                    return None
+            except configparser.NoOptionError:
+                if key == "hostname":
+                    return None
+    except configparser.NoSectionError:
         return None
 
-    auth = "%s:%s@" % (user, password) if user and password else ""
-    proxy = "http://%s%s:%s" % (auth, hostname, port)
+    auth = "%s:%s@" % (conf["user"], conf["password"]) if conf["user"] and conf["password"] else ""
+    path = "%s:%s" % (conf["hostname"], conf["port"] if conf["port"] else "")
+    proxy = "http://%s%s" % (auth, path)
 
     return {"https": proxy}
 
