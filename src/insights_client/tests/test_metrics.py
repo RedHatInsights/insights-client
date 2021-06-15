@@ -35,23 +35,92 @@ def config_file_factory():
 @fixture
 def rhsm_config_file_factory():
     def factory(**config):
+        # keep these default values initialized
+        if "hostname" not in config:
+            config["hostname"] = "subscription.rhsm.redhat.com"
+        if "port" not in config:
+            config["port"] = "443"
         config = u"""[server]
-hostname = cert-api.access.redhat.com
-port = 443
+%s
+%s
 %s
 %s
 %s
 %s
 [rhsm]
-repo_ca_cert =
-consumerCertDir =
+%s
+%s
 """ % tuple(
             "%s = %s" % (key, config[key]) if key in config else ""
-            for key in ("proxy_hostname", "proxy_port", "proxy_user", "proxy_password"))
+            for key in ("hostname", "port", "proxy_hostname", "proxy_port", "proxy_user", "proxy_password", "repo_ca_cert", "consumerCertDir"))
         return _tempfile(config)
 
     return factory
 
+@patch("insights_client.metrics._proxy_settings")
+def test_http_client_init_missing_server_section(proxy_settings, config_file_factory):
+    '''
+    Verify that when the "server" section is missing, RHSM configuration is ignored
+    and insights-client configuration is preferred
+    '''
+    config_file = config_file_factory("username=testuser\npassword=testpass\nauthmethod=BASIC")
+    rhsm_config_file = _tempfile("[nonsense]\ntest=test")
+    metrics_client = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    assert metrics_client.auth == ("testuser", "testpass")
+    assert not metrics_client.cert
+    assert metrics_client.base_url == "cloud.redhat.com"
+    assert metrics_client.api_prefix == "/api"
+
+@patch("insights_client.metrics._proxy_settings")
+def test_http_client_init_default_cert_auth(proxy_settings, config_file_factory):
+    '''
+    Verify that when insights-client configuration is used, CERT auth is selected
+    if no authmethod is defined in the configuration file
+    '''
+    config_file = config_file_factory("username=testuser\npassword=testpass")
+    rhsm_config_file = _tempfile("[nonsense]\nauth=test")
+    metrics_client = MetricsHTTPClient(
+        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name,
+        cert_file="/path/to/test/cert.pem", key_file="/path/to/test/key.pem")
+    assert not metrics_client.auth
+    assert metrics_client.cert == ("/path/to/test/cert.pem", "/path/to/test/key.pem")
+    assert metrics_client.base_url == "cert.cloud.redhat.com"
+    assert metrics_client.api_prefix == "/api"
+
+@patch("insights_client.metrics._proxy_settings")
+def test_http_client_init_is_not_satellite(proxy_settings, config_file_factory, rhsm_config_file_factory):
+    '''
+    Verify that when the configured RHSM hostname matches one of the Red Hat subscription URLs,
+    it is determined to NOT be a Satellite-subscribed host
+    '''
+    config_file = config_file_factory("")
+    rhsm_config_file = rhsm_config_file_factory(hostname="subscription.rhsm.redhat.com")
+    metrics_client = MetricsHTTPClient(
+        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name,
+        cert_file="/path/to/test/cert.pem", key_file="/path/to/test/key.pem")
+    assert not metrics_client.auth
+    assert metrics_client.cert == ("/path/to/test/cert.pem", "/path/to/test/key.pem")
+    assert metrics_client.base_url == "cert.cloud.redhat.com"
+    assert metrics_client.api_prefix == "/api"
+
+@patch("insights_client.metrics._proxy_settings")
+def test_http_client_init_is_not_satellite(proxy_settings, config_file_factory, rhsm_config_file_factory):
+    '''
+    Verify that when the configured RHSM hostname does NOT match one of the Red Hat subscription URLs,
+    it is determined to be a Satellite-subscribed host
+    '''
+    config_file = config_file_factory("")
+    rhsm_config_file = rhsm_config_file_factory(
+        hostname="satellite.example.com",
+        repo_ca_cert="/path/to/cacert/cert.pem", consumerCertDir="/path/to/sat/certs")
+    metrics_client = MetricsHTTPClient(
+        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    assert not metrics_client.auth
+    assert metrics_client.cert == ("/path/to/sat/certs/cert.pem", "/path/to/sat/certs/key.pem")
+    assert metrics_client.port == "443"
+    assert metrics_client.base_url == "satellite.example.com"
+    assert metrics_client.verify == "/path/to/cacert/cert.pem"
+    assert metrics_client.api_prefix == "/redhat_access/r/insights/platform"
 
 @patch("insights_client.metrics._proxy_settings")
 def test_http_client_init_proxies_auto_config_false(proxy_settings, config_file_factory, rhsm_config_file_factory):
@@ -118,11 +187,37 @@ def test_proxy_settings_without_auth(rhsm_config_file_factory):
 
 
 def test_proxy_settings_with_empty_auth(rhsm_config_file_factory):
-    rhsm_config_file = rhsm_config_file_factory(proxy_hostname="localhost", proxy_port=3128, proxy_user="", proxy_password="")
+    rhsm_config_file = rhsm_config_file_factory(
+        proxy_hostname="localhost", proxy_port=3128, proxy_user="", proxy_password="")
     rhsm_config = ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings == {"https": "http://localhost:3128"}
+
+
+def test_proxy_settings_with_whitespace_auth(rhsm_config_file_factory):
+    rhsm_config_file = rhsm_config_file_factory(
+        proxy_hostname="localhost", proxy_port=3128, proxy_user=" ", proxy_password=" ")
+    rhsm_config = ConfigParser()
+    rhsm_config.read(rhsm_config_file.name)
+    proxy_settings = _proxy_settings(rhsm_config)
+    assert proxy_settings == {"https": "http://localhost:3128"}
+
+
+def test_proxy_settings_empty_hostname(rhsm_config_file_factory):
+    rhsm_config_file = rhsm_config_file_factory(proxy_hostname="")
+    rhsm_config = ConfigParser()
+    rhsm_config.read(rhsm_config_file.name)
+    proxy_settings = _proxy_settings(rhsm_config)
+    assert proxy_settings is None
+
+
+def test_proxy_settings_whitespace_hostname(rhsm_config_file_factory):
+    rhsm_config_file = rhsm_config_file_factory(proxy_hostname=" ")
+    rhsm_config = ConfigParser()
+    rhsm_config.read(rhsm_config_file.name)
+    proxy_settings = _proxy_settings(rhsm_config)
+    assert proxy_settings is None
 
 
 def test_proxy_settings_with_auth(rhsm_config_file_factory):
@@ -153,14 +248,16 @@ def test_http_metrics_client_post_proxies(post, config_file_factory, rhsm_config
 @patch("insights_client.metrics.requests.Session.post")
 def test_metrics_post_event_no_proxy(post, config_file_factory, rhsm_config_file_factory):
     config_file = config_file_factory("")
-    rhsm_config_file = rhsm_config_file_factory()
+    rhsm_config_file = rhsm_config_file_factory(
+        hostname="satellite.example.com",
+        repo_ca_cert="/path/to/cacert/cert.pem", consumerCertDir="/path/to/sat/certs")
     metrics_client = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
 
     event = Mock()
     metrics_client.post(event)
 
     post.assert_called_once_with(
-        "https://cert-api.access.redhat.com:443/redhat_access/r/insights/platform/module-update-router/v1/event",
+        "https://satellite.example.com:443/redhat_access/r/insights/platform/module-update-router/v1/event",
         json=event,
         proxies=None,
     )
@@ -170,6 +267,8 @@ def test_metrics_post_event_no_proxy(post, config_file_factory, rhsm_config_file
 def test_metrics_post_event_proxy(post, config_file_factory, rhsm_config_file_factory):
     config_file = config_file_factory("")
     rhsm_config_file = rhsm_config_file_factory(
+        hostname="satellite.example.com",
+        repo_ca_cert="/path/to/cacert/cert.pem", consumerCertDir="/path/to/sat/certs",
         proxy_hostname="localhost", proxy_port=3128, proxy_user="user", proxy_password="password"
     )
     metrics_client = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
@@ -178,7 +277,8 @@ def test_metrics_post_event_proxy(post, config_file_factory, rhsm_config_file_fa
     metrics_client.post(event)
 
     post.assert_called_once_with(
-        "https://cert-api.access.redhat.com:443/redhat_access/r/insights/platform/module-update-router/v1/event",
+        "https://satellite.example.com:443/redhat_access/r/insights/platform/module-update-router/v1/event",
         json=event,
         proxies={"https": "http://user:password@localhost:3128"},
     )
+
