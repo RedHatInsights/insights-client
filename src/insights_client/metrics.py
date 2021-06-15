@@ -14,22 +14,19 @@ def _proxy_settings(rhsm_config):
             "user": None,
             "password": None}
 
-    try:
-        for key in conf:
-            try:
-                conf[key] = rhsm_config.get("server", "proxy_" + key).strip()
-                if key == "hostname" and conf[key] is None:
-                    # hostname is the only required value. return None if empty
-                    return None
-            except configparser.NoOptionError:
-                if key == "hostname":
-                    return None
-    except configparser.NoSectionError:
-        return None
+    for key in conf:
+        try:
+            conf[key] = rhsm_config.get("server", "proxy_" + key).strip() or None
+        except configparser.NoSectionError:
+            return None
+        except configparser.NoOptionError:
+            pass
+        if key == "hostname" and not conf[key]:
+            # hostname is the only required value. return None if empty
+            return None
 
     auth = "%s:%s@" % (conf["user"], conf["password"]) if conf["user"] and conf["password"] else ""
-    path = "%s:%s" % (conf["hostname"], conf["port"] if conf["port"] else "")
-    proxy = "http://%s%s" % (auth, path)
+    proxy = "http://%s%s:%s" % (auth, conf["hostname"], conf["port"] or "")
 
     return {"https": proxy}
 
