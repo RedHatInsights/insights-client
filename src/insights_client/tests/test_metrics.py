@@ -104,7 +104,7 @@ def test_http_client_init_is_not_satellite(proxy_settings, config_file_factory, 
     assert metrics_client.api_prefix == "/api"
 
 @patch("insights_client.metrics._proxy_settings")
-def test_http_client_init_is_not_satellite(proxy_settings, config_file_factory, rhsm_config_file_factory):
+def test_http_client_init_is_satellite(proxy_settings, config_file_factory, rhsm_config_file_factory):
     '''
     Verify that when the configured RHSM hostname does NOT match one of the Red Hat subscription URLs,
     it is determined to be a Satellite-subscribed host
