@@ -70,6 +70,7 @@ def test_http_client_init_missing_server_section(proxy_settings, config_file_fac
     assert not metrics_client.cert
     assert metrics_client.base_url == "cloud.redhat.com"
     assert metrics_client.api_prefix == "/api"
+    assert metrics_client.verify is True
 
 @patch("insights_client.metrics._proxy_settings")
 def test_http_client_init_default_cert_auth(proxy_settings, config_file_factory):
@@ -83,6 +84,7 @@ def test_http_client_init_default_cert_auth(proxy_settings, config_file_factory)
         config_file=config_file.name, rhsm_config_file=rhsm_config_file.name,
         cert_file="/path/to/test/cert.pem", key_file="/path/to/test/key.pem")
     assert not metrics_client.auth
+    assert metrics_client.verify is True
     assert metrics_client.cert == ("/path/to/test/cert.pem", "/path/to/test/key.pem")
     assert metrics_client.base_url == "cert.cloud.redhat.com"
     assert metrics_client.api_prefix == "/api"
@@ -99,6 +101,7 @@ def test_http_client_init_is_not_satellite(proxy_settings, config_file_factory, 
         config_file=config_file.name, rhsm_config_file=rhsm_config_file.name,
         cert_file="/path/to/test/cert.pem", key_file="/path/to/test/key.pem")
     assert not metrics_client.auth
+    assert metrics_client.verify is True
     assert metrics_client.cert == ("/path/to/test/cert.pem", "/path/to/test/key.pem")
     assert metrics_client.base_url == "cert.cloud.redhat.com"
     assert metrics_client.api_prefix == "/api"
@@ -111,7 +114,7 @@ def test_http_client_init_is_satellite(proxy_settings, config_file_factory, rhsm
     '''
     config_file = config_file_factory("")
     rhsm_config_file = rhsm_config_file_factory(
-        hostname="satellite.example.com",
+        hostname="satellite.example.com", port="443",
         repo_ca_cert="/path/to/cacert/cert.pem", consumerCertDir="/path/to/sat/certs")
     metrics_client = MetricsHTTPClient(
         config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
