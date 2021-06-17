@@ -1,5 +1,5 @@
 
-from configparser import ConfigParser
+from six.moves import configparser
 from tempfile import NamedTemporaryFile
 
 from pytest import fixture
@@ -167,7 +167,7 @@ def test_http_client_init_proxies_rhsm_config(
 
 def test_proxy_settings_no_hostname(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory()
-    rhsm_config = ConfigParser()
+    rhsm_config = configparser.ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings is None
@@ -175,7 +175,7 @@ def test_proxy_settings_no_hostname(rhsm_config_file_factory):
 
 def test_proxy_settings_only_hostname(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(proxy_hostname="localhost")
-    rhsm_config = ConfigParser()
+    rhsm_config = configparser.ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings == {"https": "http://localhost:"}
@@ -183,7 +183,7 @@ def test_proxy_settings_only_hostname(rhsm_config_file_factory):
 
 def test_proxy_settings_without_auth(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(proxy_hostname="localhost", proxy_port=3128)
-    rhsm_config = ConfigParser()
+    rhsm_config = configparser.ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings == {"https": "http://localhost:3128"}
@@ -192,7 +192,7 @@ def test_proxy_settings_without_auth(rhsm_config_file_factory):
 def test_proxy_settings_with_empty_auth(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(
         proxy_hostname="localhost", proxy_port=3128, proxy_user="", proxy_password="")
-    rhsm_config = ConfigParser()
+    rhsm_config = configparser.ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings == {"https": "http://localhost:3128"}
@@ -201,7 +201,7 @@ def test_proxy_settings_with_empty_auth(rhsm_config_file_factory):
 def test_proxy_settings_with_whitespace_auth(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(
         proxy_hostname="localhost", proxy_port=3128, proxy_user=" ", proxy_password=" ")
-    rhsm_config = ConfigParser()
+    rhsm_config = configparser.ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings == {"https": "http://localhost:3128"}
@@ -209,7 +209,7 @@ def test_proxy_settings_with_whitespace_auth(rhsm_config_file_factory):
 
 def test_proxy_settings_empty_hostname(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(proxy_hostname="")
-    rhsm_config = ConfigParser()
+    rhsm_config = configparser.ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings is None
@@ -217,7 +217,7 @@ def test_proxy_settings_empty_hostname(rhsm_config_file_factory):
 
 def test_proxy_settings_whitespace_hostname(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(proxy_hostname=" ")
-    rhsm_config = ConfigParser()
+    rhsm_config = configparser.ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings is None
@@ -227,7 +227,7 @@ def test_proxy_settings_with_auth(rhsm_config_file_factory):
     rhsm_config_file = rhsm_config_file_factory(
         proxy_hostname="localhost", proxy_port=3128, proxy_user="user", proxy_password="password"
     )
-    rhsm_config = ConfigParser()
+    rhsm_config = configparser.ConfigParser()
     rhsm_config.read(rhsm_config_file.name)
     proxy_settings = _proxy_settings(rhsm_config)
     assert proxy_settings == {"https": "http://user:password@localhost:3128"}
