@@ -8,7 +8,7 @@ from mock.mock import Mock
 from mock.mock import patch
 
 from insights_client.metrics import MetricsHTTPClient
-from insights_client.metrics import _proxy_settings
+from insights_client.metrics import _proxy_settings, _is_offline
 
 
 def _tempfile(contents_string):
@@ -285,3 +285,70 @@ def test_metrics_post_event_proxy(post, config_file_factory, rhsm_config_file_fa
         proxies={"https": "http://user:password@localhost:3128"},
     )
 
+@patch("insights_client.metrics.os.getenv")
+def test_is_offline(os_getenv, config_file_factory):
+    '''
+    Verify that _is_offline() produces correct output from the given configurations
+
+    NOTE: this test will become obsolete once InsightsConfig is used to load config
+    '''
+    # offline not specified
+    config_file = config_file_factory("")
+    cfg = configparser.RawConfigParser()
+    cfg.read(config_file.name)
+    os_getenv.return_value = None
+    with patch('sys.argv', ['insights-client']):
+        assert not _is_offline(cfg)
+    # offline specified in config
+    config_file = config_file_factory("offline=True\n")
+    cfg = configparser.RawConfigParser()
+    cfg.read(config_file.name)
+    os_getenv.return_value = None
+    with patch('sys.argv', ['insights-client']):
+        assert _is_offline(cfg)
+    # offline specified in CLI
+    config_file = config_file_factory("")
+    cfg = configparser.RawConfigParser()
+    cfg.read(config_file.name)
+    os_getenv.return_value = None
+    with patch('sys.argv', ['insights-client', '--offline']):
+        assert _is_offline(cfg)
+    # offline specified in env
+    config_file = config_file_factory("")
+    cfg = configparser.RawConfigParser()
+    cfg.read(config_file.name)
+    os_getenv.return_value = "True"
+    with patch('sys.argv', ['insights-client']):
+        assert _is_offline(cfg)
+
+@patch("insights_client.metrics._is_offline", Mock(return_value=True))
+@patch("insights_client.metrics._proxy_settings")
+def test_offline_no_init(_proxy_settings, config_file_factory, rhsm_config_file_factory):
+    '''
+    Verify that when the metrics client is set to offline, no further initialization is done
+    '''
+    config_file = config_file_factory("")
+    rhsm_config_file = rhsm_config_file_factory()
+    m = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    assert m.offline
+    assert not hasattr(m, 'base_url')
+    assert not hasattr(m, 'port')
+    assert not m.cert
+    assert m.verify
+    assert not hasattr(m, 'api_prefix')
+    assert not m.auth
+    assert not m.proxies
+    _proxy_settings.assert_not_called()
+
+@patch('insights_client.metrics.requests.Session.post')
+def test_offline_no_post(session_post, config_file_factory, rhsm_config_file_factory):
+    '''
+    Verify that when the metrics client is set to offline, no POSTs are performed
+    '''
+    config_file = config_file_factory("")
+    rhsm_config_file = rhsm_config_file_factory()
+    m = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    m.offline = True
+
+    m.post("test")
+    session_post.assert_not_called()
