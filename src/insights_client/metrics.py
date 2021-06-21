@@ -5,6 +5,7 @@ import logging
 import requests
 from six.moves import configparser
 from insights.client.constants import InsightsConstants
+# from insights.client.config import InsightsConfig
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,8 @@ def _is_offline(cfg):
         offline = False
     if "--offline" in sys.argv:
         offline = True
+    if os.getenv("INSIGHTS_OFFLINE") == "True":
+        offline = True
     return offline
 
 class MetricsHTTPClient(requests.Session):
@@ -80,6 +83,8 @@ class MetricsHTTPClient(requests.Session):
         cfg = configparser.RawConfigParser()
         cfg.read(config_file)
 
+        # TODO: switch to this once the core PR is merged
+        # self.offline = InsightsConfig().load_all().offline
         self.offline = _is_offline(cfg)
         if self.offline:
             logger.debug("Metrics: Offline mode. No metrics will be sent.")
