@@ -33,4 +33,6 @@ CLEANFILES = constants.py
 		-e 's,[@]DOCDIR[@],$(docdir),g' \
 		$< > $@.tmp && mv $@.tmp $@
 
+SUBDIRS = tests
+
 -include $(top_srcdir)/git.mk
