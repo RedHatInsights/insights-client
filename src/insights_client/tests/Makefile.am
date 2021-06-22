@@ -6,7 +6,7 @@ TESTS = pytest.sh
 endif
 
 pytest.sh: test_sed.py
-	echo 'PYTHONPATH=$(top_srcdir)/src $(PYTEST) $(PYTEST_FLAGS) ./*.py' > $@
+	echo 'PYTHONPATH=$(top_srcdir)/src:$(top_srcdir)/data/rpm.egg $(PYTEST) $(PYTEST_FLAGS) ./*.py' > $@
 	chmod +x $@
 
 CLEANFILES = pytest.sh test_sed.py
