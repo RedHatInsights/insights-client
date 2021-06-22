@@ -76,7 +76,7 @@ AC_CONFIG_FILES([
     docs/Makefile
     src/Makefile
     src/insights_client/Makefile
-    src/insights_client/tests/Makefile
+    src/tests/Makefile
 ])
 
 AC_OUTPUT

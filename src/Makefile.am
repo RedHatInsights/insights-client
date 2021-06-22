@@ -1,4 +1,6 @@
-SUBDIRS = insights_client
+SUBDIRS = insights_client \
+	  tests \
+	  $(NULL)
 
 bin_SCRIPTS = \
 	insights-client \
