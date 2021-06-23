@@ -364,6 +364,42 @@ def test_offline_basic_auth_no_pass(_proxy_settings, config_file_factory, rhsm_c
         config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
     assert metrics_client.offline
 
+@patch("insights_client.metrics._is_offline", Mock(return_value=False))
+@patch("insights_client.metrics._proxy_settings")
+def test_offline_basic_auth_empty_user(_proxy_settings, config_file_factory, rhsm_config_file_factory):
+    '''
+    Verify that if an empty username is provided for BASIC auth, metrics are not sent (default to offline)
+    '''
+    config_file = config_file_factory("username=\npassword=testpass\nauthmethod=BASIC")
+    rhsm_config_file = rhsm_config_file_factory()
+    metrics_client = MetricsHTTPClient(
+        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    assert metrics_client.offline
+
+@patch("insights_client.metrics._is_offline", Mock(return_value=False))
+@patch("insights_client.metrics._proxy_settings")
+def test_offline_basic_auth_empty_pass(_proxy_settings, config_file_factory, rhsm_config_file_factory):
+    '''
+    Verify that if an empty password is provided for BASIC auth, metrics are not sent (default to offline)
+    '''
+    config_file = config_file_factory("username=testuser\npassword=\nauthmethod=BASIC")
+    rhsm_config_file = rhsm_config_file_factory()
+    metrics_client = MetricsHTTPClient(
+        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    assert metrics_client.offline
+
+@patch("insights_client.metrics._is_offline", Mock(return_value=False))
+@patch("insights_client.metrics._proxy_settings")
+def test_offline_basic_auth_stripping(_proxy_settings, config_file_factory, rhsm_config_file_factory):
+    '''
+    Verify that usernames and passwords have whitespace stripped
+    '''
+    config_file = config_file_factory("username=testuser  \npassword=testpass  \nauthmethod=BASIC")
+    rhsm_config_file = rhsm_config_file_factory()
+    metrics_client = MetricsHTTPClient(
+        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    assert metrics_client.auth == ("testuser", "testpass")
+
 @patch('insights_client.metrics.requests.Session.post')
 def test_offline_no_post(session_post, config_file_factory, rhsm_config_file_factory):
     '''
