@@ -35,6 +35,15 @@ def _proxy_settings(rhsm_config):
     return {"https": proxy}
 
 
+def _boolify(v):
+    if v.lower() == 'true':
+        return True
+    elif v.lower() == 'false':
+        return False
+    else:
+        return v
+
+
 def _is_offline(cfg):
     '''
     Determine whether offline mode was specified in
