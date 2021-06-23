@@ -3,13 +3,11 @@ import re
 import sys
 import logging
 import requests
+import argparse
 from six.moves import configparser
-from insights.client.constants import InsightsConstants
-# from insights.client.config import InsightsConfig
 
 logger = logging.getLogger(__name__)
 
-NETWORK = InsightsConstants.custom_network_log_level
 AUTH_METHOD_BASIC = "BASIC"
 AUTH_METHOD_CERT = "CERT"
 
@@ -47,15 +45,31 @@ def _is_offline(cfg):
 
     Returns True if offline, False if not offline
     '''
+    def _boolify(v):
+        if v.lower() == 'true':
+            return True
+        elif v.lower() == 'false':
+            return False
+        else:
+            return v
     # look in config file first
     try:
         offline = cfg.getboolean("insights-client", "offline")
     except configparser.NoOptionError:
         offline = False
-    if "--offline" in sys.argv:
+
+    # get from env
+    env_offline = os.getenv("INSIGHTS_OFFLINE")
+    if env_offline:
+        offline = _boolify(env_offline)
+
+    # parse from CLI
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--offline', action='store_true')
+    args, _ = parser.parse_known_args()
+    if args.offline:
         offline = True
-    if os.getenv("INSIGHTS_OFFLINE") == "True":
-        offline = True
+
     return offline
 
 class MetricsHTTPClient(requests.Session):
@@ -83,8 +97,6 @@ class MetricsHTTPClient(requests.Session):
         cfg = configparser.RawConfigParser()
         cfg.read(config_file)
 
-        # TODO: switch to this once the core PR is merged
-        # self.offline = InsightsConfig().load_all().offline
         self.offline = _is_offline(cfg)
         if self.offline:
             logger.debug("Metrics: Offline mode. No metrics will be sent.")
@@ -133,20 +145,29 @@ class MetricsHTTPClient(requests.Session):
                 self.base_url = "cloud.redhat.com"
                 self.port = 443
                 try:
-                    u = cfg.get("insights-client", "username")
-                    p = cfg.get("insights-client", "password")
+                    u = cfg.get("insights-client", "username").strip()
+                    p = cfg.get("insights-client", "password").strip()
                 except configparser.NoOptionError:
+                    logger.debug("Metrics: BASIC auth selected but username and/or password is missing. No metrics will be sent.")
+                    self.offline = True
+                    return
+                if not u or not p:
                     logger.debug("Metrics: BASIC auth selected but username and/or password is missing. No metrics will be sent.")
                     self.offline = True
                     return
                 self.auth = (u, p)
                 self.api_prefix = "/api"
 
-            if auth_method == AUTH_METHOD_CERT:
+            elif auth_method == AUTH_METHOD_CERT:
                 self.base_url = "cert.cloud.redhat.com"
                 self.port = 443
                 self.cert = (cert_file, key_file)
                 self.api_prefix = "/api"
+
+            else:
+                logger.debug("Metrics: Unknown authentication method. No metrics will be sent.")
+                self.offline = True
+                return
 
         # @TODO: Do it more like Core insight.client.connection: RHSM if auto_config, fallback to conf and then to ENV.
         #   Use NO_PROXY, custom Core proxy auth etc.
@@ -172,7 +193,7 @@ class MetricsHTTPClient(requests.Session):
             self.base_url, self.port, self.api_prefix
         )
         logger.debug("Metrics: Posting event...")
-        logger.log(NETWORK, "POST %s", url)
+        logger.debug("POST %s", url)
         res = super(MetricsHTTPClient, self).post(url, json=event, proxies=self.proxies)
-        logger.log(NETWORK, "HTTP Status Code: %d", res.status_code)
+        logger.debug("HTTP Status Code: %d %s", res.status_code, res.reason)
         return res
