@@ -50,7 +50,7 @@ try:
         try:
             metrics_client.post(event)
         except (OSError, IOError) as e:
-            logger.debug("Could not submit event: {0}".format(e))
+            logger.debug("Metrics: Could not submit event: {0}".format(e))
         sys.exit(code)
 except KeyboardInterrupt:
     sys.exit(1)

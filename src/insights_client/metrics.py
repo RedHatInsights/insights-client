@@ -200,7 +200,7 @@ class MetricsHTTPClient(requests.Session):
             self.base_url, self.port, self.api_prefix
         )
         logger.debug("Metrics: Posting event...")
-        logger.debug("POST %s", url)
+        logger.debug("Metrics: POST %s", url)
         res = super(MetricsHTTPClient, self).post(url, json=event, proxies=self.proxies)
-        logger.debug("HTTP Status Code: %d %s", res.status_code, res.reason)
+        logger.debug("Metrics: HTTP Status Code: %d %s", res.status_code, res.reason)
         return res
