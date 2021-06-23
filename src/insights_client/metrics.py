@@ -157,9 +157,7 @@ class MetricsHTTPClient(requests.Session):
                     u = cfg.get("insights-client", "username").strip()
                     p = cfg.get("insights-client", "password").strip()
                 except configparser.NoOptionError:
-                    logger.debug("Metrics: BASIC auth selected but username and/or password is missing. No metrics will be sent.")
-                    self.offline = True
-                    return
+                    u, p = None, None
                 if not u or not p:
                     logger.debug("Metrics: BASIC auth selected but username and/or password is missing. No metrics will be sent.")
                     self.offline = True
