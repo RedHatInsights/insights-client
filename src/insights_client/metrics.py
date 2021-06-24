@@ -1,8 +1,12 @@
 import os.path
 import re
-
+import sys
+import logging
 import requests
+import argparse
 from six.moves import configparser
+
+logger = logging.getLogger(__name__)
 
 AUTH_METHOD_BASIC = "BASIC"
 AUTH_METHOD_CERT = "CERT"
@@ -31,6 +35,41 @@ def _proxy_settings(rhsm_config):
     return {"https": proxy}
 
 
+def _boolify(v):
+    # anything not specifically False is treated as True
+    return not v.lower() in ("false", "")
+
+
+def _is_offline(cfg):
+    '''
+    Determine whether offline mode was specified in
+    either the config or the CLI
+
+    :param cfg: RawConfigParser with the
+                insights-client config file read into it
+
+    Returns True if offline, False if not offline
+    '''
+    # look in config file first
+    try:
+        offline = cfg.getboolean("insights-client", "offline")
+    except configparser.NoOptionError:
+        offline = False
+
+    # get from env
+    env_offline = os.getenv("INSIGHTS_OFFLINE")
+    if env_offline:
+        offline = _boolify(env_offline)
+
+    # parse from CLI
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--offline', action='store_true')
+    args, _ = parser.parse_known_args()
+    if args.offline:
+        offline = True
+
+    return offline
+
 class MetricsHTTPClient(requests.Session):
     """
     MetricsHTTPClient is a `requests.Session` subclass, configured to transmit
@@ -56,6 +95,11 @@ class MetricsHTTPClient(requests.Session):
         cfg = configparser.RawConfigParser()
         cfg.read(config_file)
 
+        self.offline = _is_offline(cfg)
+        if self.offline:
+            logger.debug("Metrics: Offline mode. No metrics will be sent.")
+            return
+
         rhsm_cfg = configparser.ConfigParser()
         rhsm_cfg.read(rhsm_config_file)
 
@@ -67,6 +111,7 @@ class MetricsHTTPClient(requests.Session):
         except (configparser.NoSectionError, configparser.NoOptionError):
             # cannot read RHSM conf, go straight to insights-client conf parsing
             # set is_satellite=False to enter the insights-client.conf parsing block
+            logger.debug("Metrics: Error parsing RHSM config. Falling back to insights-client config.")
             is_satellite = False
         else:
             if cert_file is None:
@@ -77,6 +122,7 @@ class MetricsHTTPClient(requests.Session):
             match = re.match("subscription.rhsm(.stage)?.redhat.com", rhsm_server_hostname)
             if match is None:
                 # Assume Satellite-managed and configure for Satellite-proxied access
+                logger.debug("Metrics: Satellite detected.")
                 self.base_url = rhsm_server_hostname
                 self.port = rhsm_server_port
                 self.cert = (cert_file, key_file)
@@ -90,21 +136,34 @@ class MetricsHTTPClient(requests.Session):
             try:
                 auth_method = cfg.get("insights-client", "authmethod")
             except configparser.NoOptionError:
+                logger.debug("Metrics: authmethod not defined in insights-client config. Defaulting to CERT")
                 auth_method = AUTH_METHOD_CERT
 
             if auth_method == AUTH_METHOD_BASIC:
                 self.base_url = "cloud.redhat.com"
                 self.port = 443
-                u = cfg.get("insights-client", "username")
-                p = cfg.get("insights-client", "password")
+                try:
+                    u = cfg.get("insights-client", "username").strip()
+                    p = cfg.get("insights-client", "password").strip()
+                except configparser.NoOptionError:
+                    u, p = None, None
+                if not u or not p:
+                    logger.debug("Metrics: BASIC auth selected but username and/or password is missing. No metrics will be sent.")
+                    self.offline = True
+                    return
                 self.auth = (u, p)
                 self.api_prefix = "/api"
 
-            if auth_method == AUTH_METHOD_CERT:
+            elif auth_method == AUTH_METHOD_CERT:
                 self.base_url = "cert.cloud.redhat.com"
                 self.port = 443
                 self.cert = (cert_file, key_file)
                 self.api_prefix = "/api"
+
+            else:
+                logger.debug("Metrics: Unknown authentication method. No metrics will be sent.")
+                self.offline = True
+                return
 
         # @TODO: Do it more like Core insight.client.connection: RHSM if auto_config, fallback to conf and then to ENV.
         #   Use NO_PROXY, custom Core proxy auth etc.
@@ -124,7 +183,13 @@ class MetricsHTTPClient(requests.Session):
 
         :param event: a dictionary describing an event object
         """
+        if self.offline:
+            return
         url = "https://{0}:{1}{2}/module-update-router/v1/event".format(
             self.base_url, self.port, self.api_prefix
         )
-        return super(MetricsHTTPClient, self).post(url, json=event, proxies=self.proxies)
+        logger.debug("Metrics: Posting event...")
+        logger.debug("Metrics: POST %s", url)
+        res = super(MetricsHTTPClient, self).post(url, json=event, proxies=self.proxies)
+        logger.debug("Metrics: HTTP Status Code: %d %s", res.status_code, res.reason)
+        return res

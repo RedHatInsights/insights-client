@@ -19,7 +19,6 @@ try:
         )
 
     phase = getattr(client, os.environ["INSIGHTS_PHASE"])
-    metrics_client = metrics.MetricsHTTPClient()
     code = 0
     try:
         with open("/etc/insights-client/machine-id") as f:
@@ -47,10 +46,11 @@ try:
     finally:
         event["exit"] = code
         event["ended_at"] = utc.make_utc_datetime_rfc3339()
+        metrics_client = metrics.MetricsHTTPClient()
         try:
             metrics_client.post(event)
         except (OSError, IOError) as e:
-            logger.debug("Could not submit event: {0}".format(e))
+            logger.debug("Metrics: Could not submit event: {0}".format(e))
         sys.exit(code)
 except KeyboardInterrupt:
     sys.exit(1)

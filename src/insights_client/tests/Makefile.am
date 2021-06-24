@@ -1,15 +1,17 @@
 
 nodist_check_SCRIPTS = test_sed.py
+check_SCRIPTS = test_metrics.py \
+       $(NULL)
 
 if HAVE_PYTEST
 TESTS = pytest.sh
 endif
 
 pytest.sh: test_sed.py
-	echo 'PYTHONPATH=$(top_srcdir)/src $(PYTEST) $(PYTEST_FLAGS) ./*.py' > $@
+	echo 'PYTHONPATH=$(top_srcdir)/src:$(top_srcdir)/data/rpm.egg $(PYTEST) $(PYTEST_FLAGS) ./*.py' > $@
 	chmod +x $@
 
-CLEANFILES = pytest.sh test_sed.py
+CLEANFILES = pytest.sh $(nodist_check_SCRIPTS)
 
 %: %.in Makefile
 	$(AM_V_GEN) $(SED) \
