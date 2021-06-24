@@ -2,7 +2,7 @@
 from six.moves import configparser
 from tempfile import NamedTemporaryFile
 
-from pytest import fixture
+from pytest import fixture, mark
 from mock.mock import ANY
 from mock.mock import Mock
 from mock.mock import patch
@@ -285,41 +285,26 @@ def test_metrics_post_event_proxy(post, config_file_factory, rhsm_config_file_fa
         proxies={"https": "http://user:password@localhost:3128"},
     )
 
-@patch("insights_client.metrics.os.getenv")
-def test_is_offline(os_getenv, config_file_factory):
+@mark.parametrize(("config", "delenv", "setenv", "sysargv", "is_offline"), (
+    ("", ("INSIGHTS_OFFLINE"), (), ["insights-client"], False),
+    ("offline=True\n", ("INSIGHTS_OFFLINE"), (), ["insights-client"], True),
+    ("", ("INSIGHTS_OFFLINE"), (), ["insights-client", "--offline"], True),
+    ("", ("INSIGHTS_OFFLINE"), (("INSIGHTS_OFFLINE", "True"),), ["insights-client"], True),
+))
+def test_is_offline(monkeypatch, config, delenv, setenv, sysargv, is_offline, config_file_factory):
     '''
     Verify that _is_offline() produces correct output from the given configurations
-
-    NOTE: this test will become obsolete once InsightsConfig is used to load config
     '''
     # offline not specified
-    config_file = config_file_factory("")
+    for d in delenv:
+        monkeypatch.delenv(d, raising=False)
+    for k, v in setenv:
+        monkeypatch.setenv(k, v)
+    monkeypatch.setattr("sys.argv", sysargv)
+    config_file = config_file_factory(config)
     cfg = configparser.RawConfigParser()
     cfg.read(config_file.name)
-    os_getenv.return_value = None
-    with patch('sys.argv', ['insights-client']):
-        assert not _is_offline(cfg)
-    # offline specified in config
-    config_file = config_file_factory("offline=True\n")
-    cfg = configparser.RawConfigParser()
-    cfg.read(config_file.name)
-    os_getenv.return_value = None
-    with patch('sys.argv', ['insights-client']):
-        assert _is_offline(cfg)
-    # offline specified in CLI
-    config_file = config_file_factory("")
-    cfg = configparser.RawConfigParser()
-    cfg.read(config_file.name)
-    os_getenv.return_value = None
-    with patch('sys.argv', ['insights-client', '--offline']):
-        assert _is_offline(cfg)
-    # offline specified in env
-    config_file = config_file_factory("")
-    cfg = configparser.RawConfigParser()
-    cfg.read(config_file.name)
-    os_getenv.return_value = "True"
-    with patch('sys.argv', ['insights-client']):
-        assert _is_offline(cfg)
+    assert _is_offline(cfg) is is_offline
 
 @patch("insights_client.metrics._is_offline", Mock(return_value=True))
 @patch("insights_client.metrics._proxy_settings")
