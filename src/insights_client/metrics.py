@@ -54,13 +54,6 @@ def _is_offline(cfg):
 
     Returns True if offline, False if not offline
     '''
-    def _boolify(v):
-        if v.lower() == 'true':
-            return True
-        elif v.lower() == 'false':
-            return False
-        else:
-            return v
     # look in config file first
     try:
         offline = cfg.getboolean("insights-client", "offline")
