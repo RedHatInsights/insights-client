@@ -36,12 +36,8 @@ def _proxy_settings(rhsm_config):
 
 
 def _boolify(v):
-    if v.lower() == 'true':
-        return True
-    elif v.lower() == 'false':
-        return False
-    else:
-        return v
+    # anything not specifically False is treated as True
+    return not v.lower() in ("false", "")
 
 
 def _is_offline(cfg):
