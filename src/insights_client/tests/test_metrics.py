@@ -1,14 +1,15 @@
-
 from six.moves import configparser
 from tempfile import NamedTemporaryFile
 
-from pytest import fixture, mark
+from pytest import fixture
+from pytest import mark
 from mock.mock import ANY
 from mock.mock import Mock
 from mock.mock import patch
 
 from insights_client.metrics import MetricsHTTPClient
-from insights_client.metrics import _proxy_settings, _is_offline
+from insights_client.metrics import _is_offline
+from insights_client.metrics import _proxy_settings
 
 
 def _tempfile(contents_string):
@@ -57,6 +58,7 @@ def rhsm_config_file_factory():
 
     return factory
 
+
 @patch("insights_client.metrics._proxy_settings")
 def test_http_client_init_missing_server_section(proxy_settings, config_file_factory):
     '''
@@ -71,6 +73,7 @@ def test_http_client_init_missing_server_section(proxy_settings, config_file_fac
     assert metrics_client.base_url == "cloud.redhat.com"
     assert metrics_client.api_prefix == "/api"
     assert metrics_client.verify is True
+
 
 @patch("insights_client.metrics._proxy_settings")
 def test_http_client_init_default_cert_auth(proxy_settings, config_file_factory):
@@ -89,6 +92,7 @@ def test_http_client_init_default_cert_auth(proxy_settings, config_file_factory)
     assert metrics_client.base_url == "cert.cloud.redhat.com"
     assert metrics_client.api_prefix == "/api"
 
+
 @patch("insights_client.metrics._proxy_settings")
 def test_http_client_init_is_not_satellite(proxy_settings, config_file_factory, rhsm_config_file_factory):
     '''
@@ -105,6 +109,7 @@ def test_http_client_init_is_not_satellite(proxy_settings, config_file_factory, 
     assert metrics_client.cert == ("/path/to/test/cert.pem", "/path/to/test/key.pem")
     assert metrics_client.base_url == "cert.cloud.redhat.com"
     assert metrics_client.api_prefix == "/api"
+
 
 @patch("insights_client.metrics._proxy_settings")
 def test_http_client_init_is_satellite(proxy_settings, config_file_factory, rhsm_config_file_factory):
@@ -124,6 +129,7 @@ def test_http_client_init_is_satellite(proxy_settings, config_file_factory, rhsm
     assert metrics_client.base_url == "satellite.example.com"
     assert metrics_client.verify == "/path/to/cacert/cert.pem"
     assert metrics_client.api_prefix == "/redhat_access/r/insights/platform"
+
 
 @patch("insights_client.metrics._proxy_settings")
 def test_http_client_init_proxies_auto_config_false(proxy_settings, config_file_factory, rhsm_config_file_factory):
@@ -285,11 +291,14 @@ def test_metrics_post_event_proxy(post, config_file_factory, rhsm_config_file_fa
         proxies={"https": "http://user:password@localhost:3128"},
     )
 
+
 @mark.parametrize(("config", "delenv", "setenv", "sysargv", "is_offline"), (
     ("", ("INSIGHTS_OFFLINE"), (), ["insights-client"], False),
     ("offline=True\n", ("INSIGHTS_OFFLINE"), (), ["insights-client"], True),
     ("", ("INSIGHTS_OFFLINE"), (), ["insights-client", "--offline"], True),
-    ("", ("INSIGHTS_OFFLINE"), (("INSIGHTS_OFFLINE", "True"),), ["insights-client"], True),
+    ("", (), (("INSIGHTS_OFFLINE", "True"),), ["insights-client"], True),
+    ("offline=True\n", (), (("INSIGHTS_OFFLINE", "False"),), ["insights-client"], False),
+    ("offline=False\n", (), (("INSIGHTS_OFFLINE", "False"),), ["insights-client", "--offline"], True),
 ))
 def test_is_offline(monkeypatch, config, delenv, setenv, sysargv, is_offline, config_file_factory):
     '''
@@ -306,72 +315,48 @@ def test_is_offline(monkeypatch, config, delenv, setenv, sysargv, is_offline, co
     cfg.read(config_file.name)
     assert _is_offline(cfg) is is_offline
 
-@patch("insights_client.metrics._is_offline", Mock(return_value=True))
+
+@patch("insights_client.metrics.configparser")
+@patch("insights_client.metrics._is_offline", return_value=True)
 @patch("insights_client.metrics._proxy_settings")
-def test_offline_no_init(_proxy_settings, config_file_factory, rhsm_config_file_factory):
+def test_offline_no_init(_proxy_settings, is_offline, configparser, config_file_factory, rhsm_config_file_factory):
     '''
     Verify that when the metrics client is set to offline, no further initialization is done
     '''
     config_file = config_file_factory("")
     rhsm_config_file = rhsm_config_file_factory()
     m = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    configparser.ConfigParser.assert_not_called()
     assert m.offline
     assert not hasattr(m, 'base_url')
     assert not hasattr(m, 'port')
     assert not m.cert
-    assert m.verify
+    assert m.verify is True
     assert not hasattr(m, 'api_prefix')
     assert not m.auth
     assert not m.proxies
     _proxy_settings.assert_not_called()
 
-@patch("insights_client.metrics._is_offline", Mock(return_value=False))
+
+@mark.parametrize(("config",), (
+    ("password=testpass\nauthmethod=BASIC",),
+    ("username=testuser\nauthmethod=BASIC",),
+    ("username=\npassword=testpass\nauthmethod=BASIC",),
+    ("username=   \npassword=testpass\nauthmethod=BASIC",),
+    ("username=testuser\npassword=\nauthmethod=BASIC",),
+    ("username=testuser\npassword=   \nauthmethod=BASIC",),
+))
+@patch("insights_client.metrics._is_offline", return_value=False)
 @patch("insights_client.metrics._proxy_settings")
-def test_offline_basic_auth_no_user(_proxy_settings, config_file_factory, rhsm_config_file_factory):
+def test_offline_basic_auth_missing_credentials(_proxy_settings, is_offline, config, config_file_factory, rhsm_config_file_factory):
     '''
-    Verify that if no username is provided for BASIC auth, metrics are not sent (default to offline)
+    Verify that if no username or password is provided for BASIC auth, metrics are not sent (default to offline)
     '''
-    config_file = config_file_factory("password=testpass\nauthmethod=BASIC")
+    config_file = config_file_factory(config)
     rhsm_config_file = rhsm_config_file_factory()
-    metrics_client = MetricsHTTPClient(
-        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
+    metrics_client = MetricsHTTPClient(config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
     assert metrics_client.offline
 
-@patch("insights_client.metrics._is_offline", Mock(return_value=False))
-@patch("insights_client.metrics._proxy_settings")
-def test_offline_basic_auth_no_pass(_proxy_settings, config_file_factory, rhsm_config_file_factory):
-    '''
-    Verify that if no password is provided for BASIC auth, metrics are not sent (default to offline)
-    '''
-    config_file = config_file_factory("username=testuser\nauthmethod=BASIC")
-    rhsm_config_file = rhsm_config_file_factory()
-    metrics_client = MetricsHTTPClient(
-        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
-    assert metrics_client.offline
-
-@patch("insights_client.metrics._is_offline", Mock(return_value=False))
-@patch("insights_client.metrics._proxy_settings")
-def test_offline_basic_auth_empty_user(_proxy_settings, config_file_factory, rhsm_config_file_factory):
-    '''
-    Verify that if an empty username is provided for BASIC auth, metrics are not sent (default to offline)
-    '''
-    config_file = config_file_factory("username=\npassword=testpass\nauthmethod=BASIC")
-    rhsm_config_file = rhsm_config_file_factory()
-    metrics_client = MetricsHTTPClient(
-        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
-    assert metrics_client.offline
-
-@patch("insights_client.metrics._is_offline", Mock(return_value=False))
-@patch("insights_client.metrics._proxy_settings")
-def test_offline_basic_auth_empty_pass(_proxy_settings, config_file_factory, rhsm_config_file_factory):
-    '''
-    Verify that if an empty password is provided for BASIC auth, metrics are not sent (default to offline)
-    '''
-    config_file = config_file_factory("username=testuser\npassword=\nauthmethod=BASIC")
-    rhsm_config_file = rhsm_config_file_factory()
-    metrics_client = MetricsHTTPClient(
-        config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
-    assert metrics_client.offline
 
 @patch("insights_client.metrics._is_offline", Mock(return_value=False))
 @patch("insights_client.metrics._proxy_settings")
@@ -384,6 +369,7 @@ def test_offline_basic_auth_stripping(_proxy_settings, config_file_factory, rhsm
     metrics_client = MetricsHTTPClient(
         config_file=config_file.name, rhsm_config_file=rhsm_config_file.name)
     assert metrics_client.auth == ("testuser", "testpass")
+
 
 @patch('insights_client.metrics.requests.Session.post')
 def test_offline_no_post(session_post, config_file_factory, rhsm_config_file_factory):
