@@ -1,6 +1,6 @@
 
 nodist_check_SCRIPTS = test_sed.py
-check_SCRIPTS = test_metrics.py \
+dist_check_SCRIPTS = test_metrics.py \
        $(NULL)
 
 if HAVE_PYTEST
