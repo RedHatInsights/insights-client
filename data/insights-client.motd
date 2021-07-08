@@ -1,3 +1,2 @@
-This system is not registered to Red Hat Insights. See https://console.redhat.com/
-To register this system, run: insights-client --register
-
+Register this system with Red Hat Insights: insights-client --register
+Create an account or view all your systems at https://red.ht/insights-dashboard
