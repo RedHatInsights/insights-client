@@ -7,7 +7,7 @@ Release:                0.1.git.@COMMIT_HASH@%{?dist}
 Source:                 insights-client-%{version}.tar.gz
 Epoch:                  0
 License:                GPLv2+
-URL:                    http://cloud.redhat.com/insights
+URL:                    http://console.redhat.com/insights
 Group:                  Applications/System
 Vendor:                 Red Hat, Inc.
 
