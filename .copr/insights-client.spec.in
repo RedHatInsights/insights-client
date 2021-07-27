@@ -3,9 +3,8 @@
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                @PACKAGE_VERSION@
-Release:                0.1.git.@COMMIT_HASH@%{?dist}
+Release:                0.1.git.@COMMIT_HASH@
 Source:                 insights-client-%{version}.tar.gz
-Epoch:                  0
 License:                GPLv2+
 URL:                    http://console.redhat.com/insights
 Group:                  Applications/System
