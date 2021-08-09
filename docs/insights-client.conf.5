@@ -27,6 +27,10 @@ Automatically update the dynamic configuration.
 Obfuscate IP addresses.
 .IP "obfuscate_hostname=False"
 Obfuscate hostname. Requires obfuscate=True.
+.IP "display_name="
+Display name for this system.
+.IP "ansible_host="
+Ansible hostname for this system.
 .IP "cmd_timeout=120"
 Timeout for commands run during collection, in seconds.
 .IP "http_timeout=120"
@@ -41,6 +45,8 @@ See /usr/share/doc/insights-client/file-redaction.yaml.example or https://access
 This file can be used to omit lines or keywords from files and commands in the collection.
 .br
 See /usr/share/doc/insights-client/file-content-redaction.yaml.example or https://access.redhat.com/articles/4511681 for information on how to use it.
+.IP "tags_file=/etc/insights-client/tags.yaml"
+Location of the tags file for this system.
 .SH "SEE ALSO"
 .BR insights-client (8)
 \&
