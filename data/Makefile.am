@@ -24,7 +24,13 @@ rpm.egg:
 rpm.egg.asc:
 	$(DOWNLOAD) https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc
 
-CLEANFILES = rpm.egg rpm.egg.asc
+.fallback.json:
+	$(AM_V_DL) $(WGET) --no-verbose --output-document $@ https://api.access.redhat.com/r/insights/v1/static/uploader.v2.json
+
+.fallback.json.asc:
+	$(AM_V_DL) $(WGET) --no-verbose --output-document $@ https://api.access.redhat.com/r/insights/v1/static/uploader.v2.json.asc
+
+CLEANFILES = rpm.egg rpm.egg.asc .fallback.json .fallback.json.asc
 
 if WITH_SYSTEMDSYSTEMUNITDIR
 SYSTEMDDIR = systemd
