@@ -33,7 +33,7 @@ Requires: python3-six
 Requires: python3dist(setuptools)
 %else
 Requires: python-requests >= 2.6
-Requires: python-PyYAML
+Requires: PyYAML
 Requires: python-magic
 Requires: python-six
 Requires: python-setuptools
