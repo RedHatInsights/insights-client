@@ -127,6 +127,8 @@ rhpkg build
 ```
 The messaging while the build is running will link you to a Brew task. This task will also link you to the built RPMs when finished, so you can find the build ID later.
 
+Brew URL: https://brewweb.engineering.redhat.com/brew/
+
 ## 4. Errata Process
 Go to https://errata.devel.redhat.com and under "**Tasks**" choose "**Create New Advisory**."
 
