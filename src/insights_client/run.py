@@ -4,7 +4,6 @@ import sys
 from insights import package_info
 
 import logging
-import metrics
 import utc
 
 logger = logging.getLogger(__name__)
@@ -26,32 +25,7 @@ try:
     except:
         machine_id = "00000000-0000-0000-0000-000000000000"
 
-    event = {
-        "phase": os.environ["INSIGHTS_PHASE"],
-        "started_at": utc.make_utc_datetime_rfc3339(),
-        "exit": code,
-        "exception": None,
-        "ended_at": None,
-        "machine_id": machine_id,
-        "core_version": package_info["VERSION"],
-        "core_path": os.environ["PYTHONPATH"],
-    }
-    try:
-        sys.exit(phase())
-    except Exception as e:
-        event["exception"] = "{0}".format(e)
-        code = 1
-    except SystemExit as e:
-        code = e.code
-    finally:
-        event["exit"] = code
-        event["ended_at"] = utc.make_utc_datetime_rfc3339()
-        metrics_client = metrics.MetricsHTTPClient()
-        try:
-            metrics_client.post(event)
-        except (OSError, IOError) as e:
-            logger.debug("Metrics: Could not submit event: {0}".format(e))
-        sys.exit(code)
+    sys.exit(phase())
 except KeyboardInterrupt:
     sys.exit(1)
 except Exception as e:
