@@ -2,7 +2,7 @@ validate-commits:
   stage: test
   image: quay.io/ldupont/commitsar:latest
   tags:
-    - release
+    - shared
   script:
     - git fetch origin master
     - commitsar
