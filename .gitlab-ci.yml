@@ -1,0 +1,8 @@
+validate-commits:
+  stage: test
+  image: quay.io/ldupont/commitsar:latest
+  tags:
+    - release
+  script:
+    - git fetch origin master
+    - commitsar
