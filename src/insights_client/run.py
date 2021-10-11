@@ -1,10 +1,7 @@
 import os
 import sys
 
-from insights import package_info
-
 import logging
-import utc
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +15,6 @@ try:
         )
 
     phase = getattr(client, os.environ["INSIGHTS_PHASE"])
-    code = 0
     try:
         with open("/etc/insights-client/machine-id") as f:
             machine_id = f.read()
