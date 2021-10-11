@@ -1,7 +1,5 @@
 
 nodist_check_SCRIPTS = test_sed.py
-dist_check_SCRIPTS = \
-    $(NULL)
 
 if HAVE_PYTEST
 TESTS = pytest.sh
