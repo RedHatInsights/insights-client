@@ -15,12 +15,6 @@ try:
         )
 
     phase = getattr(client, os.environ["INSIGHTS_PHASE"])
-    try:
-        with open("/etc/insights-client/machine-id") as f:
-            machine_id = f.read()
-    except:
-        machine_id = "00000000-0000-0000-0000-000000000000"
-
     sys.exit(phase())
 except KeyboardInterrupt:
     sys.exit(1)
