@@ -16,11 +16,13 @@ AM_V_DL = $(am__v_DL_$(V))
 am__v_DL_ = $(am__v_DL_$(AM_DEFAULT_VERBOSITY))
 am__v_DL_0 = @echo "  DL    " $@;
 
+DOWNLOAD = $(AM_V_DL) $(WGET) --no-verbose --output-document $@
+
 rpm.egg:
-	$(AM_V_DL) $(WGET) --no-verbose --output-document $@ https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg
+	$(DOWNLOAD) https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg
 
 rpm.egg.asc:
-	$(AM_V_DL) $(WGET) --no-verbose --output-document $@ https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc
+	$(DOWNLOAD) https://api.access.redhat.com/r/insights/v1/static/core/insights-core.egg.asc
 
 CLEANFILES = rpm.egg rpm.egg.asc
 
