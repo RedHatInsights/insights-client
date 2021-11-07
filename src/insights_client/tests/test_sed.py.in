@@ -67,3 +67,9 @@ def test_obfuscate_rest(stdin, obfuscated):
 def test_joint_obfuscation(stdin, obfuscated):
     stdout = run_sed(stdin)
     assert stdout == obfuscated
+
+
+@pytest.mark.parametrize(["stdin"], [["PermitRootLogin without-password"]])
+def test_no_obfuscation(stdin):
+    stdout = run_sed(stdin)
+    assert stdout == stdin
