@@ -31,22 +31,28 @@ AS_IF([test -z "$PYTEST"],[
 ])
 AM_CONDITIONAL([HAVE_PYTEST], [test x"$PYTEST" != x""])
 
+
+
+  red=$(tput setaf 1)
+  clr=$(tput sgr0)
+
 AX_PYTHON_MODULE([six])
 AS_IF([test x"$HAVE_PYMOD_SIX" = x"no"],[
-    AC_MSG_WARN([missing python module: six])
+    AC_MSG_WARN([${red}missing python module: six${clr}])
 ])
 AX_PYTHON_MODULE([requests])
 AS_IF([test x"$HAVE_PYMOD_REQUESTS" = x"no"],[
-    AC_MSG_WARN([missing python module: requests])
+    AC_MSG_WARN([${red}missing python module: requests${clr}])
 ])
 AX_PYTHON_MODULE([yaml])
 AS_IF([test x"$HAVE_PYMOD_YAML" = x"no"],[
-    AC_MSG_WARN([missing python module: yaml])
+    AC_MSG_WARN([${red}missing python module: yaml${clr}])
 ])
 AX_PYTHON_MODULE([rhsm])
 AS_IF([test x"$HAVE_PYMOD_RHSM" = x"no"],[
-    AC_MSG_WARN([missing python module: rhsm])
+    AC_MSG_WARN([${red}missing python module: rhsm${clr}])
 ])
+
 
 dnl Set up required systemd directories and automake variables
 SYSTEMD_SYSTEMUNITDIR

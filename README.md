@@ -17,6 +17,12 @@ $ cd insights-client
 $ ./autogen.sh
 $ make
 ```
+2.5 `autogen.sh` may inform of missing packages needed to run the insights-client. Make sure your virtual
+environment is ussing the --system-site-packages. If not, set the flat to true in the `pyvenv.cfg` file.
+
+```
+--system-site-packages = true
+```
 
 3. To build an insights-core egg from source, run `./build_client_egg.sh` in the insights-core repo.
 
