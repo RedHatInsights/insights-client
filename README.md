@@ -17,7 +17,7 @@ $ cd insights-client
 $ ./autogen.sh
 $ make
 ```
-2.5 `autogen.sh` may inform of missing packages needed to run the insights-client. Make sure your virtual
+2. 2. `autogen.sh` may inform of missing packages needed to run the insights-client. Make sure your virtual
 environment is ussing the --system-site-packages. If not, set the flat to true in the `pyvenv.cfg` file.
 
 ```

@@ -31,8 +31,6 @@ AS_IF([test -z "$PYTEST"],[
 ])
 AM_CONDITIONAL([HAVE_PYTEST], [test x"$PYTEST" != x""])
 
-
-
   red=$(tput setaf 1)
   clr=$(tput sgr0)
 
