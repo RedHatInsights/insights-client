@@ -50,15 +50,15 @@ fi
 
 AX_PYTHON_MODULE([six])
 AS_IF([test x"$HAVE_PYMOD_SIX" = x"no"],[
-    AC_MSG_WARN([${red}missing python module: six${clr}])
+    AC_MSG_WARN([$(color 1)missing python module: six$(reset)])
 ])
 AX_PYTHON_MODULE([requests])
 AS_IF([test x"$HAVE_PYMOD_REQUESTS" = x"no"],[
-    AC_MSG_WARN([${red}missing python module: requests${clr}])
+    AC_MSG_WARN([$(color 1)missing python module: requests$(reset)])
 ])
 AX_PYTHON_MODULE([yaml])
 AS_IF([test x"$HAVE_PYMOD_YAML" = x"no"],[
-    AC_MSG_WARN([$(color 1)missing python module: yaml${clr}])
+    AC_MSG_WARN([missing python module: yaml$])
 ])
 AX_PYTHON_MODULE([rhsm])
 AS_IF([test x"$HAVE_PYMOD_RHSM" = x"no"],[
