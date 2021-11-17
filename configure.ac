@@ -31,8 +31,22 @@ AS_IF([test -z "$PYTEST"],[
 ])
 AM_CONDITIONAL([HAVE_PYTEST], [test x"$PYTEST" != x""])
 
-  red=$(tput setaf 1)
-  clr=$(tput sgr0)
+if test ${TERM}x != x -a ${TERM} != dumb; then
+    color () {
+        tput setaf $1
+    }
+    reset () {
+        tput sgr0
+    }
+else
+    color () {
+        :
+    }
+    reset () {
+        :
+    }
+fi
+
 
 AX_PYTHON_MODULE([six])
 AS_IF([test x"$HAVE_PYMOD_SIX" = x"no"],[
@@ -44,11 +58,11 @@ AS_IF([test x"$HAVE_PYMOD_REQUESTS" = x"no"],[
 ])
 AX_PYTHON_MODULE([yaml])
 AS_IF([test x"$HAVE_PYMOD_YAML" = x"no"],[
-    AC_MSG_WARN([${red}missing python module: yaml${clr}])
+    AC_MSG_WARN([$(color 1)missing python module: yaml${clr}])
 ])
 AX_PYTHON_MODULE([rhsm])
 AS_IF([test x"$HAVE_PYMOD_RHSM" = x"no"],[
-    AC_MSG_WARN([${red}missing python module: rhsm${clr}])
+    AC_MSG_WARN([$(color 1)missing python module: rhsm$(reset)])
 ])
 
 
