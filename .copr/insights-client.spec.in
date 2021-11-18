@@ -1,5 +1,9 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
+%if 0%{?rhel} >= 7
+%global __python %{_libexecdir}/platform-python
+%endif
+
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                @PACKAGE_VERSION@
@@ -60,7 +64,7 @@ Sends insightful information to Red Hat for automated analysis
 
 
 %build
-%{configure} PYTHON=%{_libexecdir}/platform-python
+%{configure} PYTHON=%{__python}
 %{__make}
 
 
