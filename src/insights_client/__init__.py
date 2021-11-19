@@ -5,6 +5,7 @@
 from __future__ import print_function
 import os
 import sys
+from insights.client.config import InsightsConfig
 import six
 import subprocess
 from subprocess import Popen, PIPE
@@ -164,9 +165,6 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
-    if os.getuid() != 0:
-        sys.exit('Insights client must be run as root.')
-
     # sort rpm and stable eggs after verification
     validated_eggs = sorted_eggs(
         list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
@@ -189,10 +187,27 @@ def _main():
         import insights
         from insights.client import InsightsClient
         from insights.client.phase.v1 import get_phases
+        #Add the insighst-config here
+        try:
+            config = InsightsConfig(_print_errors=True).load_all()
+        except ValueError as e:
+            sys.stderr.write('ERROR: ' + str(e) + '\n')
+            sys.exit(constants.sig_kill_bad)
+
+        if config["version"]:
+            from insights_client.constants import InsightsConstants as constants
+            print("Client: %s" % constants.version)
+            print("Core: %s" % InsightsClient().version())
+            return
+        
+
+        if os.getuid() != 0:
+            sys.exit('Insights client must be run as root.')
 
         # handle client instantation here so that it isn't done multiple times in __init__
-        client = InsightsClient(True, False)  # read config, but dont setup logging
-        config = client.get_conf()
+        # The config can be passed now by parameter
+        client = InsightsClient(config, False)  # read config, but dont setup logging
+
 
         # handle log rotation here instead of core
         if os.path.isfile(config['logging_file']):
@@ -202,12 +217,6 @@ def _main():
         # we now have access to the clients logging mechanism instead of using print
         client.set_up_logging()
         logging.root.debug("Loaded initial egg: %s", os.path.dirname(insights.__file__))
-
-        if config["version"]:
-            from insights_client.constants import InsightsConstants as constants
-            print("Client: %s" % constants.version)
-            print("Core: %s" % client.version())
-            return
 
         for p in get_phases():
             run_phase(p, client, validated_eggs)
