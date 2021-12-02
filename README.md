@@ -35,13 +35,13 @@ $ ../insights-core/build_client_egg.sh
 $ sudo BYPASS_GPG=True EGG=../insights-core/insights.zip ./src/insights-client --no-gpg
 ```
 
-6. Repeat steps 5 and 6 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
+6. Repeat steps 4 and 5 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
 
 ## Architecture Summary
 The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (from here on, referred to as **wrapper**), and the updatable core module (from here on, referred to as **egg**).
 
 ### Wrapper
-The wrapper is the main entry point for the Insights Client.  The wrapper's job is to initiate the **phases**, described later.  For each phase, the wrapper iterates through the available eggs, and tries each in succession to perform a successful collection & upload. If an egg fails, the client will go on to try the next available egg.  If all eggs fail, execution will halt. All possible eggs are described as follows, in the order in which they are tried:
+The wrapper is the main entry point for the Insights Client. The wrapper's job is to initiate the **phases**, described later. For each phase, the wrapper iterates through the available eggs, and tries each in succession to perform a successful collection & upload. If an egg fails, the client will go on to try the next available egg. If all eggs fail, execution will halt. All possible eggs are described as follows, in the order in which they are tried:
 
  - `ENV_EGG` - an egg specified by the environment variable `EGG`
  - `NEW_EGG` - newest available egg, if an update has been performed
@@ -49,7 +49,7 @@ The wrapper is the main entry point for the Insights Client.  The wrapper's job 
  - `RPM_EGG` - the default egg that ships with the RPM
 
 ## Egg
-The egg is the bundle that contains the Insights Core module, which has all the main functionality in it.  All the options/switches/config are passed through to the egg from the wrapper.  The egg contains phase information
+The egg is the bundle that contains the Insights Core module, which has all the main functionality in it. All the options/switches/config are passed through to the egg from the wrapper. The egg contains phase information
 
 # At Run Time
 Summary of the client's run, from start to finish.
@@ -67,7 +67,7 @@ Environment configuration can be used by setting environment variables with name
 Configuration variables available in the configuration file and their explanations:
 
 - `loglevel` - set the Python logger's default level (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). Default `DEBUG`
-- `auto_config` - attempt to auto-configure the network connection with Satellite or RHSM.  Default `True`
+- `auto_config` - attempt to auto-configure the network connection with Satellite or RHSM. Default `True`
 - `authmethod` - authentication method for the Portal (BASIC, CERT). Default is `BASIC`
 Note: when `auto_config` is enabled, `CERT` will be used if RHSM or Satellite is detected
 - `username` - username for basic auth. Blank by default
@@ -217,7 +217,7 @@ Download the newest version of `uploader.json` for file collection (legacy colle
 
 ### Phase III: Post-Update
 Process registration options.
-Check registration.  If unregistered and operating in a mode in which registration is required, exit.
+Check registration. If unregistered and operating in a mode in which registration is required, exit.
 
 ### Phase IV: Collect & Output
 Run the collection.
