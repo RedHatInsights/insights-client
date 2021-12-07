@@ -58,7 +58,7 @@ AS_IF([test x"$HAVE_PYMOD_REQUESTS" = x"no"],[
 ])
 AX_PYTHON_MODULE([yaml])
 AS_IF([test x"$HAVE_PYMOD_YAML" = x"no"],[
-    AC_MSG_WARN([missing python module: yaml$])
+    AC_MSG_WARN([$(color 1)missing python module: yaml$(reset)])
 ])
 AX_PYTHON_MODULE([rhsm])
 AS_IF([test x"$HAVE_PYMOD_RHSM" = x"no"],[
