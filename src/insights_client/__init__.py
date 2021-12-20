@@ -5,7 +5,6 @@
 from __future__ import print_function
 import os
 import sys
-from insights.client.config import InsightsConfig
 import six
 import subprocess
 from subprocess import Popen, PIPE
@@ -187,6 +186,7 @@ def _main():
         import insights
         from insights.client import InsightsClient
         from insights.client.phase.v1 import get_phases
+        from insights.client.config import InsightsConfig
         #Add the insighst-config here
         try:
             config = InsightsConfig(_print_errors=True).load_all()
