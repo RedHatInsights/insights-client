@@ -13,7 +13,6 @@ Documentation=man:insights-client(8)
 PartOf=insights-client.timer
 
 [Path]
-PathExists=@pkgsysconfdir@/.lastupload
 PathModified=@pkgsysconfdir@/.lastupload
 
 [Install]
