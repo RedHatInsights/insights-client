@@ -1,5 +1,10 @@
-check_SCRIPTS = test_commands.py
+insights_client_testdir= $(insights_clientdir)/tests
+insights_client_test_PYTHON = \
+	test_commands.py \
+	$(NULL)
+
 nodist_check_SCRIPTS = test_sed.py
+check_SCRIPTS = test_commands.py
 
 if HAVE_PYTEST
 TESTS = pytest.sh
