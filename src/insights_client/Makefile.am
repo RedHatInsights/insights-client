@@ -34,4 +34,6 @@ CLEANFILES = constants.py
 
 SUBDIRS = tests
 
+DISTCLEANFILES = __pycache__/*
+
 -include $(top_srcdir)/git.mk

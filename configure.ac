@@ -25,7 +25,7 @@ AC_PATH_PROG([TIMEOUT], [timeout])
 AS_IF([test -z "$TIMEOUT"],[
     AC_MSG_ERROR([timeout is missing from your system...])
 ])
-AC_PATH_PROG([PYTEST], [pytest])
+AC_PATH_PROGS([PYTEST], [pytest pytest-3 pytest3-6])
 AS_IF([test -z "$PYTEST"],[
     AC_MSG_WARN([failed to find pytest, skipping tests...])
 ])
