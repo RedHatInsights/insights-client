@@ -64,7 +64,13 @@ AX_PYTHON_MODULE([rhsm])
 AS_IF([test x"$HAVE_PYMOD_RHSM" = x"no"],[
     AC_MSG_WARN([$(color 1)missing python module: rhsm$(reset)])
 ])
+AX_PYTHON_MODULE([mock])
+AS_IF([test x"$HAVE_PYMOD_MOCK" = x"no"],[
+    AC_MSG_WARN([$(color 1)missing python module: mock$(reset)])
+])
+AM_CONDITIONAL([HAVE_PYMOD_MOCK], [test x"$HAVE_PYMOD_MOCK" = x"yes"])
 
+AM_CONDITIONAL([HAVE_TEST], [test x"$PYTEST" != x"" -a x"$HAVE_PYMOD_MOCK" = x"yes"])
 
 dnl Set up required systemd directories and automake variables
 SYSTEMD_SYSTEMUNITDIR

@@ -2,7 +2,7 @@ dist_check_SCRIPTS = test_commands.py
 nodist_check_SCRIPTS = test_sed.py
 
 
-if HAVE_PYTEST
+if HAVE_TEST
 TESTS = pytest.sh
 endif
 
