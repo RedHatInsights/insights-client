@@ -129,6 +129,8 @@ def run_phase(phase, client, validated_eggs):
             # 100 and 101 are unrecoverable, like post-unregistration, or
             #   a machine not being registered yet, or simply a 'dump & die'
             #   CLI option
+            #   * 100: Success, exit
+            #   * 101: Failure, exit           
             sys.exit(process.returncode % 100)
     # All attemps to run phase have failed
     sys.exit(1)
@@ -197,7 +199,7 @@ def _main():
             config = InsightsConfig(_print_errors=True).load_all()
         except ValueError as e:
             sys.stderr.write('ERROR: ' + str(e) + '\n')
-            sys.exit(constants.sig_kill_bad)
+            sys.exit('Unable to load Insights Config')
 
         if config["version"]:
             from insights_client.constants import InsightsConstants as constants
