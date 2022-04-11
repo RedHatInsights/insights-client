@@ -143,9 +143,14 @@ def update_motd_message():
     It is intentional that the message does not reappear if a system is then
     unregistered. Only if both the unregistered and the registered stamp files
     do not exist is an motd symlink created.
+
+    The motd message could also be deliberately disabled by the users before
+    registration, simply because they don't want to use insights-client, by
+    pointing /etc/motd.d/insights-client at an empty file.
     """
     try:
-        if os.path.exists(os.path.dirname(MOTD_FILE)):
+        if os.path.exists(os.path.dirname(MOTD_FILE)) and \
+           os.path.islink(MOTD_FILE) and not os.path.samefile(os.devnull, MOTD_FILE):
             if (os.path.isfile(REGISTERED_FILE) or os.path.isfile(UNREGISTERED_FILE)):
                 if not os.path.samefile(os.devnull, MOTD_FILE):
                     os.symlink(os.devnull, MOTD_FILE + ".tmp")
