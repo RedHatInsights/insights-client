@@ -73,6 +73,7 @@ AM_CONDITIONAL([HAVE_PYMOD_MOCK], [test x"$HAVE_PYMOD_MOCK" = x"yes"])
 AM_CONDITIONAL([HAVE_TEST], [test x"$PYTEST" != x"" -a x"$HAVE_PYMOD_MOCK" = x"yes"])
 
 dnl Set up required systemd directories and automake variables
+PKG_CHECK_MODULES([systemd], [systemd >= 231])
 SYSTEMD_SYSTEMUNITDIR
 SYSTEMD_SYSTEMPRESETDIR
 

@@ -21,7 +21,6 @@ WatchdogSec=900
 CPUQuota=30%
 MemoryHigh=1G
 MemoryMax=2G
-MemoryLimit=2G
 TasksMax=300
 BlockIOWeight=100
 ExecStartPre=/bin/rm -f /etc/insights-client/.run_insights_client_next_boot
