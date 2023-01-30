@@ -2,6 +2,8 @@
 
 %if 0%{?rhel} >= 7
 %global __python %{_libexecdir}/platform-python
+%else
+%global __python /usr/bin/python3
 %endif
 
 Name:                   insights-client
@@ -51,7 +53,7 @@ BuildRequires: python3-devel
 BuildRequires: python-devel
 %endif
 %if 0%{?rhel} != 6
-BuildRequires: systemd-devel
+BuildRequires: systemd
 %endif
 BuildRequires: pam
 
