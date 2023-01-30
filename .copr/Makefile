@@ -2,7 +2,7 @@ CUR_VERSION := $(shell cat VERSION)
 NEXT_VERSION := $(shell echo $(CUR_VERSION) | awk -F. '{printf("%d.%d.%d", $$1, $$2, $$3+1)}')
 
 srpm:
-	dnf install -y automake autoconf wget git
+	dnf install -y automake autoconf wget git systemd
 	echo $(NEXT_VERSION) > VERSION
 	./autogen.sh
 	echo $(CUR_VERSION) > VERSION
