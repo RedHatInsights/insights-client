@@ -98,6 +98,7 @@ AC_CONFIG_FILES([
     data/Makefile
     data/cron/Makefile
     data/systemd/Makefile
+    data/logrotate.d/Makefile
     docs/Makefile
     src/Makefile
     src/insights_client/Makefile

@@ -192,7 +192,7 @@ def _main():
         from insights.client import InsightsClient
         from insights.client.phase.v1 import get_phases
         from insights.client.config import InsightsConfig
-        #Add the insighst-config here
+        # Add the insights-config here
         try:
             config = InsightsConfig(_print_errors=True).load_all()
         except ValueError as e:
@@ -204,7 +204,6 @@ def _main():
             print("Client: %s" % constants.version)
             print("Core: %s" % InsightsClient().version())
             return
-        
 
         if os.getuid() != 0:
             sys.exit('Insights client must be run as root.')
@@ -213,12 +212,6 @@ def _main():
         # The config can be passed now by parameter
         client = InsightsClient(config, False)  # read config, but dont setup logging
 
-
-        # handle log rotation here instead of core
-        if os.path.isfile(config['logging_file']):
-            log_handler = logging.handlers.RotatingFileHandler(
-                config['logging_file'], backupCount=3)
-            log_handler.doRollover()
         # we now have access to the clients logging mechanism instead of using print
         client.set_up_logging()
         logging.root.debug("Loaded initial egg: %s", os.path.dirname(insights.__file__))

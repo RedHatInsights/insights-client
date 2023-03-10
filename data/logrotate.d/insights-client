@@ -1,0 +1,9 @@
+/var/log/insights-client/*.log {
+    rotate 4
+    weekly
+    missingok
+    notifempty
+    sharedscripts
+    copytruncate
+    create 0644 root root
+}

@@ -38,6 +38,8 @@ else
 CRONDIR = cron
 endif
 
-SUBDIRS = $(CRONDIR) $(SYSTEMDDIR)
+LOGROTATEDIR = logrotate.d
+
+SUBDIRS = $(CRONDIR) $(SYSTEMDDIR) $(LOGROTATEDIR)
 
 -include $(top_srcdir)/git.mk

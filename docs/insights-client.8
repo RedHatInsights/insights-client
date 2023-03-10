@@ -88,6 +88,9 @@ Log network activity to console.
 .SH "MOTD"
 A message will be displayed on login about \fBinsights\-client\fP if installed but has not yet been used at least once. To change or remove this message, edit the \fB/etc/insights-client/insights-client.motd\fP file.
 
+.SH "LOGGING"
+\fBinsights\-client\fP utilizes the 'logrotate' tool to rotate log files. To change log rotation options, edit the \fB/etc/logrotate.d/insights-client\fP file. Please refer to the 'logrotate' tool documentation to see all available configuration options.
+
 .SH "SEE ALSO"
 .BR insights-client.conf (5)
 
