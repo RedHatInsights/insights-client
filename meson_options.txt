@@ -1,0 +1,3 @@
+option('python', type: 'string', value: 'python3', description: 'python interpreter to use when finding python installation')
+option('auto_registration', type: 'feature', value: 'disabled', description: 'enable automatic registration')
+option('checkin', type: 'feature', value: 'disabled', description: 'enable hourly check-in')

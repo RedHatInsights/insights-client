@@ -16,12 +16,12 @@ If not, set the variable to true in the `pyvenv.cfg` file.
 ```
 --system-site-packages = true
 ```
-3. Bootstrap the configuration script. This will run `configure` for you with no options.
+3. Setup the build directory. This will run `meson` for you with no options.
 
 ```
 $ cd insights-client
-$ ./autogen.sh
-$ make
+$ meson setup builddir
+$ meson compile -C builddir
 ```
 4. To build an insights-core egg from source, run `./build_client_egg.sh` in the insights-core repo.
 

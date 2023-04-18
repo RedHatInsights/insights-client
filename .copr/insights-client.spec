@@ -1,16 +1,12 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
-%if 0%{?rhel} >= 7
 %global __python %{_libexecdir}/platform-python
-%else
-%global __python /usr/bin/python3
-%endif
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                @PACKAGE_VERSION@
-Release:                0.1.git.@COMMIT_HASH@
-Source:                 insights-client-%{version}.tar.gz
+Version:                3.2.0
+Release:                0.1
+Source:                 insights-client-%{version}.tar.xz
 License:                GPLv2+
 URL:                    http://console.redhat.com/insights
 Group:                  Applications/System
@@ -28,34 +24,21 @@ Requires: gpg
 Requires: pciutils
 
 %{?__python3:Requires: %{__python3}}
-%if 0%{?rhel} != 6
 %{?systemd_requires}
-%endif
-%if 0%{?rhel} >= 8
 Requires: python3-requests >= 2.6
 Requires: python3-PyYAML
 Requires: python3-magic
 Requires: python3-six
 Requires: python3dist(setuptools)
-%else
-Requires: python-requests >= 2.6
-Requires: PyYAML
-Requires: python-magic
-Requires: python-six
-Requires: python-setuptools
-%endif
 Requires: coreutils
+
 BuildRequires: wget
 BuildRequires: binutils
-%if 0%{?rhel} >= 8
 BuildRequires: python3-devel
-%else
-BuildRequires: python-devel
-%endif
-%if 0%{?rhel} != 6
 BuildRequires: systemd
-%endif
 BuildRequires: pam
+BuildRequires: meson
+BuildRequires: python3-pytest
 
 
 %description
@@ -66,15 +49,13 @@ Sends insightful information to Red Hat for automated analysis
 
 
 %build
-%{configure} PYTHON=%{__python}
-%{__make}
+%{meson} -Dpython=%{__python}
+%{meson_build}
 
 
 %install
-%{make_install}
-%if 0%{?rhel} != 6
+%{meson_install}
 %{__install} -D -m 644 %{_builddir}/%{name}-%{version}/data/insights-client.motd %{buildroot}/%{_sysconfdir}/insights-client/insights-client.motd
-%endif
 
 %post
 %systemd_post %{name}.timer
@@ -131,21 +112,13 @@ rm -rf %{buildroot}
 %{_sysconfdir}/insights-client/.exp.sed
 %{_sysconfdir}/insights-client/rpm.egg*
 %{_bindir}/*
-%if 0%{?rhel} >= 7
 %{_unitdir}/*
 %{_presetdir}/*
-%else
-%{_sysconfdir}/insights-client/insights-client.cron
-%config(noreplace) %{_sysconfdir}/sysconfig/insights-client
-%endif
 %attr(444,root,root) %{_sysconfdir}/insights-client/*.pem
 %attr(444,root,root) %{_sysconfdir}/insights-client/redhattools.pub.gpg
 %{_defaultdocdir}/%{name}
-%if 0%{?rhel} >= 8
 %{python3_sitelib}/insights_client/
-%else
-%{python_sitelib}/insights_client/
-%endif
+%{_sysconfdir}/logrotate.d/insights-client
 
 %doc
 %defattr(-, root, root)
