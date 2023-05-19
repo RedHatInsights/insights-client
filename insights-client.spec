@@ -4,9 +4,9 @@
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                3.2.0
-Release:                0.1
-Source:                 insights-client-%{version}.tar.xz
+Version:                {{{ git_dir_version lead=3.2 }}}
+Release:                0%{?dist}
+Source:                 {{{ git_dir_pack }}}
 License:                GPLv2+
 URL:                    http://console.redhat.com/insights
 Group:                  Applications/System
@@ -45,7 +45,7 @@ BuildRequires: python3-pytest
 Sends insightful information to Red Hat for automated analysis
 
 %prep
-%autosetup -p1
+{{{ git_dir_setup_macro }}}
 
 
 %build
@@ -55,7 +55,6 @@ Sends insightful information to Red Hat for automated analysis
 
 %install
 %{meson_install}
-%{__install} -D -m 644 %{_builddir}/%{name}-%{version}/data/insights-client.motd %{buildroot}/%{_sysconfdir}/insights-client/insights-client.motd
 
 %post
 %systemd_post %{name}.timer
@@ -101,10 +100,6 @@ if [ $1 -eq 0 ]; then
 fi
 
 
-%clean
-rm -rf %{buildroot}
-
-
 %files
 %config(noreplace) %{_sysconfdir}/insights-client/*.conf
 %{_sysconfdir}/insights-client/insights-client.motd
@@ -126,3 +121,5 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*.5.gz
 
 
+%changelog
+{{{ git_dir_changelog }}}
