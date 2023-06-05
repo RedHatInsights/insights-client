@@ -3,7 +3,5 @@
     weekly
     missingok
     notifempty
-    sharedscripts
     copytruncate
-    create 0644 root root
 }
