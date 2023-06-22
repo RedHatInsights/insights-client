@@ -161,6 +161,11 @@
             "symbolic_name": "dig_noedns"
         },
         {
+            "command": "/usr/bin/dnf -C --noplugins module list",
+            "pattern": [],
+            "symbolic_name": "dnf_module_list"
+        },
+        {
             "command": "/bin/dmesg",
             "pattern": [
                 " is now offline",
@@ -182,6 +187,7 @@
                 "FUA",
                 "Hyper-V Host Build",
                 "Hyper-V Host Build:",
+                "Hyper-V: Host Build",
                 "Ignoring BGRT: failed to map image header memory",
                 "Ignoring BGRT: failed to map image memory",
                 "Kernel page table isolation",
@@ -208,6 +214,7 @@
                 "hotplug CPUs",
                 "l1tf",
                 "mce: ",
+                "migration_entry_wait_on_locked",
                 "netconsole: network logging started",
                 "nfsd: too many open connections, consider increasing the number of threads",
                 "page allocation failure: order:",
@@ -545,7 +552,7 @@
             "symbolic_name": "ls_edac_mc"
         },
         {
-            "command": "/bin/ls -lan /etc /etc/cloud/cloud.cfg.d /etc/nova/migration /etc/pki/ovirt-vmconsole /etc/pki/tls/certs /etc/pki/tls/private /etc/rc.d/init.d /etc/selinux/targeted/policy /etc/sysconfig",
+            "command": "/bin/ls -lan /etc /etc/cloud/cloud.cfg.d /etc/nova/migration /etc/pki/ovirt-vmconsole /etc/pki/tls/certs /etc/pki/tls/private /etc/rc.d/init.d /etc/selinux/targeted/policy /etc/sysconfig /etc/watchdog.d",
             "pattern": [],
             "symbolic_name": "ls_etc"
         },
@@ -618,6 +625,11 @@
             "command": "/bin/ls -laRZ /var/lib/nova/instances",
             "pattern": [],
             "symbolic_name": "ls_var_lib_nova_instances"
+        },
+        {
+            "command": "/bin/ls -lan /var/lib/rpm",
+            "pattern": [],
+            "symbolic_name": "ls_var_lib_rpm"
         },
         {
             "command": "/bin/ls -ld /var/opt/mssql",
@@ -1430,11 +1442,6 @@
             "symbolic_name": "satellite_custom_ca_chain"
         },
         {
-            "command": "/usr/bin/mongo pulp_database --eval 'db.serverStatus().storageEngine'",
-            "pattern": [],
-            "symbolic_name": "satellite_mongodb_storage_engine"
-        },
-        {
             "command": "/usr/bin/sealert -l \"*\"",
             "pattern": [],
             "symbolic_name": "sealert"
@@ -1519,6 +1526,15 @@
             "symbolic_name": "systemctl_show_target"
         },
         {
+            "command": "/bin/systemctl status --all",
+            "pattern": [
+                "Failed: ",
+                "Jobs: ",
+                "State: "
+            ],
+            "symbolic_name": "systemctl_status_all"
+        },
+        {
             "command": "/bin/systemd-analyze blame",
             "pattern": [],
             "symbolic_name": "systemd_analyze_blame"
@@ -1537,7 +1553,27 @@
             "command": "/usr/bin/testparm -s",
             "pattern": [
                 "Server role:",
-                "["
+                "[",
+                "comment",
+                "global",
+                "idmap",
+                "kerberos method",
+                "max smbd processes",
+                "min protocol",
+                "nt pipe support",
+                "passdb backend",
+                "path",
+                "read only",
+                "realm",
+                "security",
+                "server max protocol",
+                "server min protocol",
+                "server schannel",
+                "socket options",
+                "template",
+                "winbind",
+                "workgroup",
+                "writable"
             ],
             "symbolic_name": "testparm_s"
         },
@@ -1546,9 +1582,26 @@
             "pattern": [
                 "Server role:",
                 "[",
+                "comment",
+                "global",
+                "idmap",
+                "kerberos method",
+                "max smbd processes",
                 "min protocol",
+                "nt pipe support",
+                "passdb backend",
+                "path",
+                "read only",
+                "realm",
+                "security",
+                "server max protocol",
                 "server min protocol",
-                "server schannel"
+                "server schannel",
+                "socket options",
+                "template",
+                "winbind",
+                "workgroup",
+                "writable"
             ],
             "symbolic_name": "testparm_v_s"
         },
@@ -1939,6 +1992,16 @@
             "symbolic_name": "crypto_policies_bind"
         },
         {
+            "file": "/etc/cups/cupsd.conf",
+            "pattern": [],
+            "symbolic_name": "cupsd_conf"
+        },
+        {
+            "file": "/etc/cups/cups-files.conf",
+            "pattern": [],
+            "symbolic_name": "cups_files_conf"
+        },
+        {
             "file": "/sys/kernel/debug/x86/retp_enabled",
             "pattern": [],
             "symbolic_name": "x86_retp_enabled"
@@ -1977,6 +2040,7 @@
                 "hv_balloon: Max. dynamic memory size:",
                 "hv_vmbus: probe failed for device",
                 "l1tf",
+                "migration_entry_wait_on_locked",
                 "nfsd: too many open connections, consider increasing the number of threads",
                 "x86/pti"
             ],
@@ -2216,6 +2280,11 @@
             "symbolic_name": "ipaupgrade_log"
         },
         {
+            "file": "/etc/ipa/default.conf",
+            "pattern": [],
+            "symbolic_name": "ipa_default_conf"
+        },
+        {
             "file": "/etc/ipsec.conf",
             "pattern": [
                 "include"
@@ -2341,6 +2410,10 @@
                 " invoked oom-killer: ",
                 "(enic): transmit queue 0 timed out",
                 ", type vxfs) has no security xattr handler",
+                "/etc/watchdog.d/fence_mpath_check returned 1",
+                "/etc/watchdog.d/fence_mpath_check_hardreboot returned 1",
+                "/etc/watchdog.d/fence_scsi_check returned 1",
+                "/etc/watchdog.d/fence_scsi_check_hardreboot returned 1",
                 "/input/input",
                 "/usr/lib/ocf/resource.d/heartbeat/azure-lb: line 91: kill: Binary: arguments must be process or job IDs",
                 "17763",
@@ -2403,7 +2476,6 @@
                 "canceled DHCP transaction, DHCP client pid",
                 "clearing Tx timestamp hang",
                 "device-mapper: multipath: Failing path",
-                "dispatch err (pipe full) event lost",
                 "dispatch error reporting limit reached - ending report notification",
                 "does not seem to be present, delaying initialization",
                 "drivers/input/input-leds.c:115 input_leds_connect",
@@ -2449,6 +2521,7 @@
                 "kernel: nfs: server",
                 "khash_super_prune_nolock",
                 "link status up for interface",
+                "migration_entry_wait_on_locked",
                 "multipathd.service operation timed out. Terminating",
                 "nfs_reap_expired_delegations",
                 "nfsd: too many open connections, consider increasing the number of threads",
@@ -2459,8 +2532,12 @@
                 "returned a bad sequence-id error",
                 "rhsm",
                 "rhsmd: rhsmd process exceeded runtime and was killed",
+                "rsyslog.service: Failed with result 'core-dump'.",
+                "rsyslogd",
                 "rsyslogd: too many tcp sessions",
+                "segfault at",
                 "shm_open failed, Permission denied",
+                "shutting down the system because of error 1",
                 "skb_copy",
                 "socket error sending to node",
                 "start request repeated too quickly for docker.service",
@@ -2804,6 +2881,11 @@
             "symbolic_name": "proc_keys"
         },
         {
+            "file": "/proc/key-users",
+            "pattern": [],
+            "symbolic_name": "proc_keyusers"
+        },
+        {
             "file": "/proc/net/netstat",
             "pattern": [],
             "symbolic_name": "proc_netstat"
@@ -2888,6 +2970,7 @@
             "pattern": [
                 "$ActionQueueFileName",
                 "$ModLoad imjournal",
+                "$ModLoad imklog",
                 "(",
                 ")",
                 "DefaultNetstreamDriver",
@@ -2895,9 +2978,9 @@
                 "MaxOpenFiles",
                 "MaxSessions",
                 "StreamDriver",
-                "errorfile",
                 "imjournal",
                 "load=\"imjournal\"",
+                "load=\"imklog\"",
                 "{",
                 "}"
             ],
@@ -2915,12 +2998,8 @@
                 "Global",
                 "KERBEROS METHOD",
                 "Kerberos Method",
-                "MAX SMBD PROCESSES",
-                "Max Smbd Processes",
                 "NT PIPE SUPPORT",
                 "Nt Pipe Support",
-                "PASSDB BACKEND",
-                "Passdb Backend",
                 "REALM",
                 "Realm",
                 "SECURITY",
@@ -2929,16 +3008,18 @@
                 "]",
                 "comment",
                 "global",
+                "idmap",
                 "kerberos method",
-                "max smbd processes",
                 "nt pipe support",
-                "passdb backend",
                 "path",
                 "read only",
                 "realm",
                 "security",
                 "server max protocol",
                 "socket options",
+                "template",
+                "winbind",
+                "workgroup",
                 "writable"
             ],
             "symbolic_name": "samba"
@@ -2992,8 +3073,7 @@
             "file": "/var/log/secure",
             "pattern": [
                 "Could not set limit for 'nofile': Operation not permitted",
-                "drop connection",
-                "sshd"
+                "drop connection"
             ],
             "symbolic_name": "secure"
         },
@@ -3175,6 +3255,11 @@
             "symbolic_name": "sysconfig_sshd"
         },
         {
+            "file": "/etc/sysconfig/stonith",
+            "pattern": [],
+            "symbolic_name": "sysconfig_stonith"
+        },
+        {
             "file": "/etc/sysctl.conf",
             "pattern": [],
             "symbolic_name": "sysctl_conf"
@@ -3298,6 +3383,8 @@
                 "anon_other_write_enable",
                 "anon_upload_enable",
                 "anonymous_enable",
+                "banner_file",
+                "ftpd_banner",
                 "local_enable",
                 "session_support",
                 "ssl_enable",
@@ -3751,6 +3838,7 @@
             "pattern": [
                 "$ActionQueueFileName",
                 "$ModLoad imjournal",
+                "$ModLoad imklog",
                 "(",
                 ")",
                 "DefaultNetstreamDriver",
@@ -3758,9 +3846,9 @@
                 "MaxOpenFiles",
                 "MaxSessions",
                 "StreamDriver",
-                "errorfile",
                 "imjournal",
                 "load=\"imjournal\"",
+                "load=\"imklog\"",
                 "{",
                 "}"
             ],
@@ -3815,6 +3903,11 @@
             "symbolic_name": "sudoers"
         },
         {
+            "glob": "/var/log/watchdog/*.std*",
+            "symbolic_name": "watchdog_logs",
+            "pattern": []
+        },
+        {
             "glob": "/etc/yum.repos.d/*.repo",
             "symbolic_name": "yum_repos_d",
             "pattern": []
@@ -3847,5 +3940,5 @@
     "pre_commands": {
         "iface": "/sbin/ip -o link | awk -F ': |@' '/.*link\\/ether/ {print $2}'"
     },
-    "version": "2023-04-25T01:58:38.881108"
+    "version": "2023-06-19T08:07:27.143594"
 }
