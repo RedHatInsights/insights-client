@@ -114,6 +114,7 @@ fi
 %{_defaultdocdir}/%{name}
 %{python3_sitelib}/insights_client/
 %{_sysconfdir}/logrotate.d/insights-client
+%{_sysconfdir}/tmpfiles.d/insights-client.conf
 
 %doc
 %defattr(-, root, root)
