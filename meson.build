@@ -28,6 +28,8 @@ config_data = configuration_data({
   'top_srcdir': meson.project_source_root()
 })
 
+run_target('update-egg', command: 'scripts/01-upgrade-egg.sh')
+
 subdir('data')
 subdir('docs')
 subdir('src')
