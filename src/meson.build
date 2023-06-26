@@ -8,7 +8,8 @@ foreach source : insights_client_sources
     input: source,
     output: '@BASENAME@',
     configuration: config_data,
-    install_dir: get_option('bindir')
+    install_dir: get_option('bindir'),
+    install_mode: 'rwxr-xr-x'
   )
 endforeach
 
