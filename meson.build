@@ -25,8 +25,7 @@ config_data = configuration_data({
   'SBINDIR': get_option('prefix') / get_option('sbindir'),
   'SYSCONFDIR': '/' / get_option('sysconfdir'),
   'sysconfdir': '/' / get_option('sysconfdir'),
-  'top_srcdir': meson.project_source_root(),
-  'install_mode': 'rwxr-xr-x'
+  'top_srcdir': meson.project_source_root()
 })
 
 subdir('data')
