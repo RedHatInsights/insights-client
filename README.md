@@ -4,38 +4,61 @@
 
 ## Developer Setup
 Instructions are for RHSM-subscribed machines only.
-1. Clone this repo and https://github.com/RedHatInsights/insights-core to the same directory.
 
-```
-$ git clone git@github.com:RedHatInsights/insights-client.git
-$ git clone git@github.com:RedHatInsights/insights-core.git
-```
-2. If you are using a virtual environment for development, make sure that it uses the system-site-packages flag. 
-If not, set the variable to true in the `pyvenv.cfg` file.
+1. Fork both this and [insights-core](https://github.com/RedHatInsights/insights-core) repository.
 
-```
---system-site-packages = true
-```
-3. Setup the build directory. This will run `meson` for you with no options.
+2. Clone both of them to the same directory:
 
-```
-$ cd insights-client
-$ meson setup builddir
-$ meson compile -C builddir
-```
-4. To build an insights-core egg from source, run `./build_client_egg.sh` in the insights-core repo.
+   ```shell
+   $ git clone git@github.com:$YOU/insights-client.git
+   $ git clone git@github.com:$YOU/insights-core.git
+   ```
 
-```
-$ ../insights-core/build_client_egg.sh
-```
+3. If you are using a virtual environment for development, make sure that it uses the system site packages.
 
-5. Run the client with the following options to disable GPG since this egg is unsigned.
+   - For existing one, set `include-system-site-packages = true` in venv's `pyvenv.cfg`.
+   - For new one, create it with `--system-site-packages` flag.
+   - Make sure both repositories share the virtual environment.
 
-```
-$ sudo BYPASS_GPG=True EGG=../insights-core/insights.zip ./src/insights-client --no-gpg
-```
+4. Install the insights-core as a package.
 
-6. Repeat steps 4 and 5 upon making code changes. The majority of the client code lives in `insights-core/insights/client`.
+   ```shell
+   $ cd insights-client
+   $ python3 -m pip install --upgrade pip
+   $ python3 -m pip install -e ../insights-core/.[client-develop]
+   ```
+
+   Optionally: make sure the code does not scream at you for not being able to find various directories and files:
+
+   ```shell
+   $ sudo mkdir -p /etc/insights-client
+   $ sudo touch /etc/insights-client/.exp.sed
+   ```
+
+5. Set up the build directory. This will run `meson` for you with no options.
+
+   ```shell
+   $ meson setup builddir
+   $ meson compile -C builddir
+   $ chmod +x ./builddir/src/insights-client
+   ```
+
+6. Run the client with the following options to disable GPG since this egg is unsigned.
+
+   ```shell
+   $ sudo PYTHONPATH=./src BYPASS_GPG=True EGG=../insights-core ./builddir/src/insights-client --no-gpg --help
+   ```
+
+7. To build an insights-core egg from source, run `build_client_egg.sh` from the insights-core repo.
+
+   ```shell
+   $ cd ../insights-core
+   $ bash build_client_egg.sh
+   $ # File `insights.zip` gets created in the current directory
+   $ cd ../insights-client
+   $ # To use the zip file as an egg, pass `EGG=../insights-core/insights.zip`
+   ```
+
 
 ## Architecture Summary
 The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (from here on, referred to as **wrapper**), and the updatable core module (from here on, referred to as **egg**).
