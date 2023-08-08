@@ -127,6 +127,7 @@ Command line switches available and their explanations.
 - `--net-debug` - Show network debug messages in the console output.
 - `--output-dir=DIR` - Write the collected data to a specified directory without compression. Does not upload.
 - `--output-file=FILE` - Write the collected data to a specified archive. Does not upload.
+- `--build-packagecache` - Attempt to rebuild DNF or YUM cache for current archive generation.
 
 
 #### Switches that exit immediately
