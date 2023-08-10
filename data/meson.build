@@ -18,6 +18,7 @@ install_data(
 subdir('logrotate.d')
 if systemd.found()
   subdir('systemd')
+  subdir('tmpfiles.d')
 else
   subdir('cron')
 endif
