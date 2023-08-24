@@ -206,6 +206,7 @@
                 "VPD access disabled",
                 "Warning: QLogic ISP3XXX Network Driver - this hardware has not undergone testing by Red Hat and might not be certified",
                 "__cpufreq_add_dev",
+                "_raw_spin_lock+0x",
                 "audit: kauditd hold queue overflow",
                 "blocked FC remote port time out: removing target and saving binding",
                 "crashkernel=auto resulted in zero bytes of reserved memory",
@@ -219,12 +220,14 @@
                 "nfsd: too many open connections, consider increasing the number of threads",
                 "page allocation failure: order:",
                 "resetting",
+                "smb2_reconnect.part.0+0x",
                 "smpboot: CPU ",
                 "support",
                 "the DIE domain not a subset of the NUMA domain",
                 "tx hang",
                 "vmxnet3",
                 "vpd r/w failed",
+                "watchdog: BUG: soft lockup",
                 "x86/pti"
             ],
             "symbolic_name": "dmesg"
@@ -497,6 +500,11 @@
             "command": "/sbin/ip -6 neighbor show nud all",
             "pattern": [],
             "symbolic_name": "ipv6_neigh"
+        },
+        {
+            "command": "/usr/bin/iris list",
+            "pattern": [],
+            "symbolic_name": "iris_list"
         },
         {
             "command": "/usr/sbin/iscsiadm -m session",
@@ -1134,6 +1142,7 @@
                 "rngd",
                 "rsyslogd",
                 "sap",
+                "setroubleshootd",
                 "setup.sh",
                 "smbd",
                 "snmpd",
@@ -1211,6 +1220,7 @@
                 "rngd",
                 "rsyslogd",
                 "sap",
+                "setroubleshootd",
                 "setup.sh",
                 "smbd",
                 "snmpd",
@@ -1296,6 +1306,7 @@
                 "rngd",
                 "rsyslogd",
                 "sap",
+                "setroubleshootd",
                 "setup.sh",
                 "smbd",
                 "snmpd",
@@ -1370,6 +1381,7 @@
                 "rngd",
                 "rsyslogd",
                 "sap",
+                "setroubleshootd",
                 "setup.sh",
                 "smbd",
                 "snmpd",
@@ -1474,6 +1486,7 @@
         {
             "command": "/usr/sbin/subscription-manager facts",
             "pattern": [
+                "image-builder.osbuild-composer.api-type",
                 "instance_id"
             ],
             "symbolic_name": "subscription_manager_facts"
@@ -1661,6 +1674,11 @@
             "symbolic_name": "wc_proc_1_mountinfo"
         },
         {
+            "command": "/sbin/xfs_quota -x -c 'state -gu'",
+            "pattern": [],
+            "symbolic_name": "xfs_quota_state"
+        },
+        {
             "command": "yum -C --noplugins list available",
             "pattern": [],
             "symbolic_name": "yum_list_available"
@@ -1752,6 +1770,11 @@
                 "core_collect"
             ],
             "symbolic_name": "insights_client_conf"
+        },
+        {
+            "file": "/etc/insights-client/.exp.sed",
+            "pattern": [],
+            "symbolic_name": "insights_client_exp_sed"
         },
         {
             "file": "/etc/insights-client/machine-id",
@@ -2126,9 +2149,8 @@
         {
             "file": "/var/log/foreman/production.log",
             "pattern": [
-                "background\\\" is not a valid choice",
-                "bad argument (expected URI object or URI string) (ArgumentError)",
-                "undefined method `pulp_href' for nil:NilClass (NoMethodError)"
+                "Cannot use 'skip_types' in combination with a 'mirror_complete' sync policy",
+                "background\\\" is not a valid choice"
             ],
             "symbolic_name": "foreman_production_log"
         },
@@ -2418,6 +2440,7 @@
                 "/usr/lib/ocf/resource.d/heartbeat/azure-lb: line 91: kill: Binary: arguments must be process or job IDs",
                 "17763",
                 ": segfault at ",
+                "> audit_backlog_limit=",
                 "Abort command issued",
                 "Audit daemon is suspending logging due to logfile size",
                 "Broken pipe",
@@ -2425,6 +2448,7 @@
                 "Cannot allocate memory",
                 "Cannot assign requested address",
                 "Cannot assign requested address: AH00072",
+                "Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried",
                 "Corosync main process was not scheduled (@",
                 "Could not set",
                 "DHCPv4 lease renewal requested",
@@ -2462,11 +2486,13 @@
                 "TX driver issue detected, PF reset issued",
                 "The audit daemon is now changing the system to single user mode",
                 "The audit daemon is now halting the system",
+                "Unable to detect release version",
                 "Unit ip6tables.service entered failed state",
                 "Unit iptables.service entered failed state",
                 "Virtualization daemon",
                 "] trap divide error ",
                 "_NET_ACTIVE_WINDOW",
+                "_raw_spin_lock+0x",
                 "are too open.",
                 "as active slave; either",
                 "audispd: queue is full - dropping events",
@@ -2532,13 +2558,11 @@
                 "returned a bad sequence-id error",
                 "rhsm",
                 "rhsmd: rhsmd process exceeded runtime and was killed",
-                "rsyslog.service: Failed with result 'core-dump'.",
-                "rsyslogd",
                 "rsyslogd: too many tcp sessions",
-                "segfault at",
                 "shm_open failed, Permission denied",
                 "shutting down the system because of error 1",
                 "skb_copy",
+                "smb2_reconnect.part.0+0x",
                 "socket error sending to node",
                 "start request repeated too quickly for docker.service",
                 "state changed timeout -> done",
@@ -2554,7 +2578,8 @@
                 "unknown filesystem type 'binfmt_misc'",
                 "ut of memory: ",
                 "was not terminated (reboot) by <anyone> on behalf of",
-                "watch chan error: etcdserver: mvcc: required revision has been compacted"
+                "watch chan error: etcdserver: mvcc: required revision has been compacted",
+                "watchdog: BUG: soft lockup"
             ],
             "symbolic_name": "messages"
         },
@@ -2956,6 +2981,11 @@
             "symbolic_name": "os_release"
         },
         {
+            "file": "/proc/sys/kernel/random/entropy_avail/etc/resolv.conf",
+            "pattern": [],
+            "symbolic_name": "random_entropy_avail"
+        },
+        {
             "file": "/etc/resolv.conf",
             "pattern": [],
             "symbolic_name": "resolv_conf"
@@ -2970,7 +3000,6 @@
             "pattern": [
                 "$ActionQueueFileName",
                 "$ModLoad imjournal",
-                "$ModLoad imklog",
                 "(",
                 ")",
                 "DefaultNetstreamDriver",
@@ -2980,7 +3009,6 @@
                 "StreamDriver",
                 "imjournal",
                 "load=\"imjournal\"",
-                "load=\"imklog\"",
                 "{",
                 "}"
             ],
@@ -3429,7 +3457,11 @@
         },
         {
             "file": "/var/log/yum.log",
-            "pattern": [],
+            "pattern": [
+                "Erased:",
+                "Installed:",
+                "Updated:"
+            ],
             "symbolic_name": "yum_log"
         },
         {
@@ -3745,6 +3777,11 @@
             "symbolic_name": "dnf_modules"
         },
         {
+            "glob": "/var/tmp/insights-runtimes/uploads/*.json",
+            "pattern": [],
+            "symbolic_name": "eap_json_reports"
+        },
+        {
             "glob": "/boot/config-*",
             "symbolic_name": "kernel_config",
             "pattern": [
@@ -3838,7 +3875,6 @@
             "pattern": [
                 "$ActionQueueFileName",
                 "$ModLoad imjournal",
-                "$ModLoad imklog",
                 "(",
                 ")",
                 "DefaultNetstreamDriver",
@@ -3848,7 +3884,6 @@
                 "StreamDriver",
                 "imjournal",
                 "load=\"imjournal\"",
-                "load=\"imklog\"",
                 "{",
                 "}"
             ],
@@ -3905,7 +3940,9 @@
         {
             "glob": "/var/log/watchdog/*.std*",
             "symbolic_name": "watchdog_logs",
-            "pattern": []
+            "pattern": [
+                "Connection timed out"
+            ]
         },
         {
             "glob": "/etc/yum.repos.d/*.repo",
@@ -3940,5 +3977,5 @@
     "pre_commands": {
         "iface": "/sbin/ip -o link | awk -F ': |@' '/.*link\\/ether/ {print $2}'"
     },
-    "version": "2023-06-19T08:07:27.143594"
+    "version": "2023-08-03T06:57:15.106819"
 }
