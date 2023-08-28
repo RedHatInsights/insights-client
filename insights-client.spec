@@ -39,6 +39,7 @@ BuildRequires: systemd
 BuildRequires: pam
 BuildRequires: meson
 BuildRequires: python3-pytest
+BuildRequires: systemd-rpm-macros
 
 
 %description
@@ -114,7 +115,7 @@ fi
 %{_defaultdocdir}/%{name}
 %{python3_sitelib}/insights_client/
 %{_sysconfdir}/logrotate.d/insights-client
-%{_sysconfdir}/tmpfiles.d/insights-client.conf
+%{_tmpfilesdir}/insights-client.conf
 
 %doc
 %defattr(-, root, root)
