@@ -770,6 +770,11 @@
             "symbolic_name": "lspci_vmmkn"
         },
         {
+            "command": "/usr/sbin/lvm fullreport -a --nolocking --reportformat json",
+            "pattern": [],
+            "symbolic_name": "lvm_fullreport"
+        },
+        {
             "command": "/usr/sbin/lvmconfig --type full",
             "pattern": [],
             "symbolic_name": "lvmconfig"
@@ -848,6 +853,11 @@
             "command": "/usr/bin/md5sum /usr/lib64/libfreeblpriv3.so",
             "pattern": [],
             "symbolic_name": "md5chk_files"
+        },
+        {
+            "command": "/usr/sbin/mdadm -D /dev/md*",
+            "pattern": [],
+            "symbolic_name": "mdadm_D"
         },
         {
             "command": "/bin/mokutil --sb-state",
@@ -1107,10 +1117,12 @@
                 "elasticsearch",
                 "gnocchi-metricd",
                 "gnome-shell",
+                "gunicorn",
                 "haproxy",
                 "heat-engine",
                 "histserver",
                 "httpd",
+                "irisdb",
                 "ksmtuned",
                 "kubelet",
                 "mongdb",
@@ -1184,10 +1196,12 @@
                 "elasticsearch",
                 "gnocchi-metricd",
                 "gnome-shell",
+                "gunicorn",
                 "haproxy",
                 "heat-engine",
                 "histserver",
                 "httpd",
+                "irisdb",
                 "ksmtuned",
                 "kubelet",
                 "mongdb",
@@ -1269,10 +1283,12 @@
                 "gnome-shell",
                 "goferd",
                 "greenplum",
+                "gunicorn",
                 "haproxy",
                 "heat-engine",
                 "histserver",
                 "httpd",
+                "irisdb",
                 "iscsid",
                 "ksmtuned",
                 "kubelet",
@@ -1347,10 +1363,12 @@
                 "elasticsearch",
                 "gnocchi-metricd",
                 "gnome-shell",
+                "gunicorn",
                 "haproxy",
                 "heat-engine",
                 "histserver",
                 "httpd",
+                "irisdb",
                 "ksmtuned",
                 "kubelet",
                 "mongdb",
@@ -1444,7 +1462,7 @@
             "symbolic_name": "rndc_status"
         },
         {
-            "command": "/bin/rpm -V coreutils procps procps-ng shadow-utils passwd sudo chrony findutils",
+            "command": "/bin/rpm -V coreutils procps procps-ng shadow-utils passwd sudo chrony findutils glibc",
             "pattern": [],
             "symbolic_name": "rpm_V_packages"
         },
@@ -1766,15 +1784,11 @@
             "file": "/etc/insights-client/insights-client.conf",
             "pattern": [
                 "[",
+                "authmethod",
                 "auto_update",
                 "core_collect"
             ],
             "symbolic_name": "insights_client_conf"
-        },
-        {
-            "file": "/etc/insights-client/.exp.sed",
-            "pattern": [],
-            "symbolic_name": "insights_client_exp_sed"
         },
         {
             "file": "/etc/insights-client/machine-id",
@@ -1821,6 +1835,11 @@
             "file": "/etc/audisp/audispd.conf",
             "pattern": [],
             "symbolic_name": "audispd_conf"
+        },
+        {
+            "file": "/proc/buddyinfo",
+            "pattern": [],
+            "symbolic_name": "buddyinfo"
         },
         {
             "file": "/proc/driver/cciss/()*cciss.*",
@@ -2501,6 +2520,7 @@
                 "callbacks suppressed",
                 "canceled DHCP transaction, DHCP client pid",
                 "clearing Tx timestamp hang",
+                "client-error-not-possible",
                 "device-mapper: multipath: Failing path",
                 "dispatch error reporting limit reached - ending report notification",
                 "does not seem to be present, delaying initialization",
@@ -2549,11 +2569,13 @@
                 "link status up for interface",
                 "migration_entry_wait_on_locked",
                 "multipathd.service operation timed out. Terminating",
+                "new clients may experience noticeable delays",
                 "nfs_reap_expired_delegations",
                 "nfsd: too many open connections, consider increasing the number of threads",
                 "not responding, timed out",
                 "per_source_limit from",
                 "platform microcode: firmware: requesting",
+                "rejecting connections on daemon MTA: load average",
                 "reservation conflict",
                 "returned a bad sequence-id error",
                 "rhsm",
@@ -2881,6 +2903,11 @@
             "symbolic_name": "pluginconf_d"
         },
         {
+            "file": "/etc/postfix/master.cf",
+            "pattern": [],
+            "symbolic_name": "postfix_master"
+        },
+        {
             "file": "/var/lib/pgsql/data/postgresql.conf",
             "pattern": [],
             "symbolic_name": "postgresql_conf"
@@ -2934,11 +2961,6 @@
             "file": "/proc/stat",
             "pattern": [],
             "symbolic_name": "proc_stat"
-        },
-        {
-            "file": "/sos_commands/process/ps_auxwww",
-            "pattern": [],
-            "symbolic_name": "ps_auxwww"
         },
         {
             "file": "/etc/default/pulp_workers",
@@ -3109,6 +3131,14 @@
             "file": "/etc/selinux/config",
             "pattern": [],
             "symbolic_name": "selinux_config"
+        },
+        {
+            "file": "/etc/mail/sendmail.mc",
+            "pattern": [
+                "confQUEUE_LA",
+                "confREFUSE_LA"
+            ],
+            "symbolic_name": "sendmail_mc"
         },
         {
             "file": "/proc/net/softnet_stat",
@@ -3465,11 +3495,6 @@
             "symbolic_name": "yum_log"
         },
         {
-            "file": "/var/log/redhat_access_proactive/redhat_access_proactive.log",
-            "pattern": [],
-            "symbolic_name": "redhat_access_proactive_log"
-        },
-        {
             "file": "/etc/logrotate.conf",
             "pattern": [],
             "symbolic_name": "logrotate_conf"
@@ -3653,6 +3678,20 @@
                 "%wheel"
             ],
             "symbolic_name": "sudoers"
+        },
+        {
+            "file": "/etc/udev/rules.d/66-md-auto-re-add.rules",
+            "pattern": [
+                "GOTO=\"md_end\""
+            ],
+            "symbolic_name": "udev_66_md_rules"
+        },
+        {
+            "file": "/usr/lib/udev/rules.d/66-md-auto-re-add.rules",
+            "pattern": [
+                "GOTO=\"md_end\""
+            ],
+            "symbolic_name": "udev_66_md_rules"
         },
         {
             "file": "/usr/lib/udev/rules.d/59-fc-wwpn-id.rules",
@@ -3977,5 +4016,5 @@
     "pre_commands": {
         "iface": "/sbin/ip -o link | awk -F ': |@' '/.*link\\/ether/ {print $2}'"
     },
-    "version": "2023-08-03T06:57:15.106819"
+    "version": "2023-09-08T09:13:04.812643"
 }
