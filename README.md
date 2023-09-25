@@ -1,9 +1,10 @@
 # Red Hat Insights Client
 
-**insights-client** is the Client API Wrapper for the Client API that lives in the Insights Core.
+**insights-client** is the Client API Wrapper for the Client API that lives in the Insights Core (the egg).
 
 ## Developer Setup
-Instructions are for RHSM-subscribed machines only.
+
+These instructions require the system to be registered with Red Hat Subscription Management.
 
 1. Fork both this and [insights-core](https://github.com/RedHatInsights/insights-core) repository.
 
@@ -16,26 +17,28 @@ Instructions are for RHSM-subscribed machines only.
 
 3. If you are using a virtual environment for development, make sure that it uses the system site packages.
 
-   - For existing one, set `include-system-site-packages = true` in venv's `pyvenv.cfg`.
+   - For existing one, set `include-system-site-packages = true` in virtual environment's `pyvenv.cfg`.
    - For new one, create it with `--system-site-packages` flag.
    - Make sure both repositories share the virtual environment.
 
-4. Install the insights-core as a package.
+4. Install the `insights-core` as a package.
 
-   ```shell
-   $ cd insights-client
-   $ python3 -m pip install --upgrade pip
-   $ python3 -m pip install -e ../insights-core/.[client-develop]
-   ```
-
-   Optionally: make sure the code does not scream at you for not being able to find various directories and files:
-
+   First, make sure the following directories and files exist, otherwise the code will scream at you:
+ 
    ```shell
    $ sudo mkdir -p /etc/insights-client
    $ sudo touch /etc/insights-client/.exp.sed
    ```
+   
+   Then you can install the package using pip:
 
-5. Set up the build directory. This will run `meson` for you with no options.
+   ```shell
+   $ cd insights-client
+   $ python3 -m pip install --upgrade pip wheel
+   $ python3 -m pip install -e ../insights-core/.[client-develop]
+   ```
+
+5. Set up the build directory.
 
    ```shell
    $ meson setup builddir
@@ -43,11 +46,13 @@ Instructions are for RHSM-subscribed machines only.
    $ chmod +x ./builddir/src/insights-client
    ```
 
-6. Run the client with the following options to disable GPG since this egg is unsigned.
+6. Run the client with the following options to disable GPG since the development eggs are unsigned.
 
    ```shell
    $ sudo PYTHONPATH=./src BYPASS_GPG=True EGG=../insights-core ./builddir/src/insights-client --no-gpg --help
    ```
+
+   *Note: `BYPASS_GPG` skips the verification on insights-client side, `--no-gpg` disables it on insights-core/egg side.*
 
 7. To build an insights-core egg from source, run `build_client_egg.sh` from the insights-core repo.
 
@@ -61,29 +66,59 @@ Instructions are for RHSM-subscribed machines only.
 
 
 ## Architecture Summary
-The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (from here on, referred to as **wrapper**), and the updatable core module (from here on, referred to as **egg**).
+
+The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (the `insights-client` repository, from here on referred to as **wrapper**), and the updatable core module (the `insights-core` repository, from here on referred to as **egg**).
 
 ### Wrapper
-The wrapper is the main entry point for the Insights Client. The wrapper's job is to initiate the **phases**, described later. For each phase, the wrapper iterates through the available eggs, and tries each in succession to perform a successful collection & upload. If an egg fails, the client will go on to try the next available egg. If all eggs fail, execution will halt. All possible eggs are described as follows, in the order in which they are tried:
 
- - `ENV_EGG` - an egg specified by the environment variable `EGG`
- - `NEW_EGG` - newest available egg, if an update has been performed
- - `STABLE_EGG` - the last egg that performed a successful collection & upload
- - `RPM_EGG` - the default egg that ships with the RPM
+The wrapper is the main entry point for the Insights Client, and its job is to initiate the [**phases**](#phases). For each phase, the wrapper iterates over the available eggs, and tries each in succession to perform a collection & upload. If an egg fails, the client will try the next available egg. If all eggs fail, execution will halt. All possible eggs are described as follows, in the order in which they are tried:
 
-## Egg
-The egg is the bundle that contains the Insights Core module, which has all the main functionality in it. All the options/switches/config are passed through to the egg from the wrapper. The egg contains phase information
+ 1. `ENV_EGG` - an egg specified by the environment variable `EGG`,
+ 2. `NEW_EGG` - newest available egg, if an update has been performed,
+ 3. `STABLE_EGG` - the last egg that performed a successful collection & upload,
+ 4. `RPM_EGG` - the default egg that ships with the RPM.
 
-# At Run Time
-Summary of the client's run, from start to finish.
+### Egg
+
+The egg is a bundle that contains the Insights Core module with all the main functionality. All flags and configurations are passed to the egg by the wrapper.
+
+
+## Phases
+
+The Insights Client runs in four phases.
+They are modularized, so if one of them crashes due to a bad egg, the proces can be resumed at that phase using the egg that's next in the priority list.
+
+   1. **Pre-Update**  
+   Execute any flags that exit immediately (except `--status` and `--unregister`).
+   If necessary, exit.
+
+   2. **Update**  
+   Establish a connection to Insights and update the local egg if the upstream contains a newer version (using etags).
+   During legacy collection, download the newest version of `uploader.json`.
+
+   3. **Post-Update**  
+   Process registration options.
+   Check registration.
+   If the system is not registered and the operation requires the registration, exit.
+
+   4. **Collect and output**  
+   [Run the collection](#collection).
+   Output it in desired format; the default is to upload the archive to Insights.
+
 
 ## Configuration
+
 The configuration file uses INI format (see [configparser](https://docs.python.org/3/library/configparser.html)).
 The main section for configuration variables is `[insights-client]`.
 
-Configuration follows a precedence hierarchy of CLI -> `/etc/insights-client/insights-client.conf` file -> environment variable.
+The configuration uses the values in the following hierarchy:
+
+1. CLI flags
+2. `/etc/insights-client/insights-client.conf`
+3. environment variables.
 
 ### Environment Variables
+
 Environment configuration can be used by setting environment variables with names in the format INSIGHTS_xxxxxx, where xxxxxx is the configuration variable name, in all caps.
 
 ### `insights-client.conf` File
@@ -155,6 +190,7 @@ These switches are undocumented and for developer use only.
 - `--debug-phases` - Print info about phase execution and egg fallback
 - `--to-json` - Print the collection results to the console as JSON. Deprecated as rule results are no longer returned by the upload service.
 - `--check-results` - Fetch the system profile and cache it. Produces no output to console. Not meant to be run as a standalone option but rather as part of a regular systemd job that refreshes the cached data.
+
 
 ## Recommended Developer Config
 For convenience, some sample configs are provided here for developers for connecting to the different environments the client can interface with. These configurations can be defined via config file or via environment variables using the naming described under **Environment Variables**. The following are in config file notation and can be used as drop-in configuration.
@@ -228,28 +264,10 @@ username=<username>
 password=<password>
 ```
 
-## Phases
-The Insights Client runs using **phases** of execution, modularized so that they if one crashes due to a bad egg, they can be resumed at the current phase using the following egg in the priority list.
-
-
-### Phase I: Pre-Update
-Execute any "switches that exit immediately" that were specified (except `--status` and `--unregister`), and exit if needed
-
-### Phase II: Update
-Establish a connection to Insights and update the egg if the egg available upstream is newer than newest.egg (check etags).
-Download the newest version of `uploader.json` for file collection (legacy collection only).
-
-### Phase III: Post-Update
-Process registration options.
-Check registration. If unregistered and operating in a mode in which registration is required, exit.
-
-### Phase IV: Collect & Output
-Run the collection.
-Output to the desired format; default is archive uploaded to Insights.
 
 ## Collection
 
-Insights Client utilizes **insights-core** to perform data collection. Details on the workings of insights-core can be found here: https://github.com/RedHatInsights/insights-core#documentation
+Insights Client utilizes **insights-core** to perform data collection. Details on the workings of insights-core can be found here: https://github.com/RedHatInsights/insights-core#documentation.
 
 ### Archive Structure
 The Insights archive has the following structure:
