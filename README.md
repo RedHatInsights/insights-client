@@ -28,6 +28,8 @@ These instructions require the system to be registered with Red Hat Subscription
    ```shell
    $ sudo mkdir -p /etc/insights-client
    $ sudo touch /etc/insights-client/.exp.sed
+   $ sudo ln -s `pwd`/data/redhattools.pub.gpg /etc/insights-client/
+   $ sudo ln -s `pwd`/data/cert-api.access.redhat.com.pem /etc/insights-client/
    ```
    
    Then you can install the package using pip:

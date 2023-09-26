@@ -4,17 +4,18 @@
 """
 from __future__ import print_function
 import os
+import shutil
 import sys
+import tempfile
+
 import six
 import subprocess
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
-import shlex
 import logging
 import logging.handlers
 
 GPG_KEY = "/etc/insights-client/redhattools.pub.gpg"
-
 BYPASS_GPG = os.environ.get("BYPASS_GPG", "").lower() == "true"
 ENV_EGG = os.environ.get("EGG")
 NEW_EGG = "/var/lib/insights/newest.egg"
@@ -68,21 +69,42 @@ def sorted_eggs(eggs):
 
 
 def gpg_validate(path):
-    # ENV egg might be None, so check if path defined, then check if it exists
-    if not (path and os.path.exists(path)):
+    """Verify an egg at given path has valid GPG signature.
+
+    This is an abridged version of GPG verification that is present in
+    egg's client/crypto.py.
+    """
+    # EGG= may be None or an invalid path
+    if not path or not os.path.exists(path):
         return False
 
+    # EGG may be a path to a directory (which cannot be signed)
     if BYPASS_GPG:
         return True
 
     if not os.path.exists(path + ".asc"):
         return False
 
-    gpg_template = '/usr/bin/gpg --verify --keyring %s %s %s'
-    cmd = gpg_template % (GPG_KEY, path + '.asc', path)
-    proc = subprocess.Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
-    proc.communicate()
-    return proc.returncode == 0
+    home = tempfile.mkdtemp()
+
+    # Import the public keys into temporary environment
+    import_process = subprocess.Popen(
+        ["/usr/bin/gpg", "--homedir", home, "--import", GPG_KEY],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    import_process.communicate()
+    if import_process.returncode != 0:
+        shutil.rmtree(home)
+        return False
+
+    # Verify the signature
+    verify_process = subprocess.Popen(
+        ["/usr/bin/gpg", "--homedir", home, "--verify", path+".asc", path],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    verify_process.communicate()
+    shutil.rmtree(home)
+    return verify_process.returncode == 0
 
 
 def run_phase(phase, client, validated_eggs):
