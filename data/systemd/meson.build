@@ -40,10 +40,10 @@ endforeach
 
 install_data(
   unit_sources,
-  install_dir: systemd.get_variable('systemdsystemunitdir')
+  install_dir: systemd.get_pkgconfig_variable('systemdsystemunitdir')
 )
 
 install_data(
   preset_sources,
-  install_dir: systemd.get_variable('systemdsystempresetdir')
+  install_dir: systemd.get_pkgconfig_variable('systemdsystempresetdir')
 )
