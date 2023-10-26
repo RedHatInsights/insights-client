@@ -7,11 +7,7 @@ python = import('python')
 
 python_installation = python.find_installation(get_option('python'))
 
-if meson.version().version_compare('>=0.55')
- python_exec = python_installation.full_path()
-else
- python_exec = '/usr/bin/python3'
-endif
+python_exec = '/usr/bin/python3'
 
 systemd = dependency('systemd', version: '>=231', required: false)
 
@@ -41,24 +37,16 @@ subdir('data')
 subdir('docs')
 subdir('src')
 
-if meson.version().version_compare('>=0.53')
-summary({
-  'python': get_option('python'),
-  'auto_registration': get_option('auto_registration'),
-  'checkin': get_option('checkin'),
-}, section: 'Configuration')
+configuration = '**Configuration**\n'
+configuration += '\tpython\t\t\t: ' + get_option('python') + '\n'
+if get_option('checkin').enabled()
+ configuration += '\tcheckin\t: ' + 'enabled' + '\n'
 else
-  configuration = '**Configuration**\n'
-  configuration += '\tpython\t\t\t: ' + get_option('python') + '\n'
-  if get_option('checkin').enabled()
-   configuration += '\tcheckin\t: ' + 'enabled' + '\n'
-  else
-   configuration += '\tcheckin\t: ' + 'disabled' + '\n'
-  endif
-  if get_option('auto_registration').enabled()
-    configuration += '\tauto_registration\t: ' + 'enabled' + '\n'
-  else 
-    configuration += '\tauto_registration\t: ' + 'disabled' + '\n'
-  endif
-  message(configuration)
+ configuration += '\tcheckin\t: ' + 'disabled' + '\n'
 endif
+if get_option('auto_registration').enabled()
+  configuration += '\tauto_registration\t: ' + 'enabled' + '\n'
+else 
+  configuration += '\tauto_registration\t: ' + 'disabled' + '\n'
+endif
+message(configuration)
