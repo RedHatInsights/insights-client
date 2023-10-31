@@ -1,7 +1,5 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
-%global __python %{_libexecdir}/platform-python
-
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                {{{ git_dir_version lead=3.2 }}}
@@ -50,7 +48,7 @@ Sends insightful information to Red Hat for automated analysis
 
 
 %build
-%{meson} -Dpython=%{__python}
+%{meson} -Dpython=%{__python3}
 %{meson_build}
 
 
