@@ -67,28 +67,18 @@ if [ -d %{_sysconfdir}/motd.d ]; then
     fi
 fi
 
-%systemd_post insights-register.path
-%systemd_post insights-unregister.path
-%systemd_post 80-insights.preset
-
-
 %preun
 %systemd_preun %{name}.timer
 %systemd_preun %{name}.service
-%systemd_preun insights-register.path
-%systemd_preun insights-unregister.path
 %systemd_preun insights-client-boot.service
 
 %postun
 %systemd_postun %{name}.timer
 %systemd_postun %{name}.service
-%systemd_postun insights-register.path
-%systemd_postun insights-unregister.path
 %systemd_postun insights-client-boot.service
 
 # Clean up files created by insights-client that are unowned by the RPM
 if [ $1 -eq 0 ]; then
-    systemctl unmask insights-register.path
     rm -f %{_sysconfdir}/cron.daily/insights-client
     rm -f %{_sysconfdir}/ansible/facts.d/insights.fact
     rm -f %{_sysconfdir}/ansible/facts.d/insights_machine_id.fact
