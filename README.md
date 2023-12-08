@@ -150,7 +150,7 @@ Command line switches available and their explanations.
 
 - `--register` - Register a system with the Insights API. Required for basic collection & upload, except in the case of certain targets or if `--offline` is specified
 - `--display-name=DISPLAYNAME` - Display name to appear in the insights web UI. This can be used at registration time, or standalone to change the display name any time.
-- `--group=GROUP` - Group to add the system to in the insights web UI. Only used on machine registration.
+- `--group=GROUP` - Add a tag named `group` to the system in the insights web UI and in insights-client tags file.
 - `--retry=RETRIES` - Number of times to retry the collection archive upload. Default is 1.
 - `--quiet` - Run with limited console output. This will only print ERROR level messages.
 - `--silent` - Run with no console output at all.
