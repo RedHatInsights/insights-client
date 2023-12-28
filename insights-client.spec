@@ -43,6 +43,17 @@ BuildRequires: systemd-rpm-macros
 %description
 Sends insightful information to Red Hat for automated analysis
 
+%package ros
+Requires: pcp-zeroconf
+Summary: The subpackage for Resource Optimization Service
+SOURCE0: data/ros.conf
+
+%description ros
+
+The ros subpackage provides configuration file including parameter ros_collect,
+the parameter is set to True by default. The system starts sending PCP archives to
+Resource Optimization service upon modifying ros_collect parameter to True.
+
 %prep
 {{{ git_dir_setup_macro }}}
 
@@ -54,6 +65,9 @@ Sends insightful information to Red Hat for automated analysis
 
 %install
 %{meson_install}
+# Create directory and copy file to new directory for Resource Optimization service
+install -d -m0750 %{_sysconfdir}/insights_client/insights-client.conf.d
+install -m0644  %{SOURCE0} %{_sysconfdir}/insights_client/insights-client.conf.d/ros.conf
 
 %post
 %systemd_post %{name}.timer
@@ -67,6 +81,13 @@ if [ -d %{_sysconfdir}/motd.d ]; then
     fi
 fi
 
+%post ros
+echo
+echo "Removing custom PCP configuration required for Resource Optimization service!"
+echo
+rm -f /var/lib/pcp/config/pmlogger/config.ros
+sed -i "/PCP_LOG_DIR\/pmlogger\/ros/d" /etc/pcp/pmlogger/control.d/local
+
 %preun
 %systemd_preun %{name}.timer
 %systemd_preun %{name}.service
@@ -76,6 +97,11 @@ fi
 %systemd_postun %{name}.timer
 %systemd_postun %{name}.service
 %systemd_postun insights-client-boot.service
+
+%postun ros
+echo
+echo "Removing the Resource Optimization service configuration file!"
+rm -f %{_sysconfdir}/insights_client/insights-client.conf.d/ros.conf
 
 # Clean up files created by insights-client that are unowned by the RPM
 if [ $1 -eq 0 ]; then
@@ -104,6 +130,10 @@ fi
 %{python3_sitelib}/insights_client/
 %{_sysconfdir}/logrotate.d/insights-client
 %{_tmpfilesdir}/insights-client.conf
+
+%files ros
+%config(noreplace)
+%{_sysconfdir}/insights_client/insights-client.conf.d/ros.conf
 
 %doc
 %defattr(-, root, root)
