@@ -46,7 +46,7 @@ Sends insightful information to Red Hat for automated analysis
 %package ros
 Requires: pcp-zeroconf
 Summary: The subpackage for Resource Optimization Service
-SOURCE0: data/ros.conf
+SOURCE1: data/ros.conf
 
 %description ros
 
@@ -67,7 +67,7 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 %{meson_install}
 # Create directory and copy file to new directory for Resource Optimization service
 install -d -m0750 %{_sysconfdir}/insights_client/insights-client.conf.d
-install -m0644  %{SOURCE0} %{_sysconfdir}/insights_client/insights-client.conf.d/ros.conf
+install -m0644  %{SOURCE1} %{_sysconfdir}/insights_client/insights-client.conf.d/ros.conf
 
 %post
 %systemd_post %{name}.timer
