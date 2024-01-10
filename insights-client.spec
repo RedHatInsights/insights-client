@@ -46,7 +46,7 @@ Sends insightful information to Red Hat for automated analysis
 %package ros
 Requires: pcp-zeroconf
 Summary: The subpackage for Resource Optimization Service
-SOURCE1: data/ros.conf
+Source1: ros.conf
 
 %description ros
 
