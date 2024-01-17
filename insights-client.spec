@@ -47,7 +47,7 @@ Sends insightful information to Red Hat for automated analysis
 
 %package ros
 Requires: pcp-zeroconf
-Summary: The subpackage for Resource Optimization Service
+Summary: The subpackage for Insights resource optimization service
 
 %description ros
 
@@ -80,14 +80,16 @@ if [ -d %{_sysconfdir}/motd.d ]; then
 fi
 
 %post ros
-echo
-echo "Removing custom PCP configuration required for Resource Optimization service!"
-echo
 rm -f /var/lib/pcp/config/pmlogger/config.ros
 sed -i "/PCP_LOG_DIR\/pmlogger\/ros/d" /etc/pcp/pmlogger/control.d/local
-echo
-echo "Enabling ros_collect to send PCP archives for Resource Optimization service!"
-sed -i "s/#ros_collect=True/ros_collect=True/" %{_sysconfdir}/insights-client/insights-client.conf
+
+if grep -qv "^ros_collect" %{_sysconfdir}/insights-client/insights-client.conf; then
+cat <<EOF >> %{_sysconfdir}/insights-client/insights-client.conf
+### Begin insights-client-ros ###
+ros_collect=True
+### End insights-client-ros ###
+EOF
+fi
 
 %preun
 %systemd_preun %{name}.timer
@@ -100,9 +102,7 @@ sed -i "s/#ros_collect=True/ros_collect=True/" %{_sysconfdir}/insights-client/in
 %systemd_postun insights-client-boot.service
 
 %postun ros
-echo
-echo "Disabling the ros_collect configuration of Resource Optimization service!"
-sed -i "s/ros_collect=True/#ros_collect=True/" %{_sysconfdir}/insights-client/insights-client.conf
+sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/ros_collect=True/d' %{_sysconfdir}/insights-client/insights-client.conf
 
 
 # Clean up files created by insights-client that are unowned by the RPM
