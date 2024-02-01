@@ -165,32 +165,49 @@ def run_phase(phase, client, validated_eggs):
 
 
 def update_motd_message():
-    """
-    motd displays a message about system not being registered. Once a
+    """Update MOTD (after a phase was run).
+
+    MOTD displays a message about system not being registered. Once a
     registration stamp file exists, we make that message go away by pointing
     /etc/motd.d/insights-client at an empty file.
 
     It is intentional that the message does not reappear if a system is then
     unregistered. Only if both the unregistered and the registered stamp files
-    do not exist is an motd symlink created.
+    do not exist is a motd symlink created.
 
     The motd message could also be deliberately disabled by the users before
     registration, simply because they don't want to use insights-client, by
     pointing /etc/motd.d/insights-client at an empty file.
     """
-    try:
-        if os.path.exists(os.path.dirname(MOTD_FILE)) and \
-           os.path.islink(MOTD_FILE) and not os.path.samefile(os.devnull, MOTD_FILE):
-            if (os.path.isfile(REGISTERED_FILE) or os.path.isfile(UNREGISTERED_FILE)):
-                if not os.path.samefile(os.devnull, MOTD_FILE):
-                    os.symlink(os.devnull, MOTD_FILE + ".tmp")
-                    os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
-            else:
-                os.symlink(MOTD_SRC, MOTD_FILE + ".tmp")
-                os.rename(MOTD_FILE + ".tmp", MOTD_FILE)
-    except OSError as e:
-        # In the case of multiple processes
-        logger.debug("Could not modify motd.d file: %s", str(e))
+    if not os.path.exists(os.path.dirname(MOTD_FILE)):
+        logger.debug("directory '{dir}' does not exist, ignoring MOTD update request".format(
+            dir=os.path.dirname(MOTD_FILE)
+        ))
+        return
+
+    motd_should_exist = not os.path.exists(REGISTERED_FILE) and not os.path.exists(UNREGISTERED_FILE)
+
+    if motd_should_exist:
+        # .registered & .unregistered do not exist, MOTD should be displayed
+        if not os.path.exists(MOTD_FILE):
+            try:
+                os.symlink(MOTD_SRC, MOTD_FILE)
+                logger.debug("pointed the MOTD file '{source}' to '{motd}'".format(
+                    source=MOTD_SRC, motd=MOTD_FILE,
+                ))
+            except OSError:
+                logger.exception("could not point the MOTD file '{source}' to '{motd}'".format(
+                    source=MOTD_SRC, motd=MOTD_FILE,
+                ))
+
+    else:
+        # .registered or .unregistered exist, MOTD should not be displayed
+        if os.path.exists(MOTD_FILE):
+            try:
+                os.symlink(os.devnull, MOTD_FILE)
+                logger.debug("pointed the MOTD file '{path}' to '/dev/null'".format(path=MOTD_FILE))
+            except OSError:
+                logger.exception("could not remove the MOTD file '{path}'".format(path=MOTD_FILE))
 
 
 def _main():
