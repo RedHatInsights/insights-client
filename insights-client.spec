@@ -30,6 +30,8 @@ Requires: python3-six
 Requires: python3dist(setuptools)
 Requires: coreutils
 
+Requires: subscription-manager
+
 BuildRequires: wget
 BuildRequires: binutils
 BuildRequires: python3-devel
