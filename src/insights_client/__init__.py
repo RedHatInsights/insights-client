@@ -15,6 +15,9 @@ import six
 from distutils.version import LooseVersion
 
 
+INSIGHTS_DEBUG = os.environ.get("INSIGHTS_DEBUG", "").lower() == "true"
+NO_COLOR = os.environ.get("NO_COLOR") is not None
+
 BYPASS_GPG = os.environ.get("BYPASS_GPG", "").lower() == "true"
 GPG_KEY = "/etc/insights-client/redhattools.pub.gpg"
 
@@ -32,6 +35,28 @@ TEMPORARY_GPG_HOME_PARENT_DIRECTORY = "/var/lib/insights/"
 
 
 logger = logging.getLogger(__name__)
+
+
+def client_debug(message):
+    """Debug a log message when logging isn't available yet.
+
+    Set 'INSIGHTS_DEBUG' variable to enable this method.
+
+    :param message: Text to display
+    :type message: str
+    """
+    if not INSIGHTS_DEBUG:
+        return
+
+    prefix = "insights-client debug"
+    suffix = ""
+    if NO_COLOR or not sys.stdout.isatty():
+        prefix += ":"
+    else:
+        prefix = "\033[40m" + prefix + "\033[0m\033[33m"
+        suffix = "\033[0m"
+
+    print(prefix + " " + message + suffix, file=sys.stderr)
 
 
 def log(msg):
