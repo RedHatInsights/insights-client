@@ -103,16 +103,24 @@ def gpg_validate(path):
 
     This is an abridged version of GPG verification that is present in
     egg's client/crypto.py.
+
+    :param path: Path to the egg file.
+    :type path: str
+
+    :returns: `True` if the GPG signature matches, `False` otherwise.
     """
     # EGG= may be None or an invalid path
     if not path or not os.path.exists(path):
+        client_debug("Path '{path}' does not exist and cannot be GPG validated.".format(path=path))
         return False
 
     # EGG may be a path to a directory (which cannot be signed)
     if BYPASS_GPG:
+        client_debug("'BYPASS_GPG' is set, pretending the GPG validation of '{path}' succeeded.".format(path=path))
         return True
 
     if not os.path.exists(path + ".asc"):
+        client_debug("Path '{path}' does not have an associated '.asc' file.".format(path=path))
         return False
 
     # The /var/lib/insights/ directory is used instead of /tmp/ because
@@ -137,6 +145,9 @@ def gpg_validate(path):
     )
     verify_process.communicate()
     shutil.rmtree(home)
+    client_debug("The GPG verification of '{path}' returned status code {code}.".format(
+        path=path, code=verify_process.returncode,
+    ))
     return verify_process.returncode == 0
 
 
@@ -147,20 +158,17 @@ def run_phase(phase, client, validated_eggs):
     """
     insights_command = [sys.executable, os.path.join(os.path.dirname(__file__), "run.py")] + sys.argv[1:]
     config = client.get_conf()
-    debug = config["debug"]
 
     all_eggs = [ENV_EGG, NEW_EGG] + validated_eggs
 
     for i, egg in enumerate(all_eggs):
         if egg is None or (config['gpg'] and not os.path.isfile(egg)):
-            if debug:
-                log("Egg does not exist: %s" % egg)
+            client_debug("Egg does not exist: %s" % egg)
             continue
         if config['gpg'] and not client.verify(egg)['gpg']:
-            log("WARNING: GPG verification failed.  Not loading egg: %s" % egg)
+            client_debug("WARNING: GPG verification failed. Not loading egg: %s" % egg)
             continue
-        if debug:
-            log("Attempting %s with egg: %s" % (phase['name'], egg))
+        client_debug("Attempting phase '%s' with egg '%s'" % (phase['name'], egg))
 
         # setup the env
         insights_env = {
