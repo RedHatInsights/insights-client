@@ -282,8 +282,13 @@ def _main():
             sys.exit('Unable to load Insights Config')
 
         if config["version"]:
-            from insights_client.constants import InsightsConstants as constants
-            print("Client: %s" % constants.version)
+            try:
+                from insights_client.constants import InsightsConstants
+            except ImportError:
+                # The source file is build from 'constants.py.in' and is not available during development
+                class InsightsConstants(object):
+                    version = "development"
+            print("Client: %s" % InsightsConstants.version)
             print("Core: %s" % InsightsClient().version())
             return
 
