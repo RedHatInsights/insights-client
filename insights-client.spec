@@ -101,10 +101,6 @@ fi
 %systemd_postun %{name}.service
 %systemd_postun insights-client-boot.service
 
-%postun ros
-sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/ros_collect=True/d' %{_sysconfdir}/insights-client/insights-client.conf
-
-
 # Clean up files created by insights-client that are unowned by the RPM
 if [ $1 -eq 0 ]; then
     rm -f %{_sysconfdir}/cron.daily/insights-client
@@ -115,6 +111,9 @@ if [ $1 -eq 0 ]; then
     rm -rf %{_localstatedir}/log/insights-client
     rm -f %{_sysconfdir}/insights-client/.*.etag
 fi
+
+%postun ros
+sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/ros_collect=True/d' %{_sysconfdir}/insights-client/insights-client.conf
 
 
 %files
