@@ -76,6 +76,7 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/insights-client/
 
 %post
 %systemd_post %{name}.timer
+%systemd_post %{name}-boot.service
 if [ -d %{_sysconfdir}/motd.d ]; then
     if [ ! -e %{_sysconfdir}/motd.d/insights-client -a ! -L %{_sysconfdir}/motd.d/insights-client ]; then
         if [ -e %{_localstatedir}/lib/insights/newest.egg ]; then
@@ -103,12 +104,12 @@ fi
 %preun
 %systemd_preun %{name}.timer
 %systemd_preun %{name}.service
-%systemd_preun insights-client-boot.service
+%systemd_preun %{name}-boot.service
 
 %postun
 %systemd_postun %{name}.timer
 %systemd_postun %{name}.service
-%systemd_postun insights-client-boot.service
+%systemd_postun %{name}-boot.service
 
 # Clean up files created by insights-client that are unowned by the RPM
 if [ $1 -eq 0 ]; then
