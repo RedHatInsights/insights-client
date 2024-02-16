@@ -73,6 +73,12 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 %install
 %{meson_install}
 
+# Create different insights directories in /var
+mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
+mkdir -p %{buildroot}%{_localstatedir}/lib/insights/
+mkdir -p %{buildroot}%{_localstatedir}/cache/insights/
+mkdir -p %{buildroot}%{_localstatedir}/cache/insights-client/
+
 %post
 %systemd_post %{name}.timer
 if [ -d %{_sysconfdir}/motd.d ]; then
@@ -133,11 +139,15 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %{_sysconfdir}/insights-client/rpm.egg*
 %{_bindir}/*
 %{_unitdir}/*
-%{_presetdir}/*
 %attr(444,root,root) %{_sysconfdir}/insights-client/*.pem
 %attr(444,root,root) %{_sysconfdir}/insights-client/redhattools.pub.gpg
-%{_defaultdocdir}/%{name}
 %{python3_sitelib}/insights_client/
+%{_defaultdocdir}/%{name}
+%{_presetdir}/*.preset
+%attr(700,root,root) %dir %{_localstatedir}/log/insights-client/
+%attr(700,root,root) %dir %{_localstatedir}/cache/insights-client/
+%attr(750,root,root) %dir %{_localstatedir}/cache/insights/
+%attr(750,root,root) %dir %{_localstatedir}/lib/insights/
 %{_sysconfdir}/logrotate.d/insights-client
 %{_tmpfilesdir}/insights-client.conf
 
