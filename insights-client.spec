@@ -14,11 +14,6 @@ URL:                    http://console.redhat.com/insights
 Group:                  Applications/System
 Vendor:                 Red Hat, Inc.
 
-Provides: redhat-access-insights = %{version}-%{release}%{?dist}
-
-Obsoletes: redhat-access-insights <= 1.0.13-2
-Obsoletes: redhat-access-proactive <= 1.0.13-2
-
 BuildArch: noarch
 
 Requires: tar
