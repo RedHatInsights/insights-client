@@ -92,7 +92,7 @@ fi
 rm -f /var/lib/pcp/config/pmlogger/config.ros
 sed -i "/PCP_LOG_DIR\/pmlogger\/ros/d" /etc/pcp/pmlogger/control.d/local
 
-if grep -qv "^ros_collect" %{_sysconfdir}/insights-client/insights-client.conf; then
+if ! grep -q "^ros_collect" %{_sysconfdir}/insights-client/insights-client.conf; then
 cat <<EOF >> %{_sysconfdir}/insights-client/insights-client.conf
 ### Begin insights-client-ros ###
 ros_collect=True
