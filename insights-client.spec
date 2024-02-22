@@ -52,6 +52,8 @@ Sends insightful information to Red Hat for automated analysis
 %if %{with ros}
 %package ros
 Requires: pcp-zeroconf
+Requires: insights-client
+
 Summary: The subpackage for Insights resource optimization service
 
 %description ros
