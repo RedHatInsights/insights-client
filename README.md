@@ -1,10 +1,10 @@
 # Red Hat Insights Client
 
-**insights-client** is the Client API Wrapper for the Client API that lives in the Insights Core (the egg).
+**insights-client** is a wrapper for Insights Core (the egg).
 
 ## Developer Setup
 
-These instructions require the system to be registered with Red Hat Subscription Management.
+Follow these instructions to prepare your system for development.
 
 1. Fork both this and [insights-core](https://github.com/RedHatInsights/insights-core) repository.
 
@@ -15,13 +15,13 @@ These instructions require the system to be registered with Red Hat Subscription
    $ git clone git@github.com:$YOU/insights-core.git
    ```
 
-3. If you are using a virtual environment for development, make sure that it uses the system site packages.
+3. Make sure your virtual environment uses system site packages.
 
    - For existing one, set `include-system-site-packages = true` in virtual environment's `pyvenv.cfg`.
    - For new one, create it with `--system-site-packages` flag.
    - Make sure both repositories share the virtual environment.
 
-4. Install the `insights-core` as a package.
+4. Install the `insights-core` as a Python package.
 
    First, make sure the following directories and files exist, otherwise the code will scream at you:
  
@@ -31,7 +31,7 @@ These instructions require the system to be registered with Red Hat Subscription
    $ sudo ln -s `pwd`/data/redhattools.pub.gpg /etc/insights-client/
    $ sudo ln -s `pwd`/data/cert-api.access.redhat.com.pem /etc/insights-client/
    ```
-   
+
    Then you can install the package using pip:
 
    ```shell
@@ -40,23 +40,15 @@ These instructions require the system to be registered with Red Hat Subscription
    $ python3 -m pip install -e ../insights-core/.[client-develop]
    ```
 
-5. Set up the build directory.
+5. Run the client.
 
    ```shell
-   $ meson setup builddir
-   $ meson compile -C builddir
-   $ chmod +x ./builddir/src/insights-client
+   $ sudo PYTHONPATH=./src BYPASS_GPG=True EGG=../insights-core python src/insights_client/__init__.py --no-gpg --help
    ```
 
-6. Run the client with the following options to disable GPG since the development eggs are unsigned.
+   *Note: `BYPASS_GPG` skips the verification on Client side, `--no-gpg` disables it on Core side.*
 
-   ```shell
-   $ sudo PYTHONPATH=./src BYPASS_GPG=True EGG=../insights-core ./builddir/src/insights-client --no-gpg --help
-   ```
-
-   *Note: `BYPASS_GPG` skips the verification on insights-client side, `--no-gpg` disables it on insights-core/egg side.*
-
-7. To build an insights-core egg from source, run `build_client_egg.sh` from the insights-core repo.
+6. To build an insights-core egg from source, run `build_client_egg.sh` from the insights-core repo.
 
    ```shell
    $ cd ../insights-core
@@ -65,6 +57,14 @@ These instructions require the system to be registered with Red Hat Subscription
    $ cd ../insights-client
    $ # To use the zip file as an egg, pass `EGG=../insights-core/insights.zip`
    ```
+
+
+### Contributing
+
+- Every relevant change should have a test, if possible.
+- Every commit containing Python code should be formatted with `black`.
+- Every commit/PR will be checked for those in CI.
+- Read [TESTING.md](TESTING.md) for more information.
 
 
 ## Architecture Summary
