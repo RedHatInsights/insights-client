@@ -1,0 +1,41 @@
+name: pytest
+
+on:
+  pull_request:
+    paths:
+      - "src/*"
+
+jobs:
+  pytest:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Fedora Rawhide"
+            image: "registry.fedoraproject.org/fedora:rawhide"
+          - name: "Fedora Latest"
+            image: "registry.fedoraproject.org/fedora:latest"
+          - name: "CentOS Stream 9"
+            image: "quay.io/centos/centos:stream9"
+          - name: "CentOS Stream 8"
+            image: "quay.io/centos/centos:stream8"
+
+    runs-on: "ubuntu-latest"
+    container:
+      image: ${{ matrix.image }}
+
+    steps:
+      - name: "Checkout the repository"
+        uses: actions/checkout@v4
+
+      - name: "Install dependencies"
+        run: |
+          dnf --setopt install_weak_deps=False install -y git-core python3-pip
+          python3 -m pip install --upgrade pip wheel
+          python3 -m pip install -r src/insights_client/tests/requirements.txt
+
+      - name: "Run pytest"
+        env:
+          PYTEST_ADDOPTS: "--color=yes --code-highlight=yes --showlocals"
+        run: |
+          python3 -m pytest src/insights_client/tests
