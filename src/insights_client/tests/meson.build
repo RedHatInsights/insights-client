@@ -1,16 +1,9 @@
 pytest = find_program('pytest', 'pytest-3')
-sed = find_program('sed')
 
 env = environment()
 env.append('PYTHONPATH', meson.source_root() / 'src', meson.source_root() / 'data' / 'rpm.egg')
 
-test_sources = files('test_client.py', 'test_commands.py')
-
-test_sources += configure_file(
-  input: 'test_sed.py.in',
-  output: '@BASENAME@',
-  configuration: config_data
-)
+test_sources = files('test_client.py', 'test_commands.py', 'test_sed.py')
 
 test('test',
   pytest,
