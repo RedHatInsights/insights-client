@@ -16,9 +16,9 @@ def test_status_registered(external_candlepin, insights_client):
     sleep(5)
     registration_status = insights_client.run("--status")
     if insights_client.config.legacy_upload:
-        assert b"Insights API confirms registration." in registration_status.stdout
+        assert "Insights API confirms registration." in registration_status.stdout
     else:
-        assert b"This host is registered.\n" == registration_status.stdout
+        assert "This host is registered.\n" == registration_status.stdout
 
 
 def test_status_unregistered(external_candlepin, insights_client):
@@ -34,9 +34,9 @@ def test_status_unregistered(external_candlepin, insights_client):
     if insights_client.config.legacy_upload:
         assert registration_status.returncode == 1
         assert (
-            b"Insights API says this machine is NOT registered."
+            "Insights API says this machine is NOT registered."
             in registration_status.stdout
         )
     else:
         assert registration_status.returncode == 0
-        assert b"This host is unregistered.\n" == registration_status.stdout
+        assert "This host is unregistered.\n" == registration_status.stdout
