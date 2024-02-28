@@ -3,28 +3,30 @@
  Red Hat Insights
 """
 from __future__ import print_function
+
+import logging
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 
 import six
-import subprocess
-from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
-import logging
-import logging.handlers
 
-GPG_KEY = "/etc/insights-client/redhattools.pub.gpg"
+
 BYPASS_GPG = os.environ.get("BYPASS_GPG", "").lower() == "true"
+GPG_KEY = "/etc/insights-client/redhattools.pub.gpg"
+
 ENV_EGG = os.environ.get("EGG")
 NEW_EGG = "/var/lib/insights/newest.egg"
-REGISTERED_FILE = "/etc/insights-client/.registered"
-UNREGISTERED_FILE = "/etc/insights-client/.unregistered"
 STABLE_EGG = "/var/lib/insights/last_stable.egg"
 RPM_EGG = "/etc/insights-client/rpm.egg"
-MOTD_FILE = "/etc/motd.d/insights-client"
+
 MOTD_SRC = "/etc/insights-client/insights-client.motd"
+MOTD_FILE = "/etc/motd.d/insights-client"
+REGISTERED_FILE = "/etc/insights-client/.registered"
+UNREGISTERED_FILE = "/etc/insights-client/.unregistered"
 
 TEMPORARY_GPG_HOME_PARENT_DIRECTORY = "/var/lib/insights/"
 
