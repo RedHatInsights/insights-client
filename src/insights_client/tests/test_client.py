@@ -1,6 +1,4 @@
-from sys import stderr, stdout
-from unittest import mock
-from unittest.mock import patch
+from mock.mock import patch
 import insights_client
 import pytest
 
