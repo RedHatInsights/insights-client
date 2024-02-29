@@ -34,8 +34,9 @@ def test_help_command(capsys):
     
     assert output_sudo==output_normal
 
+@patch("insights_client.gpg_validate", return_value = True)
 @patch('insights_client.sys.argv', ['insights-client'])
-def test_exit_when_run_phases_no_sudo():
+def test_exit_when_run_phases_no_sudo(gpg_validate):
     with raises(SystemExit) as pytest_wrapped_e:
         with patch('os.getuid', return_value=1):
             insights_client._main()
