@@ -2,5 +2,4 @@ pytest
 # Setuptools is required because we still rely on 'distutils' which have been dropped in Python 3.12.
 # setuptools package ships it vendorized as a top-level package, so for a time being we can rely on it.
 setuptools
-six
 -r requirements-core.txt
