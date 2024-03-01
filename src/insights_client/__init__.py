@@ -9,11 +9,8 @@ import logging
 import os
 import shutil
 import subprocess
-from subprocess import Popen, PIPE
 import sys
 import tempfile
-
-from distutils.version import LooseVersion
 
 
 INSIGHTS_DEBUG = os.environ.get("INSIGHTS_DEBUG", "").lower() == "true"
@@ -62,46 +59,6 @@ def client_debug(message):
 
 def log(msg):
     print(msg, file=sys.stderr)
-
-
-def egg_version(egg):
-    """
-    Determine the egg version
-    """
-    if not sys.executable:
-        return None
-    try:
-        proc = Popen(
-            [
-                sys.executable,
-                "-c",
-                "from insights.client import InsightsClient; print(InsightsClient(None, False).version())",
-            ],
-            env={"PYTHONPATH": egg, "PATH": os.getenv("PATH")},
-            stdout=PIPE,
-            stderr=PIPE,
-        )
-    except OSError:
-        return None
-    stdout, stderr = proc.communicate()
-    return stdout.decode("utf-8")
-
-
-def sorted_eggs(eggs):
-    """
-    Sort eggs to go into sys.path by highest version
-    """
-    if len(eggs) < 2:
-        # nothing to sort
-        return eggs
-    # default versions to 0 so LooseVersion doesn't throw a fit
-    egg0_version = egg_version(eggs[0]) or "0"
-    egg1_version = egg_version(eggs[1]) or "0"
-
-    if LooseVersion(egg0_version) > LooseVersion(egg1_version):
-        return eggs
-    else:
-        return [eggs[1], eggs[0]]
 
 
 def _remove_gpg_home(home):
@@ -353,8 +310,7 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
-    # sort rpm and stable eggs after verification
-    validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
+    validated_eggs = list(filter(gpg_validate, [STABLE_EGG, RPM_EGG]))
     # if ENV_EGG was specified and it's valid, add that to front of sys.path
     #  so it can be loaded initially. keep it in its own var so we don't
     #  pass it to run_phase where we load it again
