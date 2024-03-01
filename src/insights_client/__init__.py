@@ -8,6 +8,7 @@ import logging
 import os
 import shutil
 import subprocess
+from subprocess import Popen, PIPE
 import sys
 import tempfile
 
