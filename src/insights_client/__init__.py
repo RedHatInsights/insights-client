@@ -95,6 +95,31 @@ def sorted_eggs(eggs):
         return [eggs[1], eggs[0]]
 
 
+def _remove_gpg_home(home):
+    """Clean GPG's temporary home directory at path 'home'.
+
+    :param home: Path to the GPG's temporary home.
+    :type home: str
+    :rtype: None
+    """
+    # Shut down GPG's home agent
+    shutdown_process = subprocess.Popen(
+        ["/usr/bin/gpgconf", "--homedir", home, "--kill", "all"],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        universal_newlines=True,
+    )
+    stdout, stderr = shutdown_process.communicate()
+    if shutdown_process.returncode != 0:
+        log("Could not kill the GPG agent, got return code {rc}".format(rc=shutdown_process.returncode))
+        if stdout:
+            log(stdout)
+        if stderr:
+            log(stderr)
+
+    # Delete the temporary directory
+    shutil.rmtree(home)
+
+
 def gpg_validate(path):
     """Verify an egg at given path has valid GPG signature.
 
@@ -132,7 +157,7 @@ def gpg_validate(path):
     )
     import_process.communicate()
     if import_process.returncode != 0:
-        shutil.rmtree(home)
+        _remove_gpg_home(home)
         return False
 
     # Verify the signature
@@ -141,7 +166,8 @@ def gpg_validate(path):
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     verify_process.communicate()
-    shutil.rmtree(home)
+    _remove_gpg_home(home)
+
     client_debug("The GPG verification of '{path}' returned status code {code}.".format(
         path=path, code=verify_process.returncode,
     ))
