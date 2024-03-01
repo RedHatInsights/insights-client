@@ -1,0 +1,42 @@
+name: pytest
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+
+jobs:
+  pytest:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "CentOS 7"
+            image: "quay.io/centos/centos:7"
+
+    runs-on: "ubuntu-latest"
+    container:
+      image: ${{ matrix.image }}
+
+    steps:
+      - name: "Checkout the repository"
+        # We cannot use checkout@v4 or later; its version of NodeJS doesn't run on C7/EL7.
+        uses: actions/checkout@v3
+
+      - name: "Install dependencies"
+        # We can't run 'pip install' over the core repo, pip 20 doesn't understand the 'extras_require' in its setup.py
+        run: |
+          yum install -y epel-release git-core
+          yum install -y python-pip
+          python -m pip install --upgrade 'pip<21'
+          python -m pip install -r src/insights_client/tests/requirements.txt
+          git clone -b 3.0 --depth 1 https://github.com/RedHatInsights/insights-core.git /tmp/egg
+
+      - name: "Run pytest"
+        env:
+          PYTEST_ADDOPTS: "--color=yes --showlocals"
+          PYTHONPATH: "src/:/tmp/egg/"
+          EGG: "/tmp/egg/"
+          BYPASS_GPG: "true"
+        run: |
+          python -m pytest src/insights_client/tests
