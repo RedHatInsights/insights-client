@@ -1,22 +1,25 @@
 # -*- coding: utf-8 -*-
+import os.path
+import subprocess
 
 import pytest
-import six
 
-from subprocess import PIPE, Popen
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+SED_FILE = _REPO_ROOT + "/data/.exp.sed"
 
 
 def run_sed(stdin):
-    """
-    Obfuscates given string by SED script.
-    """
-    pipe = Popen(['sed', '-rf', '@top_srcdir@/data/.exp.sed'], stdin=PIPE, stdout=PIPE, stderr=PIPE, env={"LC_ALL": "C"})
-    if six.PY3:
-        stdout, stderr = pipe.communicate(input=stdin.encode('utf8'))
-        return stdout.decode('utf8')
-    else:
-        stdout, stderr = pipe.communicate(input=stdin)
-        return stdout
+    """Obfuscate input with `sed` script file."""
+    process = subprocess.Popen(
+        ["sed", "-rf", SED_FILE],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env={"LC_ALL": "C.UTF-8"},
+        universal_newlines=True,
+    )
+    stdout, _ = process.communicate(input=stdin)
+    return stdout
 
 
 @pytest.mark.parametrize(["stdin", "obfuscated"],
