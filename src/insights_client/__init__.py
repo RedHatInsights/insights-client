@@ -5,7 +5,6 @@
 from __future__ import print_function
 import os
 import sys
-import six
 import subprocess
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
@@ -44,10 +43,7 @@ def egg_version(egg):
     except OSError:
         return None
     stdout, stderr = proc.communicate()
-    if six.PY3:
-        return stdout.decode('utf-8')
-    else:
-        return stdout
+    return stdout
 
 
 def sorted_eggs(eggs):
