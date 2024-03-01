@@ -12,7 +12,6 @@ from subprocess import Popen, PIPE
 import sys
 import tempfile
 
-import six
 from distutils.version import LooseVersion
 
 
@@ -76,10 +75,7 @@ def egg_version(egg):
     except OSError:
         return None
     stdout, stderr = proc.communicate()
-    if six.PY3:
-        return stdout.decode('utf-8')
-    else:
-        return stdout
+    return stdout.decode('utf-8')
 
 
 def sorted_eggs(eggs):
