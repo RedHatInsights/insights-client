@@ -1,7 +1,6 @@
 import os
 import pathlib
 import sys
-from typing import TYPE_CHECKING
 
 
 def pytest_configure(config):
