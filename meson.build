@@ -9,7 +9,7 @@ python_installation = python.find_installation(get_option('python'))
 
 python_exec = '/usr/bin/python3'
 
-systemd = dependency('systemd', version: '>=231', required: false)
+systemd = dependency('systemd', version: '>=231')
 
 config_data = configuration_data({
   'bindir': get_option('prefix') / get_option('bindir'),
