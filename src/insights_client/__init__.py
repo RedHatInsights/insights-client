@@ -193,10 +193,14 @@ def run_phase(phase, client, validated_eggs):
             continue
         client_debug("phase '%s'; egg '%s'" % (phase['name'], egg))
 
-        # set up the env
+        # prepare the environment
+        pythonpath = str(egg)
+        env_pythonpath = os.environ.get("PYTHONPATH", "")  # type: str
+        if env_pythonpath:
+            pythonpath += ":" + env_pythonpath
         insights_env = {
             "INSIGHTS_PHASE": str(phase['name']),
-            "PYTHONPATH": str(egg)
+            "PYTHONPATH": pythonpath,
         }
         env = os.environ
         env.update(insights_env)
