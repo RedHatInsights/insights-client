@@ -63,7 +63,9 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 
 
 %build
-%{meson} -Dpython=%{__python3}
+%{meson} \
+    -Dpython=%{__python3} \
+    %{nil}
 %{meson_build}
 
 
