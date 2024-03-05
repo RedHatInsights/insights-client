@@ -193,7 +193,7 @@ def run_phase(phase, client, validated_eggs):
             continue
         client_debug("phase '%s'; egg '%s'" % (phase['name'], egg))
 
-        # setup the env
+        # set up the env
         insights_env = {
             "INSIGHTS_PHASE": str(phase['name']),
             "PYTHONPATH": str(egg)
@@ -223,7 +223,8 @@ def run_phase(phase, client, validated_eggs):
             #   * 100: Success, exit
             #   * 101: Failure, exit           
             sys.exit(process.returncode % 100)
-    # All attemps to run phase have failed
+
+    # All attempts to run phase have failed
     sys.exit(1)
 
 
