@@ -191,7 +191,7 @@ def run_phase(phase, client, validated_eggs):
         if config['gpg'] and not client.verify(egg)['gpg']:
             client_debug("WARNING: GPG verification failed. Not loading egg: %s" % egg)
             continue
-        client_debug("Attempting phase '%s' with egg '%s'" % (phase['name'], egg))
+        client_debug("phase '%s'; egg '%s'" % (phase['name'], egg))
 
         # setup the env
         insights_env = {
@@ -206,8 +206,13 @@ def run_phase(phase, client, validated_eggs):
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             # phase successful, don't try another egg
+            client_debug("phase '{phase}' successful".format(egg=egg, phase=phase["name"]))
             update_motd_message()
             return
+
+        client_debug(
+            "phase '{phase}' failed with return code {rc}".format(egg=egg, phase=phase["name"], rc=process.returncode)
+        )
         if process.returncode == 1:
             # egg hit an error, try the next
             logger.debug('Attempt failed.')
