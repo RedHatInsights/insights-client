@@ -253,29 +253,43 @@ def update_motd_message():
         ))
         return
 
+    if os.path.exists(MOTD_FILE) and os.path.samefile(os.devnull, MOTD_FILE):
+        logger.debug("MOTD file points at /dev/null, ignoring MOTD update request")
+        return
+
     motd_should_exist = not os.path.exists(REGISTERED_FILE) and not os.path.exists(UNREGISTERED_FILE)
 
     if motd_should_exist:
         # .registered & .unregistered do not exist, MOTD should be displayed
-        if not os.path.exists(MOTD_FILE):
+        if not os.path.lexists(MOTD_FILE):
+            logger.debug(
+                ".registered and .unregistered do not exist; "
+                "pointing the MOTD file '{source}' to '{motd}'".format(source=MOTD_SRC, motd=MOTD_FILE)
+            )
             try:
                 os.symlink(MOTD_SRC, MOTD_FILE)
-                logger.debug("pointed the MOTD file '{source}' to '{motd}'".format(
-                    source=MOTD_SRC, motd=MOTD_FILE,
+            except OSError as exc:
+                logger.debug("could not point the MOTD file '{source}' to '{motd}': {exc}".format(
+                    source=MOTD_SRC, motd=MOTD_FILE, exc=exc
                 ))
-            except OSError:
-                logger.exception("could not point the MOTD file '{source}' to '{motd}'".format(
-                    source=MOTD_SRC, motd=MOTD_FILE,
-                ))
+        else:
+            logger.debug(
+                ".registered and .unregistered do not exist; "
+                "file '{source}' correctly points to '{motd}'".format(source=MOTD_SRC, motd=MOTD_FILE)
+            )
 
     else:
         # .registered or .unregistered exist, MOTD should not be displayed
-        if os.path.exists(MOTD_FILE):
+        if os.path.lexists(MOTD_FILE):
+            logger.debug(".registered or .unregistered exist; removing the MOTD file '{path}'".format(path=MOTD_FILE))
             try:
-                os.symlink(os.devnull, MOTD_FILE)
-                logger.debug("pointed the MOTD file '{path}' to '/dev/null'".format(path=MOTD_FILE))
-            except OSError:
-                logger.exception("could not remove the MOTD file '{path}'".format(path=MOTD_FILE))
+                os.remove(MOTD_FILE)
+            except OSError as exc:
+                logger.debug("could not remove the MOTD file '{path}': {exc}".format(path=MOTD_FILE, exc=exc))
+        else:
+            logger.debug(
+                ".registered or .unregistered exist; file '{motd}' correctly does not exist".format(motd=MOTD_FILE)
+            )
 
 
 def _main():
