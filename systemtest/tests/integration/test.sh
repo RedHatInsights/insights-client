@@ -2,6 +2,12 @@
 set -eu
 set -x
 
+# get to project root
+cd ../../../
+
+# runs the packit setup
+rpm -q insights-client || ./systemtest/guest-setup.sh
+
 . /etc/os-release
 if test "${ID}" = fedora -a ${VERSION_ID} -ge 39; then
   # HACK
@@ -12,9 +18,6 @@ if test "${ID}" = fedora -a ${VERSION_ID} -ge 39; then
   # - https://github.com/RedHatInsights/insights-client/pull/154
   gpg --import /etc/insights-client/redhattools.pub.gpg
 fi
-
-# get to project root
-cd ../../../
 
 dnf --setopt install_weak_deps=False install -y \
   podman git-core python3-pip python3-pytest
