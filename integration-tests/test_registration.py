@@ -1,5 +1,5 @@
 import os
-
+import contextlib
 import pytest
 
 
@@ -65,3 +65,31 @@ def test_double_registration(insights_client):
         machine_id_new = f.read()
 
     assert machine_id_new == machine_id_old
+
+
+@pytest.mark.parametrize(
+    "legacy_upload_value",
+    [
+        pytest.param(True, marks=pytest.mark.xfail),
+        pytest.param(False),
+    ],
+)
+def test_register_group_option(insights_client, legacy_upload_value):
+    """
+    Bug https://issues.redhat.com/browse/RHINENG-7567 exists on both
+    production env and satellite env with legacy_upload=True.
+    With legacy_upload=False, "insights-client --register --group=tag"
+    works well on both envs.
+    """
+    # make sure the system is not registered to insights
+    with contextlib.suppress(Exception):
+        insights_client.unregister()
+    assert not insights_client.is_registered
+    insights_client.config.legacy_upload = legacy_upload_value
+    insights_client.config.save()
+    register_group_option = insights_client.run(
+        "--register",
+        "--group=tag",
+        check=False,
+    )
+    assert register_group_option.returncode == 0
