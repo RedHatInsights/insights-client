@@ -16,3 +16,24 @@ By pointing the `EGG` environment variable to a different path, you can test cus
 ## CI
 
 The unit tests are also run by GitHub Actions.
+
+
+## Integration tests
+
+We are using [`pytest-client-tools`](https://github.com/ptoscano/pytest-client-tools) to run our integration suite.
+
+There are various ways to run it (e.g. through `tmt`, through Packit in CI), but the easiest way to run them locally is through `scripts/integration-tests.py`.
+
+```shell
+$ # Get your system ready
+$ ./scripts/integration-tests.py generate-settings > settings.toml
+$ ./scripts/integration-tests.py build-image
+$ podman image ls -a
+REPOSITORY                       TAG     IMAGE ID      CREATED         SIZE
+localhost/insights-client-test   latest  9981e9c07636  30 seconds ago  461 MB
+$ # Run the tests
+$ ./scripts/integration-tests.py run --settings ./settings.toml
+$ ./scripts/integration-tests.py run --settings ./settings.toml --egg ../insights-core/insights.zip
+$ # Inspect the situation interactively
+$ ./scripts/integration-tests.py shell --settings ./settings.toml --egg ../insights-core/insights.zip
+```
