@@ -2,6 +2,7 @@
  Gather and upload Insights data for
  Red Hat Insights
 """
+
 from __future__ import print_function
 
 import logging
@@ -70,8 +71,16 @@ def egg_version(egg):
     if not sys.executable:
         return None
     try:
-        proc = Popen([sys.executable, '-c', 'from insights.client import InsightsClient; print(InsightsClient(None, False).version())'],
-                     env={'PYTHONPATH': egg, 'PATH': os.getenv('PATH')}, stdout=PIPE, stderr=PIPE)
+        proc = Popen(
+            [
+                sys.executable,
+                '-c',
+                'from insights.client import InsightsClient; print(InsightsClient(None, False).version())',
+            ],
+            env={'PYTHONPATH': egg, 'PATH': os.getenv('PATH')},
+            stdout=PIPE,
+            stderr=PIPE,
+        )
     except OSError:
         return None
     stdout, stderr = proc.communicate()
@@ -105,12 +114,17 @@ def _remove_gpg_home(home):
     # Shut down GPG's home agent
     shutdown_process = subprocess.Popen(
         ["/usr/bin/gpgconf", "--homedir", home, "--kill", "all"],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         universal_newlines=True,
     )
     stdout, stderr = shutdown_process.communicate()
     if shutdown_process.returncode != 0:
-        log("Could not kill the GPG agent, got return code {rc}".format(rc=shutdown_process.returncode))
+        log(
+            "Could not kill the GPG agent, got return code {rc}".format(
+                rc=shutdown_process.returncode
+            )
+        )
         if stdout:
             log(stdout)
         if stderr:
@@ -133,16 +147,26 @@ def gpg_validate(path):
     """
     # EGG= may be None or an invalid path
     if not path or not os.path.exists(path):
-        client_debug("Path '{path}' does not exist and cannot be GPG validated.".format(path=path))
+        client_debug(
+            "Path '{path}' does not exist and cannot be GPG validated.".format(
+                path=path
+            )
+        )
         return False
 
     # EGG may be a path to a directory (which cannot be signed)
     if BYPASS_GPG:
-        client_debug("'BYPASS_GPG' is set, pretending the GPG validation of '{path}' succeeded.".format(path=path))
+        client_debug(
+            "'BYPASS_GPG' is set, pretending the GPG validation of '{path}' succeeded.".format(
+                path=path
+            )
+        )
         return True
 
     if not os.path.exists(path + ".asc"):
-        client_debug("Path '{path}' does not have an associated '.asc' file.".format(path=path))
+        client_debug(
+            "Path '{path}' does not have an associated '.asc' file.".format(path=path)
+        )
         return False
 
     # The /var/lib/insights/ directory is used instead of /tmp/ because
@@ -153,7 +177,8 @@ def gpg_validate(path):
     # Import the public keys into temporary environment
     import_process = subprocess.Popen(
         ["/usr/bin/gpg", "--homedir", home, "--import", GPG_KEY],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     import_process.communicate()
     if import_process.returncode != 0:
@@ -162,15 +187,19 @@ def gpg_validate(path):
 
     # Verify the signature
     verify_process = subprocess.Popen(
-        ["/usr/bin/gpg", "--homedir", home, "--verify", path+".asc", path],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        ["/usr/bin/gpg", "--homedir", home, "--verify", path + ".asc", path],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     verify_process.communicate()
     _remove_gpg_home(home)
 
-    client_debug("The GPG verification of '{path}' returned status code {code}.".format(
-        path=path, code=verify_process.returncode,
-    ))
+    client_debug(
+        "The GPG verification of '{path}' returned status code {code}.".format(
+            path=path,
+            code=verify_process.returncode,
+        )
+    )
     return verify_process.returncode == 0
 
 
@@ -179,7 +208,10 @@ def run_phase(phase, client, validated_eggs):
     Call the run script for the given phase.  If the phase succeeds returns the
     index of the egg that succeeded to be used in the next phase.
     """
-    insights_command = [sys.executable, os.path.join(os.path.dirname(__file__), "run.py")] + sys.argv[1:]
+    insights_command = [
+        sys.executable,
+        os.path.join(os.path.dirname(__file__), "run.py"),
+    ] + sys.argv[1:]
     config = client.get_conf()
 
     all_eggs = [ENV_EGG, NEW_EGG] + validated_eggs
@@ -205,17 +237,20 @@ def run_phase(phase, client, validated_eggs):
         env = os.environ
         env.update(insights_env)
 
-        process = subprocess.Popen(insights_command,
-                                   env=env)
+        process = subprocess.Popen(insights_command, env=env)
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             # phase successful, don't try another egg
-            client_debug("phase '{phase}' successful".format(egg=egg, phase=phase["name"]))
+            client_debug(
+                "phase '{phase}' successful".format(egg=egg, phase=phase["name"])
+            )
             update_motd_message()
             return
 
         client_debug(
-            "phase '{phase}' failed with return code {rc}".format(egg=egg, phase=phase["name"], rc=process.returncode)
+            "phase '{phase}' failed with return code {rc}".format(
+                egg=egg, phase=phase["name"], rc=process.returncode
+            )
         )
         if process.returncode == 1:
             # egg hit an error, try the next
@@ -225,7 +260,7 @@ def run_phase(phase, client, validated_eggs):
             #   a machine not being registered yet, or simply a 'dump & die'
             #   CLI option
             #   * 100: Success, exit
-            #   * 101: Failure, exit           
+            #   * 101: Failure, exit
             sys.exit(process.returncode % 100)
 
     # All attempts to run phase have failed
@@ -248,47 +283,67 @@ def update_motd_message():
     pointing /etc/motd.d/insights-client at an empty file.
     """
     if not os.path.exists(os.path.dirname(MOTD_FILE)):
-        logger.debug("directory '{dir}' does not exist, ignoring MOTD update request".format(
-            dir=os.path.dirname(MOTD_FILE)
-        ))
+        logger.debug(
+            "directory '{dir}' does not exist, ignoring MOTD update request".format(
+                dir=os.path.dirname(MOTD_FILE)
+            )
+        )
         return
 
     if os.path.exists(MOTD_FILE) and os.path.samefile(os.devnull, MOTD_FILE):
         logger.debug("MOTD file points at /dev/null, ignoring MOTD update request")
         return
 
-    motd_should_exist = not os.path.exists(REGISTERED_FILE) and not os.path.exists(UNREGISTERED_FILE)
+    motd_should_exist = not os.path.exists(REGISTERED_FILE) and not os.path.exists(
+        UNREGISTERED_FILE
+    )
 
     if motd_should_exist:
         # .registered & .unregistered do not exist, MOTD should be displayed
         if not os.path.lexists(MOTD_FILE):
             logger.debug(
                 ".registered and .unregistered do not exist; "
-                "pointing the MOTD file '{source}' to '{motd}'".format(source=MOTD_SRC, motd=MOTD_FILE)
+                "pointing the MOTD file '{source}' to '{motd}'".format(
+                    source=MOTD_SRC, motd=MOTD_FILE
+                )
             )
             try:
                 os.symlink(MOTD_SRC, MOTD_FILE)
             except OSError as exc:
-                logger.debug("could not point the MOTD file '{source}' to '{motd}': {exc}".format(
-                    source=MOTD_SRC, motd=MOTD_FILE, exc=exc
-                ))
+                logger.debug(
+                    "could not point the MOTD file '{source}' to '{motd}': {exc}".format(
+                        source=MOTD_SRC, motd=MOTD_FILE, exc=exc
+                    )
+                )
         else:
             logger.debug(
                 ".registered and .unregistered do not exist; "
-                "file '{source}' correctly points to '{motd}'".format(source=MOTD_SRC, motd=MOTD_FILE)
+                "file '{source}' correctly points to '{motd}'".format(
+                    source=MOTD_SRC, motd=MOTD_FILE
+                )
             )
 
     else:
         # .registered or .unregistered exist, MOTD should not be displayed
         if os.path.lexists(MOTD_FILE):
-            logger.debug(".registered or .unregistered exist; removing the MOTD file '{path}'".format(path=MOTD_FILE))
+            logger.debug(
+                ".registered or .unregistered exist; removing the MOTD file '{path}'".format(
+                    path=MOTD_FILE
+                )
+            )
             try:
                 os.remove(MOTD_FILE)
             except OSError as exc:
-                logger.debug("could not remove the MOTD file '{path}': {exc}".format(path=MOTD_FILE, exc=exc))
+                logger.debug(
+                    "could not remove the MOTD file '{path}': {exc}".format(
+                        path=MOTD_FILE, exc=exc
+                    )
+                )
         else:
             logger.debug(
-                ".registered or .unregistered exist; file '{motd}' correctly does not exist".format(motd=MOTD_FILE)
+                ".registered or .unregistered exist; file '{motd}' correctly does not exist".format(
+                    motd=MOTD_FILE
+                )
             )
 
 
@@ -299,8 +354,7 @@ def _main():
     if an egg fails a phase never try it again
     """
     # sort rpm and stable eggs after verification
-    validated_eggs = sorted_eggs(
-        list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
+    validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
     # if ENV_EGG was specified and it's valid, add that to front of sys.path
     #  so it can be loaded initially. keep it in its own var so we don't
     #  pass it to run_phase where we load it again
@@ -321,6 +375,7 @@ def _main():
         from insights.client import InsightsClient
         from insights.client.phase.v1 import get_phases
         from insights.client.config import InsightsConfig
+
         # Add the insights-config here
         try:
             config = InsightsConfig(_print_errors=True).load_all()
@@ -335,6 +390,7 @@ def _main():
                 # The source file is build from 'constants.py.in' and is not available during development
                 class InsightsConstants(object):
                     version = "development"
+
             print("Client: %s" % InsightsConstants.version)
             print("Core: %s" % InsightsClient().version())
             return
