@@ -65,38 +65,38 @@ def log(msg):
 
 
 def egg_version(egg):
-    '''
+    """
     Determine the egg version
-    '''
+    """
     if not sys.executable:
         return None
     try:
         proc = Popen(
             [
                 sys.executable,
-                '-c',
-                'from insights.client import InsightsClient; print(InsightsClient(None, False).version())',
+                "-c",
+                "from insights.client import InsightsClient; print(InsightsClient(None, False).version())",
             ],
-            env={'PYTHONPATH': egg, 'PATH': os.getenv('PATH')},
+            env={"PYTHONPATH": egg, "PATH": os.getenv("PATH")},
             stdout=PIPE,
             stderr=PIPE,
         )
     except OSError:
         return None
     stdout, stderr = proc.communicate()
-    return stdout.decode('utf-8')
+    return stdout.decode("utf-8")
 
 
 def sorted_eggs(eggs):
-    '''
+    """
     Sort eggs to go into sys.path by highest version
-    '''
+    """
     if len(eggs) < 2:
         # nothing to sort
         return eggs
     # default versions to 0 so LooseVersion doesn't throw a fit
-    egg0_version = egg_version(eggs[0]) or '0'
-    egg1_version = egg_version(eggs[1]) or '0'
+    egg0_version = egg_version(eggs[0]) or "0"
+    egg1_version = egg_version(eggs[1]) or "0"
 
     if LooseVersion(egg0_version) > LooseVersion(egg1_version):
         return eggs
@@ -217,13 +217,13 @@ def run_phase(phase, client, validated_eggs):
     all_eggs = [ENV_EGG, NEW_EGG] + validated_eggs
 
     for i, egg in enumerate(all_eggs):
-        if egg is None or (config['gpg'] and not os.path.isfile(egg)):
+        if egg is None or (config["gpg"] and not os.path.isfile(egg)):
             client_debug("Egg does not exist: %s" % egg)
             continue
-        if config['gpg'] and not client.verify(egg)['gpg']:
+        if config["gpg"] and not client.verify(egg)["gpg"]:
             client_debug("WARNING: GPG verification failed. Not loading egg: %s" % egg)
             continue
-        client_debug("phase '%s'; egg '%s'" % (phase['name'], egg))
+        client_debug("phase '%s'; egg '%s'" % (phase["name"], egg))
 
         # prepare the environment
         pythonpath = str(egg)
@@ -231,7 +231,7 @@ def run_phase(phase, client, validated_eggs):
         if env_pythonpath:
             pythonpath += ":" + env_pythonpath
         insights_env = {
-            "INSIGHTS_PHASE": str(phase['name']),
+            "INSIGHTS_PHASE": str(phase["name"]),
             "PYTHONPATH": pythonpath,
         }
         env = os.environ
@@ -254,7 +254,7 @@ def run_phase(phase, client, validated_eggs):
         )
         if process.returncode == 1:
             # egg hit an error, try the next
-            logger.debug('Attempt failed.')
+            logger.debug("Attempt failed.")
         if process.returncode >= 100:
             # 100 and 101 are unrecoverable, like post-unregistration, or
             #   a machine not being registered yet, or simply a 'dump & die'
@@ -380,8 +380,8 @@ def _main():
         try:
             config = InsightsConfig(_print_errors=True).load_all()
         except ValueError as e:
-            sys.stderr.write('ERROR: ' + str(e) + '\n')
-            sys.exit('Unable to load Insights Config')
+            sys.stderr.write("ERROR: " + str(e) + "\n")
+            sys.exit("Unable to load Insights Config")
 
         if config["version"]:
             try:
@@ -396,7 +396,7 @@ def _main():
             return
 
         if os.getuid() != 0:
-            sys.exit('Insights client must be run as root.')
+            sys.exit("Insights client must be run as root.")
 
         # handle client instantation here so that it isn't done multiple times in __init__
         # The config can be passed now by parameter
@@ -409,8 +409,8 @@ def _main():
         for p in get_phases():
             run_phase(p, client, validated_eggs)
     except KeyboardInterrupt:
-        sys.exit('Aborting.')
+        sys.exit("Aborting.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _main()
