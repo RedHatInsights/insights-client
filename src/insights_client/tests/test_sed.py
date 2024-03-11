@@ -37,8 +37,8 @@ def run_sed(stdin: str) -> str:
         ["password--sha1", "password********"],
         [" (abc=def&password=root&key=value )", " (abc=def&password=******** )"],
         ["password: root", "password: ********"],
-        ["{auth: {password: \"root\"}}", "{auth: {password: \"********\"}}"],
-        ["<auth \"password\"=\"root\" />", "<auth \"password\"=\"********\" />"],
+        ['{auth: {password: "root"}}', '{auth: {password: "********"}}'],
+        ['<auth "password"="root" />', '<auth "password"="********" />'],
     ],
 )
 def test_fully_obfuscate(stdin, obfuscated):
