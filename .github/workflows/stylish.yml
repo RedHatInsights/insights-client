@@ -1,0 +1,25 @@
+name: stylish
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  stylish:
+    name: "black"
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+    - name: Base setup
+      run: |
+        dnf --setopt install_weak_deps=False install -y \
+            git-core \
+            python3-pip
+
+    - uses: actions/checkout@v4
+
+    - uses: psf/black@stable
+      with:
+        version: "24.2.0"
