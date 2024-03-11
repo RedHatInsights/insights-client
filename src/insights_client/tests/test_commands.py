@@ -10,14 +10,14 @@ from pytest import raises
 def test_version_command(capsys):
     with patch('os.getuid', return_value=0):
         insights_client._main()
-        captured=capsys.readouterr()
-        output_sudo=captured.out
+        captured = capsys.readouterr()
+        output_sudo = captured.out
     with patch('os.getuid', return_value=1):
         insights_client._main()
-        captured=capsys.readouterr()
-        output_normal=captured.out
-    
-    assert output_sudo==output_normal
+        captured = capsys.readouterr()
+        output_normal = captured.out
+
+    assert output_sudo == output_normal
 
 
 @patch('insights_client.sys.argv', ['insights-client', '--help'])
@@ -25,14 +25,15 @@ def test_version_command(capsys):
 def test_help_command(capsys):
     with patch('os.getuid', return_value=0):
         insights_client._main()
-        captured=capsys.readouterr()
-        output_sudo=captured.out
+        captured = capsys.readouterr()
+        output_sudo = captured.out
     with patch('os.getuid', return_value=1):
         insights_client._main()
-        captured=capsys.readouterr()
-        output_normal=captured.out
-    
-    assert output_sudo==output_normal
+        captured = capsys.readouterr()
+        output_normal = captured.out
+
+    assert output_sudo == output_normal
+
 
 @patch('insights_client.sys.argv', ['insights-client'])
 def test_exit_when_run_phases_no_sudo():
