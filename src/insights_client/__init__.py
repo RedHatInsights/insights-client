@@ -241,15 +241,13 @@ def run_phase(phase, client, validated_eggs):
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             # phase successful, don't try another egg
-            client_debug(
-                "phase '{phase}' successful".format(egg=egg, phase=phase["name"])
-            )
+            client_debug("phase '{phase}' successful".format(phase=phase["name"]))
             update_motd_message()
             return
 
         client_debug(
             "phase '{phase}' failed with return code {rc}".format(
-                egg=egg, phase=phase["name"], rc=process.returncode
+                phase=phase["name"], rc=process.returncode
             )
         )
         if process.returncode == 1:
