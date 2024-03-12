@@ -6,7 +6,7 @@ on:
 
 jobs:
   stylish:
-    name: "black"
+    name: "black & flake8"
     runs-on: ubuntu-latest
     container:
       image: fedora:latest
@@ -16,6 +16,7 @@ jobs:
       run: |
         dnf --setopt install_weak_deps=False install -y \
             git-core \
+            python3-flake8 \
             python3-pip
 
     - uses: actions/checkout@v4
@@ -23,3 +24,10 @@ jobs:
     - uses: psf/black@stable
       with:
         version: "24.2.0"
+
+    - name: Setup flake8 annotations
+      uses: rbialon/flake8-annotations@v1
+
+    - name: Run flake8
+      run: |
+        flake8
