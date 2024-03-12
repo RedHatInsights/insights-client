@@ -1,0 +1,3 @@
+# the version of black is specified also in the stylish.yml github workflow;
+# please update the version there in case it is bumped here
+black==24.2.0
