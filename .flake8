@@ -1,3 +1,19 @@
 [flake8]
-ignore = E501,E126,E127,E128,E722
-exclude = bin,docs,include,lib,lib64,.git
+filename =
+    *.py,
+    *.py.in,
+# same limit as black
+max-line-length = 88
+ignore =
+    # E203 whitespace before ':'
+    # result of black-formatted code
+    E203,
+    # W503: line break before binary operator
+    W503
+per-file-ignores =
+    # some lines are longer than 88
+    src/insights_client/__init__.py: E501
+    integration-tests/test_unregister.py: E501
+extend-exclude =
+    # default build directory
+    build/,
