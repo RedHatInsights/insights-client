@@ -1,2 +1,2 @@
 [tool.black]
-include = '\.py(\.in)?$'
+include = '(\.py(\.in)?|src/insights-client.in)$'
