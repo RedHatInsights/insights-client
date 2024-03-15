@@ -21,7 +21,7 @@ def install_katello_rpm(test_config):
 
 @pytest.fixture(scope="session")
 def register_subman(
-    external_candlepin, subman_session, test_config, install_katello_rpm
+    external_candlepin, install_katello_rpm, subman_session, test_config
 ):
     if "satellite" in test_config.environment:
         subman_session.register(
