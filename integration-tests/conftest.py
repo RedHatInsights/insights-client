@@ -1,5 +1,6 @@
 import pytest
 import subprocess
+import time
 
 
 @pytest.fixture(scope="session")
@@ -34,3 +35,24 @@ def register_subman(
             password=test_config.get("candlepin", "password"),
         )
     yield subman_session
+
+
+def loop_until(pred, poll_sec=5, timeout_sec=60):
+    """
+    An helper function to handle a time periond waiting for an external service
+    to update its state.
+
+    an example:
+
+       result = loop_until(lambda: insights_client.is_registered)
+       assert result == True
+
+    The loop function will retry to run predicate every 5secs
+    untill the total time exceeds timeout_sec.
+    """
+    start = time.time()
+    ok = False
+    while (not ok) and (time.time() - start < timeout_sec):
+        time.sleep(poll_sec)
+        ok = pred()
+    return ok
