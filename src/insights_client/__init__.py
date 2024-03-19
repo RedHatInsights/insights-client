@@ -214,15 +214,25 @@ def run_phase(phase, client, validated_eggs):
     ] + sys.argv[1:]
     config = client.get_conf()
 
-    all_eggs = [ENV_EGG, NEW_EGG] + validated_eggs
+    all_eggs = [NEW_EGG] + validated_eggs
+    if ENV_EGG is not None:
+        all_eggs = [ENV_EGG] + all_eggs
+        client_debug("ENV_EGG defined as %s." % ENV_EGG)
+    else:
+        client_debug("ENV_EGG not defined, skipping.")
 
-    for i, egg in enumerate(all_eggs):
-        if egg is None or (config["gpg"] and not os.path.isfile(egg)):
-            client_debug("Egg does not exist: %s" % egg)
-            continue
-        if config["gpg"] and not client.verify(egg)["gpg"]:
-            client_debug("WARNING: GPG verification failed. Not loading egg: %s" % egg)
-            continue
+    for egg in all_eggs:
+        if config["gpg"]:
+            if not os.path.isfile(egg):
+                client_debug("%s is not a file, can't GPG verify. Skipping." % (egg,))
+                continue
+            client_debug("Verifying %s..." % egg)
+            if not client.verify(egg)["gpg"]:
+                client_debug("WARNING: GPG verification failed. Not loading egg: %s" % egg)
+                continue
+        else:
+            client_debug("GPG disabled by --no-gpg, not verifying %s." % egg)
+
         client_debug("phase '%s'; egg '%s'" % (phase["name"], egg))
 
         # prepare the environment
@@ -351,18 +361,31 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+    client_debug("Verifying initial eggs to load config.")
+
+    validated_eggs = []
+    for egg in [STABLE_EGG, RPM_EGG]:
+        client_debug("GPG verifying initial egg %s..." % (egg,))
+        if gpg_validate(egg):
+            client_debug("GPG verification successful. Loading initial egg: %s" % (egg,))
+            validated_eggs.append(egg)
+        else:
+            client_debug("WARNING: GPG verification failed. Not loading initial egg: %s" % (egg,))
     # sort rpm and stable eggs after verification
-    validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
+    validated_eggs = sorted_eggs(validated_eggs)
     # if ENV_EGG was specified and it's valid, add that to front of sys.path
     #  so it can be loaded initially. keep it in its own var so we don't
     #  pass it to run_phase where we load it again
+    client_debug("Verifying initial ENV_EGG: %s..." % (ENV_EGG,))
     if gpg_validate(ENV_EGG):
+        client_debug("GPG verification successful. Loading initial egg: %s" % (ENV_EGG,))
         valid_env_egg = [ENV_EGG]
     else:
+        client_debug("WARNING: GPG verification failed. Not loading initial egg: %s" % (ENV_EGG,))
         valid_env_egg = []
 
     if not validated_eggs and not valid_env_egg:
-        sys.exit("No GPG-verified eggs can be found")
+        sys.exit("No GPG-verified initial eggs can be found")
 
     # ENV egg comes first
     sys.path = valid_env_egg + validated_eggs + sys.path
