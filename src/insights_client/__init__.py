@@ -64,6 +64,10 @@ def log(msg):
     print(msg, file=sys.stderr)
 
 
+def join_path(parts):
+    return ":".join(parts)
+
+
 def egg_version(egg):
     """
     Determine the egg version
@@ -85,6 +89,11 @@ def egg_version(egg):
         return None
     stdout, stderr = proc.communicate()
     return stdout.decode("utf-8")
+
+
+def egg_path(insights_module):
+    module_path = insights_module.__path__[0]
+    return os.path.dirname(module_path)
 
 
 def sorted_eggs(eggs):
@@ -239,7 +248,7 @@ def run_phase(phase, client, validated_eggs):
         pythonpath = str(egg)
         env_pythonpath = os.environ.get("PYTHONPATH", "")  # type: str
         if env_pythonpath:
-            pythonpath += ":" + env_pythonpath
+            pythonpath = join_path([pythonpath, env_pythonpath])
         insights_env = {
             "INSIGHTS_PHASE": str(phase["name"]),
             "PYTHONPATH": pythonpath,
@@ -377,12 +386,16 @@ def _main():
 
     # ENV egg comes first
     all_valid_eggs = valid_env_egg + validated_eggs
-    client_debug("Using eggs: %s", ":".join(all_valid_eggs))
+    client_debug("Using eggs: %s", join_path(all_valid_eggs))
     sys.path = all_valid_eggs + sys.path
 
     try:
         # flake8 complains because these imports aren't at the top
         import insights
+
+        initial_egg_path = egg_path(insights)
+        client_debug("Loaded initial egg: %s" % (initial_egg_path,))
+
         from insights.client import InsightsClient
         from insights.client.phase.v1 import get_phases
         from insights.client.config import InsightsConfig
@@ -412,10 +425,12 @@ def _main():
         # handle client instantation here so that it isn't done multiple times in __init__
         # The config can be passed now by parameter
         client = InsightsClient(config, False)  # read config, but dont setup logging
+        client_debug(
+            "InsightsClient initialized. Egg version: %s" % (client.version(),)
+        )
 
         # we now have access to the clients logging mechanism instead of using print
         client.set_up_logging()
-        logging.root.debug("Loaded initial egg: %s", os.path.dirname(insights.__file__))
 
         for p in get_phases():
             run_phase(p, client, validated_eggs)
