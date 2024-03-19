@@ -405,7 +405,11 @@ def _main():
         # Add the insights-config here
         try:
             client_debug("Initializing InsightsConfig.")
-            config = InsightsConfig(_print_errors=True).load_all()
+
+            config_args = {}
+            if INSIGHTS_DEBUG:
+                config_args["verbose"] = True
+            config = InsightsConfig(_print_errors=True, **config_args).load_all()
         except ValueError as e:
             sys.stderr.write("ERROR: " + str(e) + "\n")
             sys.exit("Unable to load Insights Config")
