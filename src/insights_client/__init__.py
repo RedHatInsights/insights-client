@@ -391,20 +391,27 @@ def _main():
     sys.path = valid_env_egg + validated_eggs + sys.path
 
     try:
+        sys_path = ":".join(sys.path)
+        client_debug("Importing the insights module from %s..." % (sys_path,))
         # flake8 complains because these imports aren't at the top
         import insights
+        egg_path = os.path.dirname(insights.__path__[0])
+        client_debug("Loaded initial egg: %s" % ( egg_path,))
+
         from insights.client import InsightsClient
         from insights.client.phase.v1 import get_phases
         from insights.client.config import InsightsConfig
 
         # Add the insights-config here
         try:
+            client_debug("Initializing InsightsConfig.")
             config = InsightsConfig(_print_errors=True).load_all()
         except ValueError as e:
             sys.stderr.write("ERROR: " + str(e) + "\n")
             sys.exit("Unable to load Insights Config")
 
         if config["version"]:
+            client_debug("Only printing version, skipping regular Client run.")
             try:
                 from insights_client.constants import InsightsConstants
             except ImportError:
@@ -421,13 +428,16 @@ def _main():
 
         # handle client instantation here so that it isn't done multiple times in __init__
         # The config can be passed now by parameter
+        client_debug("Initializing InsightsClient with the loaded config...")
         client = InsightsClient(config, False)  # read config, but dont setup logging
+        client_debug("InsightsClient initialized. Egg version: %s" % (client.version(),))
 
         # we now have access to the clients logging mechanism instead of using print
+        client_debug("Setting up regular logging.")
         client.set_up_logging()
-        logging.root.debug("Loaded initial egg: %s", os.path.dirname(insights.__file__))
 
         for p in get_phases():
+            client_debug("Running phase %s." % (p["name"],))
             run_phase(p, client, validated_eggs)
     except KeyboardInterrupt:
         sys.exit("Aborting.")
