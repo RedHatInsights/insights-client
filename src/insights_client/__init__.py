@@ -16,7 +16,23 @@ import tempfile
 from distutils.version import LooseVersion
 
 
-INSIGHTS_DEBUG = os.environ.get("INSIGHTS_DEBUG", "").lower() == "true"
+def get_logging_config():
+    config = {}
+
+    for arg in ["silent", "verbose"]:
+        environ_variable = f"INSIGHTS_{arg.upper()}"
+        environ_value = os.environ.get(environ_variable, "")
+
+        if environ_value.lower() == "true":
+            config[arg] = True
+        else:
+            cli_flag = f"--{arg}"
+            config[arg] = cli_flag in sys.argv
+
+    return config
+
+
+LOGGING_CONFIG = get_logging_config()
 NO_COLOR = os.environ.get("NO_COLOR") is not None
 
 BYPASS_GPG = os.environ.get("BYPASS_GPG", "").lower() == "true"
@@ -46,7 +62,10 @@ def client_debug(message):
     :param message: Text to display
     :type message: str
     """
-    if not INSIGHTS_DEBUG:
+    if LOGGING_CONFIG["silent"]:
+        logger.setLevel(logging.FATAL)
+        return
+    elif not LOGGING_CONFIG["verbose"]:
         return
 
     prefix = "insights-client debug"
@@ -370,7 +389,6 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
-
     # sort rpm and stable eggs after verification
     validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
     # if ENV_EGG was specified and it's valid, add that to front of sys.path
@@ -402,7 +420,7 @@ def _main():
 
         # Add the insights-config here
         try:
-            config = InsightsConfig(_print_errors=True).load_all()
+            config = InsightsConfig(_print_errors=True, **logging_config).load_all()
         except ValueError as e:
             sys.stderr.write("ERROR: " + str(e) + "\n")
             sys.exit("Unable to load Insights Config")
