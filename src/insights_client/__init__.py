@@ -214,15 +214,25 @@ def run_phase(phase, client, validated_eggs):
     ] + sys.argv[1:]
     config = client.get_conf()
 
-    all_eggs = [ENV_EGG, NEW_EGG] + validated_eggs
+    all_eggs = [NEW_EGG] + validated_eggs
+    if ENV_EGG is not None:
+        all_eggs = [ENV_EGG] + all_eggs
+        client_debug("Environment egg defined as %s." % ENV_EGG)
 
-    for i, egg in enumerate(all_eggs):
-        if egg is None or (config["gpg"] and not os.path.isfile(egg)):
-            client_debug("Egg does not exist: %s" % egg)
-            continue
-        if config["gpg"] and not client.verify(egg)["gpg"]:
-            client_debug("WARNING: GPG verification failed. Not loading egg: %s" % egg)
-            continue
+    for egg in all_eggs:
+        if config["gpg"]:
+            if not os.path.isfile(egg):
+                client_debug("%s is not a file, can't GPG verify. Skipping." % (egg,))
+                continue
+            client_debug("Verifying %s..." % egg)
+            if not client.verify(egg)["gpg"]:
+                client_debug(
+                    "WARNING: GPG verification failed. Not loading egg: %s" % egg
+                )
+                continue
+        else:
+            client_debug("GPG disabled by --no-gpg, not verifying %s." % egg)
+
         client_debug("phase '%s'; egg '%s'" % (phase["name"], egg))
 
         # prepare the environment
@@ -351,6 +361,7 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+
     # sort rpm and stable eggs after verification
     validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
     # if ENV_EGG was specified and it's valid, add that to front of sys.path
@@ -362,10 +373,12 @@ def _main():
         valid_env_egg = []
 
     if not validated_eggs and not valid_env_egg:
-        sys.exit("No GPG-verified eggs can be found")
+        sys.exit("No GPG-verified initial eggs can be found")
 
     # ENV egg comes first
-    sys.path = valid_env_egg + validated_eggs + sys.path
+    all_valid_eggs = valid_env_egg + validated_eggs
+    client_debug("Using eggs: %s", ":".join(all_valid_eggs))
+    sys.path = all_valid_eggs + sys.path
 
     try:
         # flake8 complains because these imports aren't at the top
