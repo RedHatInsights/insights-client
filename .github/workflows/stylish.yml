@@ -23,7 +23,7 @@ jobs:
 
     - uses: psf/black@stable
       with:
-        version: "24.2.0"
+        version: "24.3.0"
 
     - name: Setup flake8 annotations
       uses: rbialon/flake8-annotations@v1
