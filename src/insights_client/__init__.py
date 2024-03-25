@@ -16,23 +16,7 @@ import tempfile
 from distutils.version import LooseVersion
 
 
-def get_logging_config():
-    config = {}
-
-    for arg in ["silent", "verbose"]:
-        environ_variable = f"INSIGHTS_{arg.upper()}"
-        environ_value = os.environ.get(environ_variable, "")
-
-        if environ_value.lower() == "true":
-            config[arg] = True
-        else:
-            cli_flag = f"--{arg}"
-            config[arg] = cli_flag in sys.argv
-
-    return config
-
-
-LOGGING_CONFIG = get_logging_config()
+LOG_FORMAT = "%(asctime)s %(levelname)8s %(name)s:%(lineno)s %(message)s"
 NO_COLOR = os.environ.get("NO_COLOR") is not None
 
 BYPASS_GPG = os.environ.get("BYPASS_GPG", "").lower() == "true"
@@ -54,33 +38,40 @@ TEMPORARY_GPG_HOME_PARENT_DIRECTORY = "/var/lib/insights/"
 logger = logging.getLogger(__name__)
 
 
-def client_debug(message):
-    """Debug a log message when logging isn't available yet.
+def get_logging_config():
+    config = {}
 
-    Set 'INSIGHTS_DEBUG' variable to enable this method.
+    for arg in ["silent", "verbose"]:
+        environ_variable = f"INSIGHTS_{arg.upper()}"
+        environ_value = os.environ.get(environ_variable, "")
 
-    :param message: Text to display
-    :type message: str
-    """
-    if LOGGING_CONFIG["silent"]:
+        if environ_value.lower() == "true":
+            config[arg] = True
+        else:
+            cli_flag = f"--{arg}"
+            config[arg] = cli_flag in sys.argv
+
+    return config
+
+
+def set_up_logging(logging_config):
+    if logging_config["silent"]:
         logger.setLevel(logging.FATAL)
         return
-    elif not LOGGING_CONFIG["verbose"]:
+    elif not logging_config["verbose"]:
         return
 
-    prefix = "insights-client debug"
-    suffix = ""
-    if NO_COLOR or not sys.stdout.isatty():
-        prefix += ":"
-    else:
-        prefix = "\033[40m" + prefix + "\033[0m\033[33m"
-        suffix = "\033[0m"
+    logger.setLevel(logging.DEBUG)
 
-    print(prefix + " " + message + suffix, file=sys.stderr)
+    handler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter(LOG_FORMAT)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
 
-def log(msg):
-    print(msg, file=sys.stderr)
+def tear_down_logging():
+    for handler in logger.handlers:
+        logger.removeHandler(handler)
 
 
 def join_path(parts):
@@ -148,15 +139,14 @@ def _remove_gpg_home(home):
     )
     stdout, stderr = shutdown_process.communicate()
     if shutdown_process.returncode != 0:
-        log(
-            "Could not kill the GPG agent, got return code {rc}".format(
-                rc=shutdown_process.returncode
-            )
+        logger.debug(
+            "Could not kill the GPG agent, got return code %d",
+            shutdown_process.returncode,
         )
         if stdout:
-            log(stdout)
+            logger.debug(stdout)
         if stderr:
-            log(stderr)
+            logger.debug(stderr)
 
     # Delete the temporary directory
     shutil.rmtree(home)
@@ -175,26 +165,19 @@ def gpg_validate(path):
     """
     # EGG= may be None or an invalid path
     if not path or not os.path.exists(path):
-        client_debug(
-            "Path '{path}' does not exist and cannot be GPG validated.".format(
-                path=path
-            )
-        )
+        logger.debug("Path '%s' does not exist and cannot be GPG validated.", path)
         return False
 
     # EGG may be a path to a directory (which cannot be signed)
     if BYPASS_GPG:
-        client_debug(
-            "'BYPASS_GPG' is set, pretending the GPG validation of '{path}' succeeded.".format(
-                path=path
-            )
+        logger.debug(
+            "'BYPASS_GPG' is set, pretending the GPG validation of '%s' succeeded.",
+            path,
         )
         return True
 
     if not os.path.exists(path + ".asc"):
-        client_debug(
-            "Path '{path}' does not have an associated '.asc' file.".format(path=path)
-        )
+        logger.debug("Path '%s' does not have an associated '.asc' file.", path)
         return False
 
     # The /var/lib/insights/ directory is used instead of /tmp/ because
@@ -222,11 +205,10 @@ def gpg_validate(path):
     verify_process.communicate()
     _remove_gpg_home(home)
 
-    client_debug(
-        "The GPG verification of '{path}' returned status code {code}.".format(
-            path=path,
-            code=verify_process.returncode,
-        )
+    logger.debug(
+        "The GPG verification of '%s' returned status code %d.",
+        path,
+        verify_process.returncode,
     )
     return verify_process.returncode == 0
 
@@ -245,23 +227,23 @@ def run_phase(phase, client, validated_eggs):
     all_eggs = [NEW_EGG] + validated_eggs
     if ENV_EGG is not None:
         all_eggs = [ENV_EGG] + all_eggs
-        client_debug("Environment egg defined as %s." % ENV_EGG)
+        logger.debug("Environment egg defined as %s." % ENV_EGG)
 
     for egg in all_eggs:
         if config["gpg"]:
             if not os.path.isfile(egg):
-                client_debug("%s is not a file, can't GPG verify. Skipping." % (egg,))
+                logger.debug("%s is not a file, can't GPG verify. Skipping.", egg)
                 continue
-            client_debug("Verifying %s..." % egg)
+            logger.debug("Verifying %s..." % egg)
             if not client.verify(egg)["gpg"]:
-                client_debug(
-                    "WARNING: GPG verification failed. Not loading egg: %s" % egg
+                logger.debug(
+                    "WARNING: GPG verification failed. Not loading egg: %s", egg
                 )
                 continue
         else:
-            client_debug("GPG disabled by --no-gpg, not verifying %s." % egg)
+            logger.debug("GPG disabled by --no-gpg, not verifying %s.", egg)
 
-        client_debug("phase '%s'; egg '%s'" % (phase["name"], egg))
+        logger.debug("phase '%s'; egg '%s'", phase["name"], egg)
 
         # prepare the environment
         pythonpath = str(egg)
@@ -279,14 +261,12 @@ def run_phase(phase, client, validated_eggs):
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             # phase successful, don't try another egg
-            client_debug("phase '{phase}' successful".format(phase=phase["name"]))
+            logger.debug("phase '%s' successful", phase["name"])
             update_motd_message()
             return
 
-        client_debug(
-            "phase '{phase}' failed with return code {rc}".format(
-                phase=phase["name"], rc=process.returncode
-            )
+        logger.debug(
+            "phase '%s' failed with return code %d", phase["name"], process.returncode
         )
         if process.returncode == 1:
             # egg hit an error, try the next
@@ -320,9 +300,8 @@ def update_motd_message():
     """
     if not os.path.exists(os.path.dirname(MOTD_FILE)):
         logger.debug(
-            "directory '{dir}' does not exist, ignoring MOTD update request".format(
-                dir=os.path.dirname(MOTD_FILE)
-            )
+            "directory '%s' does not exist, ignoring MOTD update request",
+            os.path.dirname(MOTD_FILE),
         )
         return
 
@@ -339,47 +318,44 @@ def update_motd_message():
         if not os.path.lexists(MOTD_FILE):
             logger.debug(
                 ".registered and .unregistered do not exist; "
-                "pointing the MOTD file '{source}' to '{motd}'".format(
-                    source=MOTD_SRC, motd=MOTD_FILE
-                )
+                "pointing the MOTD file '%s' to '%s'",
+                MOTD_SRC,
+                MOTD_FILE,
             )
             try:
                 os.symlink(MOTD_SRC, MOTD_FILE)
             except OSError as exc:
                 logger.debug(
-                    "could not point the MOTD file '{source}' to '{motd}': {exc}".format(
-                        source=MOTD_SRC, motd=MOTD_FILE, exc=exc
-                    )
+                    "could not point the MOTD file '%s' to '%s': %s",
+                    MOTD_SRC,
+                    MOTD_FILE,
+                    exc,
                 )
         else:
             logger.debug(
                 ".registered and .unregistered do not exist; "
-                "file '{source}' correctly points to '{motd}'".format(
-                    source=MOTD_SRC, motd=MOTD_FILE
-                )
+                "file '%s' correctly points to '%s'",
+                MOTD_SRC,
+                MOTD_FILE,
             )
 
     else:
         # .registered or .unregistered exist, MOTD should not be displayed
         if os.path.lexists(MOTD_FILE):
             logger.debug(
-                ".registered or .unregistered exist; removing the MOTD file '{path}'".format(
-                    path=MOTD_FILE
-                )
+                ".registered or .unregistered exist; removing the MOTD file '{path}'",
+                MOTD_FILE,
             )
             try:
                 os.remove(MOTD_FILE)
             except OSError as exc:
                 logger.debug(
-                    "could not remove the MOTD file '{path}': {exc}".format(
-                        path=MOTD_FILE, exc=exc
-                    )
+                    "could not remove the MOTD file '{path}': {exc}", MOTD_FILE, exc
                 )
         else:
             logger.debug(
-                ".registered or .unregistered exist; file '{motd}' correctly does not exist".format(
-                    motd=MOTD_FILE
-                )
+                ".registered or .unregistered exist; file '{motd}' correctly does not exist",
+                MOTD_FILE,
             )
 
 
@@ -389,6 +365,9 @@ def _main():
     attempt to collect and upload with new, then current, then rpm
     if an egg fails a phase never try it again
     """
+    logging_config = get_logging_config()
+    set_up_logging(logging_config)
+
     # sort rpm and stable eggs after verification
     validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
     # if ENV_EGG was specified and it's valid, add that to front of sys.path
@@ -404,15 +383,14 @@ def _main():
 
     # ENV egg comes first
     all_valid_eggs = valid_env_egg + validated_eggs
-    client_debug("Using eggs: %s", join_path(all_valid_eggs))
+    logger.debug("Using eggs: %s", join_path(all_valid_eggs))
     sys.path = all_valid_eggs + sys.path
 
     try:
         # flake8 complains because these imports aren't at the top
         import insights
 
-        initial_egg_path = egg_path(insights)
-        client_debug("Loaded initial egg: %s" % (initial_egg_path,))
+        logger.debug("Loaded initial egg: %s", egg_path(insights))
 
         from insights.client import InsightsClient
         from insights.client.phase.v1 import get_phases
@@ -443,11 +421,10 @@ def _main():
         # handle client instantation here so that it isn't done multiple times in __init__
         # The config can be passed now by parameter
         client = InsightsClient(config, False)  # read config, but dont setup logging
-        client_debug(
-            "InsightsClient initialized. Egg version: %s" % (client.version(),)
-        )
+        logger.debug("InsightsClient initialized. Egg version: %s", client.version())
 
-        # we now have access to the clients logging mechanism instead of using print
+        # we now have access to the clients logging mechanism
+        tear_down_logging()
         client.set_up_logging()
 
         for p in get_phases():
