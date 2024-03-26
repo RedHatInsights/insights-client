@@ -19,11 +19,11 @@ def test_register_with_display_name(insights_client, fetch_from_inventory):
     assert loop_until(lambda: insights_client.is_registered)
     assert (
         "Successfully registered host" in status.stdout
-    ), f"An application should inform about successfull registration"
+    ), "An application should inform about successfull registration"
 
     assert (
         f"as {unique_hostname}" in status.stdout
-    ), f"An application should inform that a system is registered with the given hostname"
+    ), "App should inform a system is registered with the given hostname"
     response = fetch_from_inventory()
     logger.debug(f"response from console {response}")
 
@@ -40,8 +40,8 @@ def test_register_twice_with_different_display_name(
     Set new display_name and try to register twice.
 
     Registering twice, even with a different display_name set, will do nothing.
-    The `register` method does check if the host changed at all, it only checks the machine_id
-
+    The `register` method does check if the host changed at all,
+    it only checks the machine_id
     """
     insights_id = None
     unique_hostname = f"test-qa.{uuid.uuid4()}.csi-client-tools.example.com"
@@ -62,9 +62,11 @@ def test_register_twice_with_different_display_name(
     (status, response, record) = (None, None, None)
     with subtests.test(msg="The second registration"):
         status = insights_client.run("--register", "--display-name", unique_hostname_02)
-        registration_message = ('stage' in test_config.environment) \
-            and "This machine has already been registered" \
+        registration_message = (
+            ("stage" in test_config.environment)
+            and "This machine has already been registered"
             or "This host has already been registered"
+        )
         assert registration_message in status.stdout
 
         assert loop_until(lambda: insights_client.is_registered)

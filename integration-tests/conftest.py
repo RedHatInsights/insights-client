@@ -1,13 +1,13 @@
 import pytest
 import subprocess
 import time
-import json
 import requests
 import logging
 
 logger = logging.getLogger(__name__)
 
 MACHINE_ID_FILE: str = "/etc/insights-client/machine-id"
+
 
 @pytest.fixture(scope="session")
 def install_katello_rpm(test_config):
@@ -42,6 +42,7 @@ def register_subman(
         )
     yield subman_session
 
+
 def loop_until(pred, poll_sec=5, timeout_sec=60):
     """
     An helper function to handle a time periond waiting for an external service
@@ -61,24 +62,29 @@ def loop_until(pred, poll_sec=5, timeout_sec=60):
         time.sleep(poll_sec)
         ok = pred()
     return ok
-    
+
+
 @pytest.fixture(scope="session")
 def fetch_from_inventory(test_config):
     """
-    curl https://<console_service_hostname>/api/inventory/v1/hosts?insights_id=<insights-client/machine_id> \
+    curl \
+    https://<host>/api/inventory/v1/hosts?insights_id=<insights-client/machine_id> \
       --cert /etc/pki/consumer/cert.pem \
       --key /etc/pki/consumer/key.pem \
       -k
     """
+
     def _wrapper(insights_id=None):
         hostname = test_config.get("console", "host")
         if not insights_id:
             logger.info(f"{MACHINE_ID_FILE} will be used to fetch an inventory")
-            with open(MACHINE_ID_FILE,"rt") as f:
-                insights_id=f.read()
-                
-        response = requests.get(f"https://{hostname}/api/inventory/v1/hosts?insights_id={insights_id}",
-                              cert=("/etc/pki/consumer/cert.pem","/etc/pki/consumer/key.pem"))
+            with open(MACHINE_ID_FILE, "rt") as f:
+                insights_id = f.read()
+
+        response = requests.get(
+            f"https://{hostname}/api/inventory/v1/hosts?insights_id={insights_id}",
+            cert=("/etc/pki/consumer/cert.pem", "/etc/pki/consumer/key.pem"),
+        )
         print(response)
         return response.json()
 
