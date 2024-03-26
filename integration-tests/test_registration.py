@@ -1,11 +1,9 @@
 import os
 import contextlib
 import pytest
-
+from conftest import MACHINE_ID_FILE
 
 pytestmark = pytest.mark.usefixtures("register_subman")
-
-MACHINE_ID_FILE: str = "/etc/insights-client/machine-id"
 
 
 def test_machineid_exists_only_when_registered(insights_client):
