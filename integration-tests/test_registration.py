@@ -6,7 +6,6 @@ from conftest import MACHINE_ID_FILE
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
-
 def test_machineid_exists_only_when_registered(insights_client):
     """`machine-id` is only present when insights-client is registered."""
     assert not insights_client.is_registered
