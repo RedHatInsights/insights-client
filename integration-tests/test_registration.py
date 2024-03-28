@@ -65,8 +65,8 @@ def test_double_register(insights_client):
     assert (
         "View the Red Hat Insights console" in response.stdout
     ), "An application should inform about Insights console"
-    assert (
-        loop_until(lambda : insights_client.is_registered)
+    assert loop_until(
+        lambda: insights_client.is_registered
     ), "Current state of registration should be 'registered'"
 
     assert os.path.exists(MACHINE_ID_FILE)
@@ -154,6 +154,7 @@ def test_register_using_auth_proxy(insights_client, test_config):
         assert any(
             msg in line for line in log
         ), f"Message '{msg}' about using proxy should appear in a log file"
+
 
 @pytest.mark.parametrize(
     "legacy_upload_value",
