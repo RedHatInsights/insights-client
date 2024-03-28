@@ -3,11 +3,62 @@ import pytest
 import contextlib
 from pytest_client_tools.util import Version
 import conftest
-
+from constants import MACHINE_ID_FILE
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
-MACHINE_ID_FILE: str = "/etc/insights-client/machine-id"
+
+def test_register(insights_client):
+    """Test `insights-client --register` on an unregistered client"""
+    register_result = insights_client.run("--register")
+    assert insights_client.is_registered
+
+    assert "Starting to collect Insights data" in register_result.stdout
+    assert "Successfully uploaded report" in register_result.stdout
+    assert "View the Red Hat Insights console" in register_result.stdout
+
+
+def test_register_auth_proxy(insights_client, test_config):
+    """This test verifies that `insights-client --register` successfully
+    registers host when auth proxy is configured.
+    """
+    try:
+        proxy_host = test_config.get("auth_proxy", "host")
+        proxy_user = test_config.get("auth_proxy", "username")
+        proxy_pass = test_config.get("auth_proxy", "password")
+        proxy_port = str(test_config.get("auth_proxy", "port"))
+    except KeyError:
+        pytest.skip("Skipping because this test needs proxy settings to be configured")
+
+    auth_proxy = f"http://{proxy_user}:{proxy_pass}@{proxy_host}:{proxy_port}"
+
+    # save proxy information in insights-client.conf
+    insights_client.config.proxy = auth_proxy
+    insights_client.config.save()
+
+    register_result = insights_client.run("--register", "--verbose")
+    assert insights_client.is_registered
+    assert "Proxy Scheme: http://" in register_result.stdout
+    assert f"Proxy Location: {proxy_host}" in register_result.stdout
+    assert f"Proxy User: {proxy_user}" in register_result.stdout
+
+
+def test_register_noauth_proxy(insights_client, test_config):
+    """This test verifies that `insights-client --register` successfully
+    registers host when no-auth proxy is configured.
+    """
+    try:
+        proxy_host = test_config.get("noauth_proxy", "host")
+        proxy_port = str(test_config.get("noauth_proxy", "port"))
+    except KeyError:
+        pytest.skip("Skipping because this test needs proxy settings to be configured")
+    no_auth_proxy = f"http://{proxy_host}:{proxy_port}"
+    insights_client.config.proxy = no_auth_proxy
+    insights_client.config.save()
+
+    register_result = insights_client.run("--register", "--verbose")
+    assert insights_client.is_registered
+    assert f"CONF Proxy: {no_auth_proxy}" in register_result.stdout
 
 
 def test_machineid_exists_only_when_registered(insights_client):
