@@ -74,6 +74,20 @@ def tear_down_logging():
         logger.removeHandler(handler)
 
 
+def debug_environ(environ):
+    items = map(lambda item: f"{item[0]}={item[1]}", environ.items())
+    return " ".join(items)
+
+
+def debug_command(command, environ=None):
+    if environ:
+        full_command = [debug_environ(environ)] + command
+    else:
+        full_command = command
+    # Please note that neither spaces nor any other special characters are quoted.
+    return " ".join(full_command)
+
+
 def join_path(parts):
     return ":".join(parts)
 
@@ -85,19 +99,18 @@ def egg_version(egg):
     if not sys.executable:
         return None
     try:
-        proc = Popen(
-            [
-                sys.executable,
-                "-c",
-                "from insights.client import InsightsClient; print(InsightsClient(None, False).version())",
-            ],
-            env={"PYTHONPATH": egg, "PATH": os.getenv("PATH")},
-            stdout=PIPE,
-            stderr=PIPE,
-        )
+        version_command = [
+            sys.executable,
+            "-c",
+            "from insights.client import InsightsClient; "
+            "print(InsightsClient(None, False).version())",
+        ]
+        env = {"PYTHONPATH": egg, "PATH": os.getenv("PATH")}
+        logger.debug("Running command: %s", debug_command(version_command, env))
+        proc = Popen(version_command, env=env, stdout=PIPE, stderr=PIPE)
     except OSError:
         return None
-    stdout, stderr = proc.communicate()
+    stdout, _stderr = proc.communicate()
     return stdout.decode("utf-8")
 
 
@@ -131,8 +144,10 @@ def _remove_gpg_home(home):
     :rtype: None
     """
     # Shut down GPG's home agent
+    shutdown_command = ["/usr/bin/gpgconf", "--homedir", home, "--kill", "all"]
+    logger.debug("Running command: %s", " ".join(shutdown_command))
     shutdown_process = subprocess.Popen(
-        ["/usr/bin/gpgconf", "--homedir", home, "--kill", "all"],
+        shutdown_command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
@@ -144,11 +159,12 @@ def _remove_gpg_home(home):
             shutdown_process.returncode,
         )
         if stdout:
-            logger.debug(stdout)
+            logger.debug("stdout: %s", stdout)
         if stderr:
-            logger.debug(stderr)
+            logger.debug("stderr: %s", stderr)
 
     # Delete the temporary directory
+    logger.debug("Removing temporary directory: %s", home)
     shutil.rmtree(home)
 
 
@@ -183,24 +199,40 @@ def gpg_validate(path):
     # The /var/lib/insights/ directory is used instead of /tmp/ because
     # GPG needs to have RW permissions in it, and existing SELinux rules only
     # allow access here.
+    logger.debug(
+        "Creating temporary directory in %s...", TEMPORARY_GPG_HOME_PARENT_DIRECTORY
+    )
     home = tempfile.mkdtemp(dir=TEMPORARY_GPG_HOME_PARENT_DIRECTORY)
 
     # Import the public keys into temporary environment
+    import_command = ["/usr/bin/gpg", "--homedir", home, "--import", GPG_KEY]
+    logger.debug("Running command: %s", debug_command(import_command))
     import_process = subprocess.Popen(
-        ["/usr/bin/gpg", "--homedir", home, "--import", GPG_KEY],
+        import_command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
     import_process.communicate()
     if import_process.returncode != 0:
+        logger.debug(
+            "Could not import the GPG key, got return code %d",
+            import_process.returncode,
+        )
         _remove_gpg_home(home)
         return False
 
     # Verify the signature
+    verify_command = [
+        "/usr/bin/gpg",
+        "--homedir",
+        home,
+        "--verify",
+        path + ".asc",
+        path,
+    ]
+    logger.debug("Running command: %s", debug_command(verify_command))
     verify_process = subprocess.Popen(
-        ["/usr/bin/gpg", "--homedir", home, "--verify", path + ".asc", path],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        verify_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     verify_process.communicate()
     _remove_gpg_home(home)
@@ -234,11 +266,8 @@ def run_phase(phase, client, validated_eggs):
             if not os.path.isfile(egg):
                 logger.debug("%s is not a file, can't GPG verify. Skipping.", egg)
                 continue
-            logger.debug("Verifying %s..." % egg)
             if not client.verify(egg)["gpg"]:
-                logger.debug(
-                    "WARNING: GPG verification failed. Not loading egg: %s", egg
-                )
+                logger.debug("Not using egg: %s", egg)
                 continue
         else:
             logger.debug("GPG disabled by --no-gpg, not verifying %s.", egg)
@@ -258,16 +287,20 @@ def run_phase(phase, client, validated_eggs):
         env.update(insights_env)
 
         process = subprocess.Popen(insights_command, env=env)
-        stdout, stderr = process.communicate()
+        process.communicate()
         if process.returncode == 0:
             # phase successful, don't try another egg
             logger.debug("phase '%s' successful", phase["name"])
             update_motd_message()
             return
 
-        logger.debug(
-            "phase '%s' failed with return code %d", phase["name"], process.returncode
-        )
+        if process.returncode not in [0, 100]:
+            logger.debug(
+                "phase '%s' failed with return code %d",
+                phase["name"],
+                process.returncode,
+            )
+
         if process.returncode == 1:
             # egg hit an error, try the next
             logger.debug("Attempt failed.")
