@@ -1,6 +1,7 @@
 import contextlib
 import pytest
 from time import sleep
+import conftest
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -11,7 +12,7 @@ def test_status_registered(external_candlepin, insights_client):
     in case of legacy_upload status command returns a different output.
     """
     insights_client.register()
-    assert insights_client.is_registered
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     # Adding a small wait to ensure inventory is up-to-date
     sleep(5)
     registration_status = insights_client.run("--status")

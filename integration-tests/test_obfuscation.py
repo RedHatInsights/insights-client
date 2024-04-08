@@ -2,8 +2,8 @@ import pytest
 import subprocess
 import os
 import yaml
-from time import sleep
 import re
+import conftest
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 CONTENT_REDACTION_FILE = "/etc/insights-client/file-content-redaction.yaml"
@@ -17,8 +17,7 @@ def test_obfuscation(insights_client, tmp_path):
     """
     # Register system to insights
     insights_client.register()
-    sleep(5)
-    assert insights_client.is_registered
+    assert conftest.loop_until(lambda: insights_client.is_registered)
 
     # Record the current hostname
     with open("/etc/hostname", "r") as f:
