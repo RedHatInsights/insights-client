@@ -3,6 +3,7 @@ import glob
 import os
 import subprocess
 import pytest
+import conftest
 
 
 @pytest.mark.usefixtures("register_subman")
@@ -15,7 +16,7 @@ def test_client_files_permission(insights_client):
     with contextlib.suppress(FileNotFoundError):
         os.remove(file_last_upload)  # performing a cleanup before test
     insights_client.register()
-    assert insights_client.is_registered
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     assert oct(os.stat(file_last_upload).st_mode & 0o777) == "0o644"
 
 
