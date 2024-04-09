@@ -1,5 +1,5 @@
 import pytest
-from time import sleep
+import conftest
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -11,8 +11,7 @@ def test_set_ansible_host_info(insights_client):
     """
     # Register system against Satellite, and register insights through satellite
     insights_client.register()
-    sleep(10)
-    assert insights_client.is_registered
+    assert conftest.loop_until(lambda: insights_client.is_registered)
 
     # Update ansible-host
     ret = insights_client.run("--ansible-host=foo.example.com", check=False)
