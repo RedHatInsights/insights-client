@@ -2,6 +2,7 @@ import os
 import pytest
 import contextlib
 from pytest_client_tools.util import Version
+import conftest
 
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -11,7 +12,7 @@ MACHINE_ID_FILE: str = "/etc/insights-client/machine-id"
 
 def test_machineid_exists_only_when_registered(insights_client):
     """`machine-id` is only present when insights-client is registered."""
-    assert not insights_client.is_registered
+    assert conftest.loop_until(lambda: not insights_client.is_registered)
     assert not os.path.exists(MACHINE_ID_FILE)
 
     res = insights_client.run(check=False)
@@ -56,7 +57,7 @@ def test_double_registration(insights_client):
 
     This behavior has changed multiple times during the package lifetime.
     """
-    assert not insights_client.is_registered
+    assert conftest.loop_until(lambda: not insights_client.is_registered)
 
     insights_client.register()
     assert os.path.exists(MACHINE_ID_FILE)
@@ -89,7 +90,7 @@ def test_register_group_option(insights_client, legacy_upload_value):
     # make sure the system is not registered to insights
     with contextlib.suppress(Exception):
         insights_client.unregister()
-    assert not insights_client.is_registered
+    assert conftest.loop_until(lambda: not insights_client.is_registered)
     insights_client.config.legacy_upload = legacy_upload_value
     insights_client.config.save()
     register_group_option = insights_client.run(
@@ -102,7 +103,7 @@ def test_register_group_option(insights_client, legacy_upload_value):
 
 def test_registered_and_unregistered_files_are_created_and_deleted(insights_client):
     """'.registered and .unregistered file gets created and deleted"""
-    assert not insights_client.is_registered
+    assert conftest.loop_until(lambda: not insights_client.is_registered)
     assert not os.path.exists("/etc/insights-client/.registered")
 
     insights_client.register()
