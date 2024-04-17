@@ -1,7 +1,8 @@
+import json
+import tarfile
 import pytest
 import conftest
 import glob
-
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -40,3 +41,49 @@ def test_no_upload(insights_client):
 
     archive_file_after = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")
     assert len(archive_file_after) > len(archive_file_before)
+
+
+def test_group(insights_client, tmp_path):
+    """Test --group option
+    This test generates an archive in offline mode and verifies if the group
+    specified in --group was created and packed
+    """
+
+    group_name = "testing-group"
+    archive_name = "archive.tar.gz"
+    archive_location = tmp_path / archive_name
+
+    # Running insights-client in offline mode to generate archive
+    insights_client.run(
+        "--offline", f"--group={group_name}", f"--output-file={archive_location}"
+    )
+
+    with tarfile.open(archive_location, "r") as tar:
+        dir_name = tar.getnames()[0]
+        for m in tar.getmembers():
+            if m.name == f"{dir_name}/tags.json":
+                tag_file = tar.extractfile(m)
+                tag_file_content = json.load(tag_file)
+                break
+
+    assert len(tag_file_content) == 1
+
+    tag = tag_file_content[0]
+    assert tag["key"] == "group"
+    assert tag["namespace"] == "insights-client"
+    assert tag["value"] == group_name
+
+
+def test_support(insights_client):
+    """Test if --support option is giving expected information in output
+    and generates a support logfile for Red Hat Insights.
+    """
+    support_result = insights_client.run("--support")
+
+    assert "Insights version:" in support_result.stdout
+    assert "Registration check:" in support_result.stdout
+    assert "Last successful upload was" in support_result.stdout
+    assert "Connectivity tests" in support_result.stdout
+    assert "Running command:" in support_result.stdout
+    assert "Process output:" in support_result.stdout
+    assert "Support information collected in" in support_result.stdout
