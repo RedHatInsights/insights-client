@@ -1,4 +1,5 @@
 import json
+import os
 import tarfile
 import pytest
 import conftest
@@ -87,3 +88,33 @@ def test_support(insights_client):
     assert "Running command:" in support_result.stdout
     assert "Process output:" in support_result.stdout
     assert "Support information collected in" in support_result.stdout
+
+
+def test_client_validate_no_network_call(insights_client):
+    """Verify that '--validate' option will not try to connect to any network service.
+
+    Ref : https://bugzilla.redhat.com/show_bug.cgi?id=2009864
+    """
+    try:
+        # '/etc/insights-client/tags.yaml' file exists with any content
+        tags_filename = "/etc/insights-client/tags.yaml"
+        with open(tags_filename, "w"):
+            pass
+
+        # modifying conf so that any attempt to connect to any
+        # network service would fail
+        insights_client.config.base_url = "non-existent-url.redhat.com:442/r/insights"
+        insights_client.config.auto_config = False
+        insights_client.config.auto_update = False
+
+        validate_result = insights_client.run("--validate")
+
+        # validating tags.yaml is loaded and no metric data in output
+        assert (
+            "/etc/insights-client/tags.yaml loaded successfully"
+            in validate_result.stdout
+        )
+        assert "metrics Metrics:" not in validate_result.stdout
+    finally:
+        # Remove tags file at the end of test to leave system in clean state
+        os.remove(tags_filename)
