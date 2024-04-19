@@ -118,3 +118,13 @@ def test_client_validate_no_network_call(insights_client):
     finally:
         # Remove tags file at the end of test to leave system in clean state
         os.remove(tags_filename)
+
+
+def test_client_checkin_offline(insights_client):
+    """This test verifies that running --checkin with --offline, a friendly message is
+    logged, and it exists with a failure code
+    """
+    insights_client.register()
+    checkin_result = insights_client.run("--offline", "--checkin", check=False)
+    assert checkin_result.returncode == 1
+    assert "ERROR: Cannot check-in in offline mode." in checkin_result.stderr
