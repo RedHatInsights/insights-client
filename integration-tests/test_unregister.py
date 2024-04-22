@@ -39,4 +39,7 @@ def test_unregister_twice(insights_client):
     unregistration_status = insights_client.run("--unregister", check=False)
     assert conftest.loop_until(lambda: not insights_client.is_registered)
     assert unregistration_status.returncode == 1
-    assert "This system is already unregistered." in unregistration_status.stdout
+    assert (
+        "This host is not registered, unregistration is not applicable."
+        in unregistration_status.stdout
+    )
