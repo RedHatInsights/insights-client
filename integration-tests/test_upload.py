@@ -1,3 +1,5 @@
+import os
+
 import pytest
 import conftest
 
@@ -76,3 +78,39 @@ def test_upload_too_large_archive(insights_client, tmp_path):
 
     assert "Archive is too large to upload" in upload_result.stdout
     assert "Upload failed." in upload_result.stdout
+
+
+@pytest.mark.parametrize(
+    "compressor,expected_extension",
+    [
+        ("gz", ".gz"),
+        ("bz2", ".bz2"),
+        ("xz", ".xz"),
+    ],
+)
+def test_upload_compressor_options(
+    insights_client,
+    compressor,
+    expected_extension,
+):
+    """
+    This test verifies that valid compression types can be used
+    with --compressor to create archives and upload data using --payload
+    """
+    insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
+    # using --compressor option to generate and save archive
+    command_result = insights_client.run(f"--compressor={compressor}", "--no-upload")
+    archive_name = command_result.stdout.split()[-1]
+
+    # Verifying that archive is created with expected extension
+    assert os.path.splitext(archive_name)[1] == expected_extension
+    assert (os.path.splitext(archive_name)[0]).endswith(".tar")
+
+    # Now try to upload the pre-collected archive
+    upload_result = insights_client.run(
+        f"--payload={archive_name}", f"--content-type={compressor}"
+    )
+    assert "Uploading Insights data." in upload_result.stdout
+    assert "Successfully uploaded report" in upload_result.stdout
