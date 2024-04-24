@@ -145,3 +145,35 @@ def test_client_diagnosis(insights_client):
     diagnosis_data = json.loads(diagnosis_result.stdout)
     # verify that diagnosis contains correct machine id
     assert diagnosis_data["insights_id"] == machine_id
+
+
+def test_check_show_results(insights_client):
+    """
+    Verify a remediation is returned when checking results from server (--check-results)
+    and then displaying then (--show-results)
+    First I will introduce a vulnerability to the system and at the
+    end of the test I will set the correct file permission again
+    """
+    insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
+    try:
+        os.chmod("/etc/ssh/sshd_config", 0o777)
+
+        insights_client.run()
+
+        insights_client.run("--check-results")
+        show_results = insights_client.run("--show-results")
+
+        assert (
+            "hardening_ssh_config_perms|OPENSSH_HARDENING_CONFIG_PERMS"
+            in show_results.stdout
+        )
+        assert "Decreased security: OpenSSH config permissions" in show_results.stdout
+        assert (
+            "examine the following detected issues in OpenSSH settings:"
+            in show_results.stdout
+        )
+        assert "OPENSSH_HARDENING_CONFIG_PERMS" in show_results.stdout
+    finally:
+        os.chmod("/etc/ssh/sshd_config", 0o600)
