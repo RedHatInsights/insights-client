@@ -115,3 +115,24 @@ def test_insights_details_file_exists(insights_client):
     insights_client.run("--check-results")
     # Verify that insights-details.json gets re generated
     assert os.path.isfile(output_file)
+
+
+@pytest.mark.usefixtures("register_subman")
+def test_insights_directory_files(insights_client):
+    """
+    Test that /var/lib/insights have content available
+    """
+    directory = "/var/lib/insights"
+    registered_contents = [
+        "last_stable.egg",
+        "last_stable.egg.asc",
+    ]
+
+    insights_client.register()
+
+    dir_content_registered = [
+        entry.name for entry in os.scandir(directory) if entry.is_file()
+    ]
+
+    for item in registered_contents:
+        assert item in dir_content_registered, f"File '{item}' not found in directory."
