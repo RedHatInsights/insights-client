@@ -97,3 +97,21 @@ def test_verify_logrotate_feature(insights_client):
     subprocess.check_call(["logrotate", "-vf", logrotate_conf_file_path])
     number_of_files_after_logrotate = len(os.listdir(logdir))
     assert number_of_files_after_logrotate == (number_of_log_files + 1)
+
+
+@pytest.mark.usefixtures("register_subman")
+def test_insights_details_file_exists(insights_client):
+    """
+    This test verifies that /var/lib/insights/insights-details.json exists
+    when --check-results is called
+    """
+    output_file = "/var/lib/insights/insights-details.json"
+    insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
+    # Deleting file manually
+    with contextlib.suppress(FileNotFoundError):
+        os.remove(output_file)
+    insights_client.run("--check-results")
+    # Verify that insights-details.json gets re generated
+    assert os.path.isfile(output_file)
