@@ -114,3 +114,53 @@ def test_upload_compressor_options(
     )
     assert "Uploading Insights data." in upload_result.stdout
     assert "Successfully uploaded report" in upload_result.stdout
+
+
+def test_retries(insights_client):
+    """
+    This test verifies that client tries to upload archive if upload fails.
+    setting retries to 2 only because between each attempt the wait time is 180 sec.
+    set wrong base_url in insights-client.config to fail upload operation
+    """
+    reg_result = insights_client.run("--register", "--keep-archive")
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
+    # Save the archive, to be used while upload operation
+    archive_name = reg_result.stdout.split()[-1]
+
+    # Modifying config to break connection
+    insights_client.config.auto_config = False
+    insights_client.config.base_url = "non-existent-url.redhat.com"
+    insights_client.config.save()
+
+    # Now try to upload the pre-collected archive with retry=2 , default content=type gz
+    upload_result = insights_client.run(
+        f"--payload={archive_name}", "--content-type={gz}", "--retry=2", check=False
+    )
+
+    assert "Upload attempt 1 of 2 failed" in upload_result.stdout
+    assert "Upload attempt 2 of 2 failed" in upload_result.stdout
+    assert "Waiting 180 seconds then retrying" in upload_result.stdout
+    assert "All attempts to upload have failed!" in upload_result.stdout
+
+
+def test_retries_not_happening_on_unrecoverable_errors(insights_client):
+    """
+    This test verifies that client retries won't happen during unrecoverable errors.
+    The client should try to upload just once and then fail.
+    """
+    reg_result = insights_client.run("--register", "--keep-archive")
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
+    # Save the archive, to be used while upload operation
+    archive_name = reg_result.stdout.split()[-1]
+
+    # Pass invalid content type to mock unrecoverable errors
+    upload_result = insights_client.run(
+        f"--payload={archive_name}",
+        "--content-type=invalid-type",
+        "--retry=2",
+        check=False,
+    )
+    assert "Upload failed." in upload_result.stdout
+    assert "Upload attempt 1 of 2 failed" not in upload_result.stdout
