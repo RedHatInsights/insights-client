@@ -2,13 +2,12 @@ import contextlib
 import json
 
 import pytest
+from constants import HOST_DETAILS
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
-HOST_DETAILS = "/var/lib/insights/host-details.json"
 
-
-def test_ultralight_checkin(insights_client):
+def test_ultralight_checkin(insights_client, test_config):
     """test --checkin
     Sends nothing but canonical facts to update the host stale and updated timestamp
     """
