@@ -1,6 +1,11 @@
 import contextlib
 import os
 import tarfile
+import glob
+import json
+import pytest
+
+ARCHIVE_CACHE_DIRECTORY = "/var/cache/insights-client"
 
 
 def test_output_file_valid_parameters(insights_client, tmp_path):
@@ -106,3 +111,94 @@ def test_output_file_already_exists(insights_client, tmp_path):
     cmd_result = insights_client.run(f"--output-file={output_file}", check=False)
     assert cmd_result.returncode == 1
     assert f"ERROR: File {output_file} already exists." in cmd_result.stderr
+
+
+@pytest.mark.usefixtures("register_subman")
+def test_cmd_timeout(insights_client):
+    """
+    Test cmd_timeout config option
+    Client executes all commands with timeout. If the command doesn't finish within
+    a specified amount of seconds, it is killed.
+    Test that setting a custom amount of seconds to cmd_timeout config option works.
+    """
+    cmd_output_message = "Executing: [['timeout', '-s', '9', '10'"
+
+    insights_client.register()
+
+    insights_client.config.cmd_timeout = 10
+    insights_client.config.save()
+
+    timeout_output = insights_client.run("--verbose", check=False)
+    assert cmd_output_message in timeout_output.stdout
+
+
+@pytest.mark.usefixtures("register_subman")
+def test_branch_info(insights_client):
+    """
+    Test that branch_info includes all required information
+    branch_info is used to identify the host when it is connectec via Satellite.
+    It uses branch_id and leaf_id to identify
+    """
+    insights_client.register()
+    insights_client.run("--no-upload")
+
+    list_of_files = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")
+    latest_file = max(list_of_files, key=os.path.getctime)
+
+    with tarfile.open(latest_file, "r:gz") as tar:
+        tar.extractall(path="/var/cache/insights-client/", filter="data")
+        directory_name = latest_file.replace(".tar.gz", "")
+
+    branch_info_path = os.path.join(directory_name, "branch_info")
+    with open(branch_info_path, "r") as file:
+        data = json.load(file)
+        assert data["remote_branch"] == -1, "Incorrect remote_branch value"
+        assert data["remote_leaf"] == -1, "Incorrect remote_leaf value"
+
+
+@pytest.mark.usefixtures("register_subman")
+def test_archive_structure(insights_client):
+    """
+    Test that the archive have the correct structure
+    """
+    dirs_list = [
+        "blacklist_report",
+        "branch_info",
+        "data",
+        "egg_release",
+        "insights_archive.txt",
+        "meta_data",
+        "version_info",
+    ]
+
+    subdirs_list = [
+        "branch_info",
+        "version_info",
+        "boot",
+        "etc",
+        "insights_commands",
+        "proc",
+        "run",
+        "sys",
+        "usr",
+        "var",
+    ]
+
+    insights_client.register()
+    insights_client.run("--no-upload")
+
+    list_of_files = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")
+    latest_file = max(list_of_files, key=os.path.getctime)
+
+    with tarfile.open(latest_file, "r:gz") as tar:
+        tar.extractall(path="/var/cache/insights-client/", filter="data")
+        directory_name = latest_file.replace(".tar.gz", "")
+
+    extracted_dirs_files = os.listdir(directory_name)
+    missing_dirs = [d for d in dirs_list if d not in extracted_dirs_files]
+    assert not missing_dirs, f"Missing directories {missing_dirs}"
+
+    data_dir_path = os.path.join(directory_name, "data")
+    data_subdirs = os.listdir(data_dir_path)
+    missing_subdirs = [d for d in subdirs_list if d not in data_subdirs]
+    assert not missing_subdirs, f"Missing subdirectory {missing_subdirs}"
