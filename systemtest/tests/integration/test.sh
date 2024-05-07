@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -u
 set -x
 
 # get to project root
@@ -28,4 +28,11 @@ python3 -m venv venv
 
 pip install -r integration-tests/requirements.txt
 
-pytest -v integration-tests
+pytest --junit-xml=./junit.xml -v integration-tests
+retval=$?
+
+if [ -d "$TMT_PLAN_DATA" ]; then
+  cp ./junit.xml "$TMT_PLAN_DATA/junit.xml"
+fi
+
+exit $retval
