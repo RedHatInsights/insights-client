@@ -1,4 +1,4 @@
-summary: rhc test suite
+summary: insights-client test suite
 discover:
     how: fmf
 
