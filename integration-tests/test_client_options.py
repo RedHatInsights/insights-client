@@ -125,6 +125,7 @@ def test_client_checkin_offline(insights_client):
     logged, and it exists with a failure code
     """
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     checkin_result = insights_client.run("--offline", "--checkin", check=False)
     assert checkin_result.returncode == 1
     assert "ERROR: Cannot check-in in offline mode." in checkin_result.stderr
@@ -139,6 +140,7 @@ def test_client_diagnosis(insights_client):
     assert "Unable to get diagnosis data: 404" in diagnosis_result.stdout
     # Running diagnosis on registered system
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     with open("/etc/insights-client/machine-id", "r") as f:
         machine_id = f.read()
     diagnosis_result = insights_client.run("--diagnosis")

@@ -37,7 +37,7 @@ def register_subman(
     yield subman_session
 
 
-def loop_until(pred, poll_sec=5, timeout_sec=60):
+def loop_until(pred, poll_sec=5, timeout_sec=90):
     """
     An helper function to handle a time periond waiting for an external service
     to update its state.
