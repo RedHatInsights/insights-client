@@ -1,40 +1,40 @@
+import json
+import os
 import pytest
-import re
-import subprocess
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
-def test_common_specs(insights_client):
+def test_common_specs(insights_client, tmp_path):
+    """Verify that the specified specs can be collected and parsed as expected."""
     common_specs = [
-        "insights.specs.Specs.date",
-        "insights.specs.Specs.dmidecode",
-        "insights.specs.Specs.fstab",
-        "insights.specs.Specs.hostname",
-        "insights.specs.Specs.hosts",
-        "insights.specs.Specs.installed_rpms",
-        "insights.specs.Specs.ip_addresses",
-        "insights.specs.Specs.ls_dev",
-        "insights.specs.Specs.lscpu",
-        "insights.specs.Specs.lspci",
-        "insights.specs.Specs.meminfo",
-        "insights.specs.Specs.mount",
-        "insights.specs.Specs.mountinfo",
-        "insights.specs.Specs.ps_auxcww",
-        "insights.specs.Specs.redhat_release",
-        "insights.specs.Specs.uname",
-        "insights.specs.Specs.yum_repos_d",
+        "insights.specs.Specs.date.json",
+        "insights.specs.Specs.dmidecode.json",
+        "insights.specs.Specs.fstab.json",
+        "insights.specs.Specs.hostname.json",
+        "insights.specs.Specs.hosts.json",
+        "insights.specs.Specs.installed_rpms.json",
+        "insights.specs.Specs.ip_addresses.json",
+        "insights.specs.Specs.ls_dev.json",
+        "insights.specs.Specs.lscpu.json",
+        "insights.specs.Specs.lspci.json",
+        "insights.specs.Specs.meminfo.json",
+        "insights.specs.Specs.mount.json",
+        "insights.specs.Specs.mountinfo.json",
+        "insights.specs.Specs.ps_auxcww.json",
+        "insights.specs.Specs.redhat_release.json",
+        "insights.specs.Specs.uname.json",
+        "insights.specs.Specs.yum_repos_d.json",
     ]
 
-    insights_client.register()
-    output = insights_client.run("--no-upload")
+    # Running insights-client to collect data in tmp path
+    insights_client.run(f"--output-dir={tmp_path}")
 
-    pattern = r"Archive saved at (.+/[^/]+\.tar\.gz)$"
-    match = re.search(pattern, output.stdout, re.MULTILINE)
-    archive_path = match.group(1)
-
-    content = subprocess.run(
-        "tar", "-xvzf", archive_path, text=True, capture_output=True
-    )
+    # assert  that spec file exist and content has no error
     for spec in common_specs:
-        assert spec in content.stdout
+        spec_filepath = tmp_path / "meta_data" / spec
+        assert os.path.exists(spec_filepath), f"spec file {spec} not found "
+        with open(spec_filepath, "r") as specfile:
+            data = json.load(specfile)
+            assert not data["errors"], f"spec file contains error {data['errors']} "
+            assert data["results"] is not None, "spec file exists but results are none."
