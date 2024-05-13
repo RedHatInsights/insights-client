@@ -27,6 +27,18 @@ jobs:
       - rhel-8
       - rhel-9
 
+  - job: copr_build
+    trigger: commit
+    branch: master
+    owner: "@yggdrasil"
+    project: latest
+    targets:
+      - centos-stream-8
+      - centos-stream-9
+      - fedora-all
+      - rhel-8
+      - rhel-9
+
   - job: tests
     trigger: pull_request
     identifier: "unit/centos-stream"
