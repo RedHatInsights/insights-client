@@ -15,6 +15,8 @@ jobs:
             image: "registry.fedoraproject.org/fedora:rawhide"
           - name: "Fedora Latest"
             image: "registry.fedoraproject.org/fedora:latest"
+          - name: "CentOS Stream 10"
+            image: "quay.io/centos/centos:stream10-development"
           - name: "CentOS Stream 9"
             image: "quay.io/centos/centos:stream9"
           - name: "CentOS Stream 8"
