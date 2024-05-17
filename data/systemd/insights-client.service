@@ -13,11 +13,14 @@
 Description=Insights Client
 Documentation=man:insights-client(8)
 After=network.target
+StartLimitIntervalSec=12h
+StartLimitBurst=6
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/insights-client --retry 3
-Restart=no
+Type=exec
+ExecStart=/usr/bin/insights-client
+Restart=on-failure
+RestartSec=1h
 WatchdogSec=900
 CPUQuota=30%
 MemoryHigh=1G
