@@ -23,12 +23,12 @@ def test_http_timeout(insights_client):
     Set http_timeout to a very low value, run --test-connection and check
     the set time
     """
-    insights_client.config.http_timeout = 0.1
+    insights_client.config.http_timeout = 0.01
     insights_client.config.save()
 
     output = insights_client.run("--test-connection", check=False)
     assert output.returncode == 1
-    assert "read timeout=0.1" in output.stdout
+    assert "timeout=0.01" in output.stdout
 
 
 def test_noauth_proxy_connection(insights_client, test_config):
