@@ -1,10 +1,18 @@
 import os
+import json
+import logging
 
 import pytest
 import conftest
+from constants import HOST_DETAILS
+
+logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
+def read_host_details():
+    with open(HOST_DETAILS, "r") as data_file:
+        return json.load(data_file)
 
 def test_upload_pre_collected_archive(insights_client, tmp_path):
     """This test verifies that a pre-collect insights-archive can be uploaded
@@ -164,3 +172,37 @@ def test_retries_not_happening_on_unrecoverable_errors(insights_client):
     )
     assert "Upload failed." in upload_result.stdout
     assert "Upload attempt 1 of 2 failed" not in upload_result.stdout
+
+def test_upload_pre_collected_archive_creates_new_inventory_record(
+        insights_client,
+        tmp_path,
+        subtests
+):
+    """This test verifies that a new inventory record is created
+    after a pre-collect insights-archive is uploaded.
+    
+    This test extends a test `test_upload_pre_collected_archive`
+    """
+    # Registering the client because upload can happen on registered system
+    insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
+    inventory_before_upload = read_host_details()
+    logger.debug(f"inventory before upload: {inventory_before_upload}")
+    
+    with subtests.test(msg="Uploading pre-colected archive"):
+        archive_name = "archive.tar.gz"
+        archive_location = tmp_path / archive_name
+
+        # Running insights-client in offline mode to generate archive and save at tmp dir
+        insights_client.run(f"--output-file={archive_location}")
+
+        # Running insights-client --payload with --content-type to upload archive
+        # collected in previous step
+        upload_result = insights_client.run(
+            f"--payload={archive_location}", "--content-type=gz"
+        )
+        
+    with subtests.test(msg="Verify that new invntory record is created"):
+        inventory_after_upload = read_host_details()
+        logger.debug(f"inventory after upload: {inventory_after_upload}")

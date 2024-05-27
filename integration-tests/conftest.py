@@ -1,9 +1,6 @@
 import pytest
 import subprocess
 import time
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
