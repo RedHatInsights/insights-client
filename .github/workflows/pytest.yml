@@ -30,7 +30,7 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          dnf --setopt install_weak_deps=False install -y git-core python3-pip
+          dnf --setopt install_weak_deps=False install -y git-core python3-pip gpg
           python3 -m pip install --upgrade pip wheel
           python3 -m pip install -r src/insights_client/tests/requirements.txt
 
