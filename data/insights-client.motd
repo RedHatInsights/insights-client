@@ -1,2 +1,11 @@
-Register this system with Red Hat Insights: insights-client --register
-Create an account or view all your systems at https://red.ht/insights-dashboard
+Register this system with Red Hat Insights: rhc connect
+
+Example:
+# rhc connect --activation-key <key> --organization <org>
+
+The rhc client and Red Hat Insights will enable analytics and additional
+management capabilities on your system.
+View your connected systems at https://console.redhat.com/insights
+
+You can learn more about how to register your system 
+using rhc at https://red.ht/registration
