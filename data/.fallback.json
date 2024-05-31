@@ -61,19 +61,14 @@
             "symbolic_name": "blkid"
         },
         {
+            "command": "/usr/bin/bootc status --json",
+            "pattern": [],
+            "symbolic_name": "bootc_status"
+        },
+        {
             "command": "/usr/sbin/brctl show",
             "pattern": [],
             "symbolic_name": "brctl_show"
-        },
-        {
-            "command": "/usr/bin/ceph health detail -f json",
-            "pattern": [],
-            "symbolic_name": "ceph_health_detail"
-        },
-        {
-            "command": "/usr/bin/ceph df detail -f json",
-            "pattern": [],
-            "symbolic_name": "ceph_df_detail"
         },
         {
             "command": "/usr/bin/ceph osd dump -f json",
@@ -222,12 +217,14 @@
                 "resetting",
                 "smb2_reconnect.part.0+0x",
                 "smpboot: CPU ",
+                "srb 0x30",
                 "support",
                 "the DIE domain not a subset of the NUMA domain",
                 "tx hang",
                 "vmxnet3",
                 "vpd r/w failed",
                 "watchdog: BUG: soft lockup",
+                "watchdog: BUG: soft lockup - CPU",
                 "x86/pti"
             ],
             "symbolic_name": "dmesg"
@@ -236,11 +233,6 @@
             "command": "/usr/sbin/dmidecode",
             "pattern": [],
             "symbolic_name": "dmidecode"
-        },
-        {
-            "command": "/usr/sbin/dmidecode -s system-uuid",
-            "pattern": [],
-            "symbolic_name": "bios_uuid"
         },
         {
             "command": "/usr/sbin/dmsetup info -C",
@@ -324,6 +316,16 @@
             "pattern": [],
             "pre_command": "iface",
             "symbolic_name": "ethtool_k"
+        },
+        {
+            "command": "/opt/CrowdStrike/falconctl -g --backend",
+            "pattern": [],
+            "symbolic_name": "falconctl_backend"
+        },
+        {
+            "command": "/opt/CrowdStrike/falconctl -g --rfm-state",
+            "pattern": [],
+            "symbolic_name": "falconctl_rfm"
         },
         {
             "command": "/usr/sbin/fcoeadm -i",
@@ -424,6 +426,11 @@
             "command": "/bin/hostname -s",
             "pattern": [],
             "symbolic_name": "hostname_short"
+        },
+        {
+            "command": "/sbin/hponcfg -g",
+            "pattern": [],
+            "symbolic_name": "hponcfg_g"
         },
         {
             "command": "/usr/sbin/httpd -V",
@@ -575,11 +582,6 @@
             "symbolic_name": "ls_ipa_idoverride_memberof"
         },
         {
-            "command": "/bin/ls -lan /var/lib/sss/pubconf/krb5.include.d",
-            "pattern": [],
-            "symbolic_name": "ls_krb5_sssd"
-        },
-        {
             "command": "/bin/ls -lanR /lib/firmware",
             "pattern": [],
             "symbolic_name": "ls_lib_firmware"
@@ -608,31 +610,6 @@
                 "total"
             ],
             "symbolic_name": "ls_usr_bin"
-        },
-        {
-            "command": "/bin/ls -lan /var/cache/pulp",
-            "pattern": [],
-            "symbolic_name": "ls_var_cache_pulp"
-        },
-        {
-            "command": "/bin/ls -la /var/lib/mongodb",
-            "pattern": [],
-            "symbolic_name": "ls_var_lib_mongodb"
-        },
-        {
-            "command": "/bin/ls -laR /var/lib/nova/instances",
-            "pattern": [],
-            "symbolic_name": "ls_R_var_lib_nova_instances"
-        },
-        {
-            "command": "/bin/ls -la /var/lib/pcp",
-            "pattern": [],
-            "symbolic_name": "ls_var_lib_pcp"
-        },
-        {
-            "command": "/bin/ls -laRZ /var/lib/nova/instances",
-            "pattern": [],
-            "symbolic_name": "ls_var_lib_nova_instances"
         },
         {
             "command": "/bin/ls -lan /var/lib/rpm",
@@ -729,6 +706,7 @@
                 "(deleted)",
                 "/var/log/journal",
                 "COMMAND",
+                "irisdb",
                 "libQt5Core.so.5",
                 "libcrypto",
                 "libdb-5",
@@ -747,6 +725,7 @@
                 "(deleted)",
                 "/var/log/journal",
                 "COMMAND",
+                "irisdb",
                 "libQt5Core.so.5",
                 "libcrypto",
                 "libdb-5",
@@ -800,21 +779,6 @@
             "symbolic_name": "saphostctl_getcimobject_sapinstance"
         },
         {
-            "command": "/usr/sap/hostctrl/exe/saphostexec -status",
-            "pattern": [],
-            "symbolic_name": "saphostexec_status"
-        },
-        {
-            "command": "/usr/sap/hostctrl/exe/saphostexec -version",
-            "pattern": [],
-            "symbolic_name": "saphostexec_version"
-        },
-        {
-            "command": "/usr/bin/lsscsi",
-            "pattern": [],
-            "symbolic_name": "lsscsi"
-        },
-        {
             "command": "/sbin/lvs --nameprefixes --noheadings --separator='|' -a -o lv_name,lv_size,lv_attr,mirror_log,vg_name,devices,region_size,data_percent,metadata_percent,segtype,seg_monitor,lv_kernel_major,lv_kernel_minor --config=\"global{locking_type=0}\"",
             "pattern": [],
             "symbolic_name": "lvs_noheadings"
@@ -855,11 +819,6 @@
             "symbolic_name": "md5chk_files"
         },
         {
-            "command": "/usr/sbin/mdadm -D /dev/md*",
-            "pattern": [],
-            "symbolic_name": "mdadm_D"
-        },
-        {
             "command": "/bin/mokutil --sb-state",
             "pattern": [],
             "symbolic_name": "mokutil_sbstate"
@@ -868,11 +827,6 @@
             "command": "/bin/mount",
             "pattern": [],
             "symbolic_name": "mount"
-        },
-        {
-            "command": "/usr/local/bin/mpirun --version",
-            "pattern": [],
-            "symbolic_name": "mpirun_version"
         },
         {
             "command": "/usr/bin/find /sys/devices/virtual/net/ -name multicast_querier -print -exec cat {} \\;",
@@ -982,6 +936,11 @@
             "symbolic_name": "netstat_s"
         },
         {
+            "command": "/usr/bin/nmap --script ssh2-enum-algos -sV -p 22 127.0.0.1",
+            "pattern": [],
+            "symbolic_name": "nmap_ssh"
+        },
+        {
             "command": "/usr/bin/nmcli conn show",
             "pattern": [],
             "symbolic_name": "nmcli_conn_show"
@@ -992,14 +951,14 @@
             "symbolic_name": "nmcli_dev_show"
         },
         {
-            "command": "/usr/bin/id -u nova",
-            "pattern": [],
-            "symbolic_name": "nova_uid"
-        },
-        {
             "command": "/usr/sbin/ntpq -pn",
             "pattern": [],
             "symbolic_name": "ntpq_pn"
+        },
+        {
+            "command": "/usr/bin/nvidia-smi -L",
+            "pattern": [],
+            "symbolic_name": "nvidia_smi_l"
         },
         {
             "command": "/bin/grep -c '^[[:digit:]]' /etc/passwd /etc/group",
@@ -1010,11 +969,6 @@
             "command": "/usr/bin/od -An -t d /dev/cpu_dma_latency",
             "pattern": [],
             "symbolic_name": "od_cpu_dma_latency"
-        },
-        {
-            "command": "/usr/bin/ovs-vsctl -t 5 get Open_vSwitch . other_config",
-            "pattern": [],
-            "symbolic_name": "openvswitch_other_config"
         },
         {
             "command": "/usr/bin/ovs-vsctl list bridge",
@@ -1057,11 +1011,6 @@
             "symbolic_name": "podman_list_containers"
         },
         {
-            "command": "/usr/bin/podman images --all --no-trunc --digests",
-            "pattern": [],
-            "symbolic_name": "podman_list_images"
-        },
-        {
             "command": "/usr/sbin/postconf -C builtin",
             "pattern": [
                 "smtp_tls_mandatory_protocols",
@@ -1096,6 +1045,7 @@
                 "/usr/bin/openshift start node",
                 "/usr/bin/teamd",
                 "COMMAND",
+                "SystemPerformance",
                 "abrtd",
                 "auditd",
                 "avahi",
@@ -1108,6 +1058,7 @@
                 "corosync",
                 "crmd",
                 "dataserver",
+                "db2sysc",
                 "diagbs",
                 "diagserver",
                 "diagxps",
@@ -1122,7 +1073,7 @@
                 "heat-engine",
                 "histserver",
                 "httpd",
-                "irisdb",
+                "jboss",
                 "ksmtuned",
                 "kubelet",
                 "mongdb",
@@ -1177,6 +1128,7 @@
                 "/usr/bin/teamd",
                 "COMMAND",
                 "STAP/8.2",
+                "SystemPerformance",
                 "abrtd",
                 "auditd",
                 "awx",
@@ -1188,6 +1140,7 @@
                 "corosync",
                 "crmd",
                 "dataserver",
+                "db2sysc",
                 "diagbs",
                 "diagserver",
                 "diagxps",
@@ -1201,7 +1154,7 @@
                 "heat-engine",
                 "histserver",
                 "httpd",
-                "irisdb",
+                "jboss",
                 "ksmtuned",
                 "kubelet",
                 "mongdb",
@@ -1262,6 +1215,7 @@
                 "/usr/bin/teamd",
                 "/usr/sbin/fcoemon --syslog",
                 "COMMAND",
+                "SystemPerformance",
                 "abrtd",
                 "auditd",
                 "awx",
@@ -1273,6 +1227,7 @@
                 "corosync",
                 "crmd",
                 "dataserver",
+                "db2sysc",
                 "diagbs",
                 "diagserver",
                 "diagxps",
@@ -1288,8 +1243,8 @@
                 "heat-engine",
                 "histserver",
                 "httpd",
-                "irisdb",
                 "iscsid",
+                "jboss",
                 "ksmtuned",
                 "kubelet",
                 "mongdb",
@@ -1344,6 +1299,7 @@
                 "/usr/bin/teamd",
                 "CMD",
                 "COMMAND",
+                "SystemPerformance",
                 "abrtd",
                 "auditd",
                 "awx",
@@ -1355,6 +1311,7 @@
                 "corosync",
                 "crmd",
                 "dataserver",
+                "db2sysc",
                 "diagbs",
                 "diagserver",
                 "diagxps",
@@ -1368,7 +1325,7 @@
                 "heat-engine",
                 "histserver",
                 "httpd",
-                "irisdb",
+                "jboss",
                 "ksmtuned",
                 "kubelet",
                 "mongdb",
@@ -1393,6 +1350,7 @@
                 "pmcd",
                 "pmie",
                 "postmaster",
+                "qemu-kvm",
                 "radosgw",
                 "redis-server",
                 "rhcd",
@@ -1412,11 +1370,6 @@
             "symbolic_name": "ps_ef"
         },
         {
-            "command": "/bin/ps -eo pid,ppid,comm",
-            "pattern": [],
-            "symbolic_name": "ps_eo"
-        },
-        {
             "command": "/usr/bin/openssl x509 -in /etc/puppetlabs/puppet/ssl/ca/ca_crt.pem -enddate -noout",
             "pattern": [],
             "symbolic_name": "puppet_ca_cert_expire_date"
@@ -1425,11 +1378,6 @@
             "command": "/sbin/pvs --nameprefixes --noheadings --separator='|' -a -o pv_all,vg_name --config=\"global{locking_type=0}\"",
             "pattern": [],
             "symbolic_name": "pvs_noheadings"
-        },
-        {
-            "command": "/usr/sbin/rabbitmqctl report",
-            "pattern": [],
-            "symbolic_name": "rabbitmq_report"
         },
         {
             "command": "/usr/bin/readlink -e /etc/mtab",
@@ -1462,7 +1410,7 @@
             "symbolic_name": "rndc_status"
         },
         {
-            "command": "/bin/rpm -V coreutils procps procps-ng shadow-utils passwd sudo chrony findutils glibc",
+            "command": "/bin/rpm -V coreutils procps procps-ng shadow-utils passwd sudo chrony findutils glibc systemd",
             "pattern": [],
             "symbolic_name": "rpm_V_packages"
         },
@@ -1502,8 +1450,24 @@
             "symbolic_name": "ss"
         },
         {
+            "command": "/usr/sbin/sshd -T",
+            "pattern": [
+                "CIPHERS",
+                "Ciphers",
+                "MACS",
+                "MACs",
+                "Macs",
+                "ciphers",
+                "kexalgorithms",
+                "macs",
+                "usepam"
+            ],
+            "symbolic_name": "sshd_test_mode"
+        },
+        {
             "command": "/usr/sbin/subscription-manager facts",
             "pattern": [
+                "conversions.activity",
                 "image-builder.osbuild-composer.api-type",
                 "instance_id"
             ],
@@ -1535,6 +1499,11 @@
             "command": "/bin/systemctl cat rpcbind.socket",
             "pattern": [],
             "symbolic_name": "systemctl_cat_rpcbind_socket"
+        },
+        {
+            "command": "/bin/systemctl get-default",
+            "pattern": [],
+            "symbolic_name": "systemctl_get_default"
         },
         {
             "command": "/bin/systemctl list-unit-files",
@@ -1629,6 +1598,7 @@
                 "server min protocol",
                 "server schannel",
                 "socket options",
+                "sss",
                 "template",
                 "winbind",
                 "workgroup",
@@ -1702,11 +1672,6 @@
             "symbolic_name": "yum_list_available"
         },
         {
-            "command": "yum -C --noplugins list installed",
-            "pattern": [],
-            "symbolic_name": "yum_list_installed"
-        },
-        {
             "command": "/usr/bin/yum -d 2 -C --noplugins repolist",
             "pattern": [],
             "symbolic_name": "yum_repolist"
@@ -1719,16 +1684,6 @@
                 "CreateCoreBacktrace"
             ],
             "symbolic_name": "abrt_ccpp_conf"
-        },
-        {
-            "file": "/etc/redhat-access-insights/machine-id",
-            "pattern": [],
-            "symbolic_name": "machine_id1"
-        },
-        {
-            "file": "/etc/redhat_access_proactive/machine-id",
-            "pattern": [],
-            "symbolic_name": "machine_id2"
         },
         {
             "file": "/etc/machine-id",
@@ -1786,14 +1741,25 @@
                 "[",
                 "authmethod",
                 "auto_update",
-                "core_collect"
+                "core_collect",
+                "ros_collect"
             ],
             "symbolic_name": "insights_client_conf"
         },
         {
+            "file": "/etc/redhat-access-insights/machine-id",
+            "pattern": [],
+            "symbolic_name": "machine_id"
+        },
+        {
+            "file": "/etc/redhat_access_proactive/machine-id",
+            "pattern": [],
+            "symbolic_name": "machine_id"
+        },
+        {
             "file": "/etc/insights-client/machine-id",
             "pattern": [],
-            "symbolic_name": "machine_id3"
+            "symbolic_name": "machine_id"
         },
         {
             "file": "/var/log/audit/audit.log",
@@ -1842,6 +1808,13 @@
             "symbolic_name": "buddyinfo"
         },
         {
+            "file": "/var/log/candlepin/candlepin.log",
+            "pattern": [
+                "update or delete on table \"cp_cert_serial\" violates foreign key constraint \"fk16370c54b9410fc\" on table \"cp_certificate\""
+            ],
+            "symbolic_name": "candlepin_log"
+        },
+        {
             "file": "/proc/driver/cciss/()*cciss.*",
             "pattern": [],
             "symbolic_name": "cciss"
@@ -1850,20 +1823,6 @@
             "file": "/sys/bus/usb/drivers/cdc_wdm/module/refcnt",
             "pattern": [],
             "symbolic_name": "cdc_wdm"
-        },
-        {
-            "file": "/var/log/ceilometer/compute.log",
-            "pattern": [
-                "Cannot inspect data of"
-            ],
-            "symbolic_name": "ceilometer_compute_log"
-        },
-        {
-            "file": "/var/log/containers/ceilometer/compute.log",
-            "pattern": [
-                "Cannot inspect data of"
-            ],
-            "symbolic_name": "ceilometer_compute_log"
         },
         {
             "file": "/etc/ceph/ceph.conf",
@@ -1902,49 +1861,9 @@
             "symbolic_name": "cinder_conf"
         },
         {
-            "file": "/var/log/cinder/cinder-api.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "cinder_api_log"
-        },
-        {
-            "file": "/var/log/containers/cinder/cinder-api.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "cinder_api_log"
-        },
-        {
             "file": "/var/lib/config-data/puppet-generated/cinder/etc/cinder/cinder.conf",
             "pattern": [],
             "symbolic_name": "cinder_conf"
-        },
-        {
-            "file": "/var/log/containers/cinder/cinder-volume.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "cinder_volume_log"
-        },
-        {
-            "file": "/var/log/containers/cinder/volume.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "cinder_volume_log"
-        },
-        {
-            "file": "/var/log/cinder/volume.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "cinder_volume_log"
         },
         {
             "file": "/etc/cluster/cluster.conf",
@@ -1962,6 +1881,11 @@
             "file": "/etc/cni/net.d/87-podman-bridge.conflist",
             "pattern": [],
             "symbolic_name": "cni_podman_bridge_conf"
+        },
+        {
+            "file": "/etc/rhsm/facts/convert2rhel.facts",
+            "pattern": [],
+            "symbolic_name": "convert2rhel_facts"
         },
         {
             "file": "/etc/corosync/corosync.conf",
@@ -1989,11 +1913,6 @@
             "symbolic_name": "cpu_smt_active"
         },
         {
-            "file": "/sys/devices/system/cpu/smt/control",
-            "pattern": [],
-            "symbolic_name": "cpu_smt_control"
-        },
-        {
             "file": "/sys/fs/cgroup/cpuset/cpuset.cpus",
             "pattern": [],
             "symbolic_name": "cpuset_cpus"
@@ -2012,6 +1931,14 @@
                 "foreman-rake reports:expire"
             ],
             "symbolic_name": "cron_foreman"
+        },
+        {
+            "file": "/var/log/cron",
+            "pattern": [
+                "FAILED to authorize user with PAM (Authentication token expired)",
+                "No SELinux security context"
+            ],
+            "symbolic_name": "cron_log"
         },
         {
             "file": "/etc/crypto-policies/config",
@@ -2042,6 +1969,11 @@
             "file": "/etc/cups/cups-files.conf",
             "pattern": [],
             "symbolic_name": "cups_files_conf"
+        },
+        {
+            "file": "/etc/cups/ppd/()*",
+            "pattern": [],
+            "symbolic_name": "cups_ppd"
         },
         {
             "file": "/sys/kernel/debug/x86/retp_enabled",
@@ -2092,7 +2024,8 @@
             "file": "/etc/dnf/dnf.conf",
             "pattern": [
                 "[",
-                "best"
+                "best",
+                "main"
             ],
             "symbolic_name": "dnf_conf"
         },
@@ -2174,11 +2107,6 @@
             "symbolic_name": "foreman_production_log"
         },
         {
-            "file": "/var/log/ipa/healthcheck/healthcheck.log",
-            "pattern": [],
-            "symbolic_name": "freeipa_healthcheck_log"
-        },
-        {
             "file": "/etc/fstab",
             "pattern": [],
             "symbolic_name": "fstab"
@@ -2253,21 +2181,24 @@
                 "consider raising the MaxRequestWorkers setting",
                 "exceed ServerLimit",
                 "exceeds ServerLimit",
-                "exit signal Segmentation fault"
+                "exit signal Segmentation fault",
+                "unable to create worker thread"
             ],
             "symbolic_name": "httpd_error_log"
         },
         {
             "file": "/opt/rh/httpd24/root/etc/httpd/logs/error_log",
             "pattern": [
-                "The mpm module (prefork.c) is not supported by mod_http2"
+                "The mpm module (prefork.c) is not supported by mod_http2",
+                "unable to create worker thread"
             ],
             "symbolic_name": "httpd24_httpd_error_log"
         },
         {
             "file": "/opt/rh/jbcs-httpd24/root/etc/httpd/logs/error_log",
             "pattern": [
-                "The mpm module (prefork.c) is not supported by mod_http2"
+                "The mpm module (prefork.c) is not supported by mod_http2",
+                "unable to create worker thread"
             ],
             "symbolic_name": "jbcs_httpd24_httpd_error_log"
         },
@@ -2321,11 +2252,6 @@
             "symbolic_name": "ipaupgrade_log"
         },
         {
-            "file": "/etc/ipa/default.conf",
-            "pattern": [],
-            "symbolic_name": "ipa_default_conf"
-        },
-        {
             "file": "/etc/ipsec.conf",
             "pattern": [
                 "include"
@@ -2336,22 +2262,6 @@
             "file": "/etc/sysconfig/iptables",
             "pattern": [],
             "symbolic_name": "iptables_permanent"
-        },
-        {
-            "file": "/var/log/ironic-inspector/ironic-inspector.log",
-            "pattern": [
-                "Certificate did not match expected hostname",
-                "ERROR requests.packages.urllib3.connection"
-            ],
-            "symbolic_name": "ironic_inspector_log"
-        },
-        {
-            "file": "/var/log/containers/ironic-inspector/ironic-inspector.log",
-            "pattern": [
-                "Certificate did not match expected hostname",
-                "ERROR requests.packages.urllib3.connection"
-            ],
-            "symbolic_name": "ironic_inspector_log"
         },
         {
             "file": "/etc/kdump.conf",
@@ -2367,11 +2277,6 @@
             "file": "/sys/kernel/kexec_crash_size",
             "pattern": [],
             "symbolic_name": "kexec_crash_size"
-        },
-        {
-            "file": "/var/spool/cron/keystone",
-            "pattern": [],
-            "symbolic_name": "keystone_crontab"
         },
         {
             "file": "/etc/()*krb5\\.conf",
@@ -2412,11 +2317,6 @@
             "file": "/etc/security/()*limits\\.conf",
             "pattern": [],
             "symbolic_name": "limits_conf"
-        },
-        {
-            "file": "/etc/security/limits.d/()*.*\\.conf",
-            "pattern": [],
-            "symbolic_name": "limits_d"
         },
         {
             "file": "/sys/module/lpfc/parameters/lpfc_max_luns",
@@ -2482,7 +2382,6 @@
                 "High mssql stolen node memory",
                 "Hyper-V Host",
                 "Hyper-V Host Build:",
-                "Included profile file could not be read",
                 "List /apis/image.openshift.io/v1/images",
                 "Loop callback failed with: Cannot allocate memory",
                 "Low random number entropy available",
@@ -2497,18 +2396,22 @@
                 "Permissions",
                 "ProcessExecutionError: Exit code: 1; Stdin: ; Stdout: ; Stderr: setting the network namespace",
                 "Result of start operation for clvmd ",
+                "Returning IPP client-error-not-possible",
                 "SCSI error: return code =",
                 "Severe demand for real memory",
                 "Started NFS server and services.",
                 "Started Security Auditing Service.",
                 "Steal time is >",
+                "System allocated file descriptor percentage",
                 "TX driver issue detected, PF reset issued",
                 "The audit daemon is now changing the system to single user mode",
                 "The audit daemon is now halting the system",
                 "Unable to detect release version",
                 "Unit ip6tables.service entered failed state",
                 "Unit iptables.service entered failed state",
+                "VFS: file-max limit ",
                 "Virtualization daemon",
+                "[Included profile file could not be read]",
                 "] trap divide error ",
                 "_NET_ACTIVE_WINDOW",
                 "_raw_spin_lock+0x",
@@ -2520,14 +2423,12 @@
                 "callbacks suppressed",
                 "canceled DHCP transaction, DHCP client pid",
                 "clearing Tx timestamp hang",
-                "client-error-not-possible",
                 "device-mapper: multipath: Failing path",
                 "dispatch error reporting limit reached - ending report notification",
                 "does not seem to be present, delaying initialization",
                 "drivers/input/input-leds.c:115 input_leds_connect",
                 "enabling it in",
                 "end_request: I/O error, dev",
-                "error Error on attach: Node not found",
                 "eviction manager: must evict pod(s) to reclaim nodefsInodes",
                 "ext4_ext_search_left",
                 "failed while handling",
@@ -2569,18 +2470,19 @@
                 "link status up for interface",
                 "migration_entry_wait_on_locked",
                 "multipathd.service operation timed out. Terminating",
-                "new clients may experience noticeable delays",
                 "nfs_reap_expired_delegations",
                 "nfsd: too many open connections, consider increasing the number of threads",
                 "not responding, timed out",
                 "per_source_limit from",
                 "platform microcode: firmware: requesting",
+                "quorum using qdevice is distrusted for SBD as qdevice-sync_timeout",
                 "rejecting connections on daemon MTA: load average",
                 "reservation conflict",
                 "returned a bad sequence-id error",
                 "rhsm",
                 "rhsmd: rhsmd process exceeded runtime and was killed",
                 "rsyslogd: too many tcp sessions",
+                "scope: Connection timed out",
                 "shm_open failed, Permission denied",
                 "shutting down the system because of error 1",
                 "skb_copy",
@@ -2597,39 +2499,21 @@
                 "timing out command, waited",
                 "transmit queue",
                 "udev: renamed network interface",
+                "unable to create worker thread",
                 "unknown filesystem type 'binfmt_misc'",
                 "ut of memory: ",
+                "warning: inquisitor_child: Latency: No liveness for",
                 "was not terminated (reboot) by <anyone> on behalf of",
                 "watch chan error: etcdserver: mvcc: required revision has been compacted",
-                "watchdog: BUG: soft lockup"
+                "watchdog: BUG: soft lockup",
+                "watchdog: BUG: soft lockup - CPU"
             ],
             "symbolic_name": "messages"
         },
         {
             "file": "/etc/()*modprobe\\.conf",
             "pattern": [],
-            "symbolic_name": "modprobe_conf"
-        },
-        {
-            "file": "/etc/modprobe.d/()*.*\\.conf",
-            "pattern": [],
-            "symbolic_name": "modprobe_d"
-        },
-        {
-            "file": "/etc/mongod.conf",
-            "pattern": [
-                "dbPath",
-                "storage"
-            ],
-            "symbolic_name": "mongod_conf"
-        },
-        {
-            "file": "/etc/opt/rh/rh-mongodb34/mongod.conf",
-            "symbolic_name": "mongod_conf",
-            "pattern": [
-                "dbPath",
-                "storage"
-            ]
+            "symbolic_name": "modprobe"
         },
         {
             "file": "/proc/self/mountinfo",
@@ -2677,11 +2561,6 @@
             "symbolic_name": "mysql_log"
         },
         {
-            "file": "/etc/sysconfig/netconsole",
-            "pattern": [],
-            "symbolic_name": "netconsole"
-        },
-        {
             "file": "/etc/NetworkManager/NetworkManager.conf",
             "pattern": [],
             "symbolic_name": "networkmanager_conf"
@@ -2724,22 +2603,6 @@
                 "worker_connections are not enough"
             ],
             "symbolic_name": "nginx_error_log"
-        },
-        {
-            "file": "/var/log/nova/nova-api.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "nova_api_log"
-        },
-        {
-            "file": "/var/log/containers/nova/nova-api.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "nova_api_log"
         },
         {
             "file": "/var/log/nova/nova-compute.log",
@@ -2852,6 +2715,7 @@
         {
             "file": "/var/log/pacemaker.log",
             "pattern": [
+                "doesn't exist, or not visible on this node",
                 "is active on 2 nodes (attempting recovery)"
             ],
             "symbolic_name": "pacemaker_log"
@@ -2859,6 +2723,7 @@
         {
             "file": "/var/log/pacemaker/pacemaker.log",
             "pattern": [
+                "doesn't exist, or not visible on this node",
                 "is active on 2 nodes (attempting recovery)"
             ],
             "symbolic_name": "pacemaker_log"
@@ -2867,11 +2732,6 @@
             "file": "/etc/pam.d/password-auth",
             "pattern": [],
             "symbolic_name": "password_auth"
-        },
-        {
-            "file": "/var/log/pcp/pmcd/openmetrics.log",
-            "pattern": [],
-            "symbolic_name": "pcp_openmetrics_log"
         },
         {
             "file": "/etc/opt/rh/php73/php.ini",
@@ -2963,11 +2823,6 @@
             "symbolic_name": "proc_stat"
         },
         {
-            "file": "/etc/default/pulp_workers",
-            "pattern": [],
-            "symbolic_name": "pulp_worker_defaults"
-        },
-        {
             "file": "/etc/libvirt/qemu/()*.+\\.xml",
             "pattern": [],
             "symbolic_name": "qemu_xml"
@@ -2981,11 +2836,6 @@
             "file": "/sys/module/qla2xxx/parameters/ql2xmqsupport",
             "pattern": [],
             "symbolic_name": "ql2xmqsupport"
-        },
-        {
-            "file": "/etc/rabbitmq/rabbitmq-env.conf",
-            "pattern": [],
-            "symbolic_name": "rabbitmq_env"
         },
         {
             "file": "/etc/rc.d/rc.local",
@@ -3018,19 +2868,35 @@
             "symbolic_name": "rhsm_releasever"
         },
         {
+            "file": "/etc/yum/vars/releasever",
+            "pattern": [],
+            "symbolic_name": "rhui_releasever"
+        },
+        {
+            "file": "/etc/dnf/vars/releasever",
+            "pattern": [],
+            "symbolic_name": "rhui_releasever"
+        },
+        {
             "file": "/etc/rsyslog.conf",
             "pattern": [
                 "$ActionQueueFileName",
                 "$ModLoad imjournal",
                 "(",
                 ")",
+                "/var/log/messages",
+                "/var/log/secure",
                 "DefaultNetstreamDriver",
                 "InputTCPMaxSessions",
                 "MaxOpenFiles",
                 "MaxSessions",
+                "OmitLocalLogging",
                 "StreamDriver",
+                "SysSock.Use=\"off\"",
+                "SystemLogSocketName",
                 "imjournal",
                 "load=\"imjournal\"",
+                "load=\"imuxsock\"",
                 "{",
                 "}"
             ],
@@ -3123,7 +2989,10 @@
             "file": "/var/log/secure",
             "pattern": [
                 "Could not set limit for 'nofile': Operation not permitted",
-                "drop connection"
+                "Failed to create session: Maximum number of sessions (",
+                "drop connection",
+                "pam_unix(crond:account): expired password for user",
+                "pam_unix(passwd:chauthtok): password changed for"
             ],
             "symbolic_name": "secure"
         },
@@ -3169,6 +3038,13 @@
             "symbolic_name": "sos_conf"
         },
         {
+            "file": "/var/log/squid/cache.log",
+            "pattern": [
+                "Your cache is running out of filedescriptors"
+            ],
+            "symbolic_name": "squid_cache_log"
+        },
+        {
             "file": "/etc/ssh/sshd_config",
             "pattern": [
                 "ALLOWUSERS",
@@ -3193,6 +3069,7 @@
                 "KBDINTERACTIVEAUTHENTICATION",
                 "KbdInteractiveAuthentication",
                 "Kbdinteractiveauthentication",
+                "KexAlgorithms",
                 "LOGINGRACETIME",
                 "LoginGraceTime",
                 "Logingracetime",
@@ -3248,16 +3125,6 @@
             "symbolic_name": "sssd_config"
         },
         {
-            "file": "/etc/swift/object-expirer.conf",
-            "pattern": [],
-            "symbolic_name": "swift_object_expirer_conf"
-        },
-        {
-            "file": "/var/lib/config-data/puppet-generated/swift/etc/swift/object-expirer.conf",
-            "pattern": [],
-            "symbolic_name": "swift_object_expirer_conf"
-        },
-        {
             "file": "/etc/swift/proxy-server.conf",
             "pattern": [],
             "symbolic_name": "swift_proxy_server_conf"
@@ -3306,6 +3173,11 @@
             "file": "/etc/sysconfig/prelink",
             "pattern": [],
             "symbolic_name": "sysconfig_prelink"
+        },
+        {
+            "file": "/etc/sysconfig/sbd",
+            "pattern": [],
+            "symbolic_name": "sysconfig_sbd"
         },
         {
             "file": "/etc/sysconfig/sshd",
@@ -3394,13 +3266,6 @@
             "symbolic_name": "vdsm_log"
         },
         {
-            "file": "/etc/libvirt/virtlogd.conf",
-            "pattern": [
-                "max_size"
-            ],
-            "symbolic_name": "virtlogd_conf"
-        },
-        {
             "file": "/sys/kernel/mm/swap/vma_ra_enabled",
             "pattern": [],
             "symbolic_name": "vma_ra_enabled"
@@ -3482,7 +3347,17 @@
         },
         {
             "file": "/etc/yum.conf",
-            "pattern": [],
+            "pattern": [
+                "[",
+                "baseurl",
+                "distroverpkg",
+                "enabled",
+                "exclude",
+                "gpgcheck",
+                "gpgkey",
+                "main",
+                "repo_gpgcheck"
+            ],
             "symbolic_name": "yum_conf"
         },
         {
@@ -3505,34 +3380,6 @@
             "symbolic_name": "logrotate_conf"
         },
         {
-            "file": "/var/log/containers/gnocchi/gnocchi-metricd.log",
-            "pattern": [
-                "ObjectNotFound: error opening pool 'metrics'"
-            ],
-            "symbolic_name": "gnocchi_metricd_log"
-        },
-        {
-            "file": "/var/log/gnocchi/metricd.log",
-            "pattern": [
-                "ObjectNotFound: error opening pool 'metrics'"
-            ],
-            "symbolic_name": "gnocchi_metricd_log"
-        },
-        {
-            "file": "/var/lib/config-data/puppet-generated/gnocchi/etc/gnocchi/gnocchi.conf",
-            "pattern": [
-                "["
-            ],
-            "symbolic_name": "gnocchi_conf"
-        },
-        {
-            "file": "/etc/gnocchi/gnocchi.conf",
-            "pattern": [
-                "["
-            ],
-            "symbolic_name": "gnocchi_conf"
-        },
-        {
             "file": "/etc/named.conf",
             "pattern": [
                 "allow-recursion",
@@ -3541,119 +3388,9 @@
             "symbolic_name": "named_conf"
         },
         {
-            "file": "/etc/neutron/neutron.conf",
-            "pattern": [
-                "[",
-                "agent_down_time",
-                "agent_report_interval",
-                "allow_automatic_dhcp_failover",
-                "api_workers",
-                "ipam_driver",
-                "router_distributed",
-                "rpc_workers",
-                "service_plugins"
-            ],
-            "symbolic_name": "neutron_conf"
-        },
-        {
-            "file": "/var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf",
-            "pattern": [
-                "[",
-                "agent_down_time",
-                "agent_report_interval",
-                "allow_automatic_dhcp_failover",
-                "api_workers",
-                "ipam_driver",
-                "router_distributed",
-                "rpc_workers",
-                "service_plugins"
-            ],
-            "symbolic_name": "neutron_conf"
-        },
-        {
-            "file": "/etc/neutron/dhcp_agent.ini",
-            "pattern": [
-                "["
-            ],
-            "symbolic_name": "neutron_dhcp_agent_ini"
-        },
-        {
-            "file": "/var/lib/config-data/puppet-generated/neutron/etc/neutron/dhcp_agent.ini",
-            "pattern": [
-                "["
-            ],
-            "symbolic_name": "neutron_dhcp_agent_ini"
-        },
-        {
-            "file": "/etc/neutron/plugin.ini",
-            "pattern": [],
-            "symbolic_name": "neutron_plugin_ini"
-        },
-        {
-            "file": "/var/lib/config-data/puppet-generated/neutron/etc/neutron/plugin.ini",
-            "pattern": [],
-            "symbolic_name": "neutron_plugin_ini"
-        },
-        {
             "file": "/etc/zipl.conf",
             "pattern": [],
             "symbolic_name": "zipl_conf"
-        },
-        {
-            "file": "/etc/neutron/l3_agent.ini",
-            "pattern": [
-                "["
-            ],
-            "symbolic_name": "neutron_l3_agent_ini"
-        },
-        {
-            "file": "/var/lib/config-data/puppet-generated/neutron/etc/neutron/l3_agent.ini",
-            "pattern": [
-                "["
-            ],
-            "symbolic_name": "neutron_l3_agent_ini"
-        },
-        {
-            "file": "/var/log/neutron/l3-agent.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Error while deleting router",
-                "Stderr: Another app is currently holding the xtables lock",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "neutron_l3_agent_log"
-        },
-        {
-            "file": "/var/log/containers/neutron/l3-agent.log",
-            "pattern": [
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Error while deleting router",
-                "Stderr: Another app is currently holding the xtables lock",
-                "Timed out waiting for RPC response"
-            ],
-            "symbolic_name": "neutron_l3_agent_log"
-        },
-        {
-            "file": "/var/log/neutron/openvswitch-agent.log",
-            "pattern": [
-                "Agent main thread died of an exception",
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response",
-                "neutron.plugins.ml2.drivers.openvswitch.agent.openflow.native.ovs_ryuapp",
-                "u'device_owner': u'network:router_interface_distributed'"
-            ],
-            "symbolic_name": "neutron_ovs_agent_log"
-        },
-        {
-            "file": "/var/log/containers/neutron/openvswitch-agent.log",
-            "pattern": [
-                "Agent main thread died of an exception",
-                "DEBUG oslo.messaging._drivers.impl_rabbit",
-                "Timed out waiting for RPC response",
-                "neutron.plugins.ml2.drivers.openvswitch.agent.openflow.native.ovs_ryuapp",
-                "u'device_owner': u'network:router_interface_distributed'"
-            ],
-            "symbolic_name": "neutron_ovs_agent_log"
         },
         {
             "file": "/usr/libexec/setup-named-chroot.sh",
@@ -3664,30 +3401,24 @@
             "symbolic_name": "setup_named_chroot"
         },
         {
-            "file": "/usr/sap/hostctrl/exe/host_profile",
-            "pattern": [
-                "DIR_",
-                "SAPSYSTEM"
-            ],
-            "symbolic_name": "sap_host_profile"
-        },
-        {
             "file": "/etc/sudoers",
             "pattern": [
                 "#includedir",
-                "%wheel"
+                "%wheel",
+                "@",
+                "\\"
             ],
             "symbolic_name": "sudoers"
         },
         {
-            "file": "/etc/udev/rules.d/66-md-auto-re-add.rules",
+            "file": "/etc/udev/rules.d/66-md-auto-readd.rules",
             "pattern": [
                 "GOTO=\"md_end\""
             ],
             "symbolic_name": "udev_66_md_rules"
         },
         {
-            "file": "/usr/lib/udev/rules.d/66-md-auto-re-add.rules",
+            "file": "/usr/lib/udev/rules.d/66-md-auto-readd.rules",
             "pattern": [
                 "GOTO=\"md_end\""
             ],
@@ -3725,11 +3456,6 @@
         {
             "glob": "/sys/devices/system/cpu/vulnerabilities/*",
             "symbolic_name": "cpu_vulns",
-            "pattern": []
-        },
-        {
-            "glob": "/etc/cups/ppd/*",
-            "symbolic_name": "cups_ppd",
             "pattern": []
         },
         {
@@ -3775,6 +3501,11 @@
             "symbolic_name": "httpd_conf_scl_jbcs_httpd24"
         },
         {
+            "glob": "/etc/security/limits.d/*.conf",
+            "pattern": [],
+            "symbolic_name": "limits_conf"
+        },
+        {
             "glob": "/sys/class/bdi/*/read_ahead_kb",
             "pattern": [],
             "symbolic_name": "bdi_read_ahead_kb"
@@ -3804,7 +3535,9 @@
             "symbolic_name": "dse_ldif",
             "pattern": [
                 "cn: config",
+                "dn:",
                 "nsSSL3",
+                "nsslapd-pluginEnabled:",
                 "nsslapd-security",
                 "sslVersionMax",
                 "sslVersionMin"
@@ -3831,13 +3564,13 @@
         },
         {
             "glob": "/etc/krb5.conf.d/*",
-            "symbolic_name": "krb5_conf_d",
+            "symbolic_name": "krb5",
             "pattern": []
         },
         {
-            "glob": "/etc/dirsrv/slapd-*/dse.ldif",
+            "glob": "/etc/modprobe.d/()*.*\\.conf",
             "pattern": [],
-            "symbolic_name": "ldif_config"
+            "symbolic_name": "modprobe"
         },
         {
             "glob": "/etc/nginx/*.conf",
@@ -3878,13 +3611,6 @@
             "symbolic_name": "nginx_error_log"
         },
         {
-            "glob": "/var/log/ceph/ceph.log*",
-            "pattern": [
-                "[WRN] slow request"
-            ],
-            "symbolic_name": "ceph_log"
-        },
-        {
             "glob": "/var/opt/rh/rh-mysql*/log/mysql/mysqld.log",
             "symbolic_name": "mysql_log",
             "pattern": [
@@ -3916,13 +3642,19 @@
                 "$ModLoad imjournal",
                 "(",
                 ")",
+                "/var/log/messages",
+                "/var/log/secure",
                 "DefaultNetstreamDriver",
                 "InputTCPMaxSessions",
                 "MaxOpenFiles",
                 "MaxSessions",
+                "OmitLocalLogging",
                 "StreamDriver",
+                "SysSock.Use=\"off\"",
+                "SystemLogSocketName",
                 "imjournal",
                 "load=\"imjournal\"",
+                "load=\"imuxsock\"",
                 "{",
                 "}"
             ],
@@ -3972,7 +3704,9 @@
             "glob": "/etc/sudoers.d/*",
             "pattern": [
                 "#includedir",
-                "%wheel"
+                "%wheel",
+                "@",
+                "\\"
             ],
             "symbolic_name": "sudoers"
         },
@@ -3993,6 +3727,22 @@
             "symbolic_name": "ssh_config_d",
             "pattern": [
                 "Include"
+            ]
+        },
+        {
+            "glob": "/etc/ssh/sshd_config.d/*.conf",
+            "symbolic_name": "sshd_config_d",
+            "pattern": [
+                "CIPHERS",
+                "Ciphers",
+                "INCLUDE",
+                "Include",
+                "MACS",
+                "MACs",
+                "Macs",
+                "ciphers",
+                "include",
+                "macs"
             ]
         }
     ],
@@ -4016,5 +3766,5 @@
     "pre_commands": {
         "iface": "/sbin/ip -o link | awk -F ': |@' '/.*link\\/ether/ {print $2}'"
     },
-    "version": "2023-09-08T09:13:04.812643"
+    "version": "2024-05-23T08:13:20.220663"
 }
