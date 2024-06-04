@@ -30,6 +30,11 @@ jobs:
       - name: "Checkout the repository"
         uses: actions/checkout@v4
 
+      - name: "Use CentOS Vault"
+        if: matrix.name == 'CentOS Stream 8'
+        run: |
+          sed -i 's|#baseurl=http://mirror|baseurl=http://vault|' /etc/yum.repos.d/CentOS-Stream-*.repo
+
       - name: "Install dependencies"
         run: |
           dnf --setopt install_weak_deps=False install -y git-core python3-pip gpg
