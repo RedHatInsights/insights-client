@@ -1,8 +1,10 @@
+import string
+
 import pytest
 import uuid
 import logging
-import fauxfactory
 import json
+import random
 
 from conftest import loop_until
 from constants import HOST_DETAILS
@@ -19,6 +21,10 @@ def read_host_details():
 
 def generate_unique_hostname():
     return f"test-qa.{uuid.uuid4()}.csi-client-tools.example.com"
+
+
+def create_random_string(n: int):
+    return "".join(random.choices(string.ascii_letters, k=n))
 
 
 def test_display_name(insights_client):
@@ -106,7 +112,7 @@ def test_register_twice_with_different_display_name(
         ), "machine-id should remain the same even display-name has been changed"
 
 
-@pytest.mark.parametrize("invalid_display_name", [fauxfactory.gen_alpha(201), ""])
+@pytest.mark.parametrize("invalid_display_name", [create_random_string(201), ""])
 def test_invalid_display_name(invalid_display_name, insights_client):
     """Tries to set an invalid display name.
     invalid display names:

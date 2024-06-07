@@ -20,7 +20,7 @@ if test "${ID}" = fedora -a ${VERSION_ID} -ge 39; then
 fi
 
 dnf --setopt install_weak_deps=False install -y \
-  podman git-core python3-pip python3-pytest logrotate bzip2 python3-cryptography
+  podman git-core python3-pip python3-pytest logrotate bzip2
 
 python3 -m venv venv
 # shellcheck disable=SC1091
