@@ -1,0 +1,43 @@
+# This playbook will install the required OpenSCAP packages to get your systems ready to be used
+# with Insights Compliance service.
+#
+# After running this playbook, perform the following steps manually:
+# 1. Create a Compliance policy in cloud.redhat.com and associate the required systems.
+# 2. Run `insights-client --compliance` on your system to report Compliance to cloud.redhat.com
+
+- name: Compliance OpenSCAP Setup
+  hosts: localhost
+  become: yes
+  vars:
+    insights_signature_exclude: /hosts,/vars/insights_signature
+    insights_signature: !!binary |
+      TFMwdExTMUNSVWRKVGlCUVIxQWdVMGxIVGtGVVZWSkZMUzB0TFMwS1ZtVnljMmx2YmpvZ1IyNTFV
+      RWNnZGpFS0NtbFJTVlpCZDFWQldUbE1WREpqZG5jMU9FUXJhalZ3VGtGUmFIaDFRa0ZCWjA1cE9D
+      OXJTVFZQYW5reWMySjJOR3BXWlVKdEx6WnZiR3RpTlV4SVVrRUtiRzVtY2tOSFp6Sm5NVEZoYUU1
+      TEx6RmpkVzVPUWsxTmVUazFXV3RKTlU1cWRtNXpOVVpHVTNSTFowMHdWV0Z3YjFoaVZWQktSV1pT
+      U2xWRUwzUXhaUXBJVURaUlEwTldTa1l5VFVWWldIcHZVVzFsTUVSc01FeERaMUlyU1hvd2NWaFJa
+      R2t2WVRSWWNEVnBWRkZTVW5OT1l5OXBWa2cxZFZZemVscHNNbWN4Q2xsRE1sQlFOVzkyZDBwMGFU
+      RlFjemRyYmtabmJIcERiVWxPVUdGdllYVlRTamhoUkU5a00wSkxZbXRTVW10cmVXNDJORlJzVWtn
+      eE9HSXdSbGh0Y1VrS2VHaE5hMVZRVEhOd1UwVkxZWGhqTDA5UVNUUXJPVEkwSzI0NVRHRnlUWFZO
+      THpncmVURlNTa1pTT1hNMk5GaFVaMmh6VEdkQ2JtNXlPRE41VTFKWmJ3cHVWelpDY0c0eVowdzNR
+      MHBCVHpabmJsZFhZbUphZURVNVdYRTRkV2RpYldWTFJFUXJSalZqVmpSaFpFaENXV3BZUmpkbFRY
+      bEpUbTlvUzA5WVNtUkRDbkpzU1VSUlJUUktSM2RGU1dJMmRHSnNVWEJMYVhZeFFWZzNNbFF4WjFS
+      WFNVUXdPVEZEVEU1Rk0wZERVa2M0VnpWeVl6SkRTVkJRYW5KNlNUWldTVWdLTWpVclltbEVPVTFp
+      YW5sSFVXNVZRMkV3SzBGVlZsVlVibmxYVUhWRFEyeHhlbWhHYXpsVGRYQjRlRXh2VDBkTkwxTnlj
+      elp2UlZFMFptUk1RV3BKYVFwd1ptUkdRVkI0VEdJMmNGVldSRkJGTVZFeU5GWXZXamd6WkZwTll5
+      dHhORVJzZWtKV09EaHFaMDlwVWxOc1lYSktTQzl2YUZkSGNVSjFZM1oxYjBZMkNqQTRNamxLYVhW
+      ak5rOHlUa1ZOYTNjNU1YUjVaSEJPZG1kbU5HNVhhbmRPYmt0Q1ZsTkViR3gyTW01QlQwcHdaRVZx
+      WVhoRFl5c3hVVkJTU1cxWk5WTUtPRTFQUjBjMlRuRmxWMDV1VGtwaVYzRTBXRVp3Y2xOSlJFZHJV
+      MFpFVmxkQllURlNka3RyYVV4bVMxQTFlQzh4V2pkT2RITTVWbGhVU0VwQ09YbHVad3BoYUdJeFFs
+      aHhaM3B2VFQwS1BVTkphbWtLTFMwdExTMUZUa1FnVUVkUUlGTkpSMDVCVkZWU1JTMHRMUzB0Q2c9
+      PQ==
+  tasks:
+    - name: Install OpenSCAP packages for Compliance service
+      ansible.builtin.package:
+        name:
+          - openscap
+          - openscap-scanner
+          - scap-security-guide
+        state: latest
+      when:
+        - ansible_facts.ansible_cmdline.ostree is undefined
