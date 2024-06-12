@@ -1,7 +1,10 @@
 insights_client_sources = [
   'insights-client.in',
-  'redhat-access-insights.in'
 ]
+
+if get_option('redhat_access_insights')
+  insights_client_sources += 'redhat-access-insights.in'
+endif
 
 foreach source : insights_client_sources
   configure_file(

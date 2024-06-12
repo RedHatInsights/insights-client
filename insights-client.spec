@@ -65,6 +65,7 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 %build
 %{meson} \
     -Dpython=%{__python3} \
+    -Dredhat_access_insights=true \
     %{nil}
 %{meson_build}
 
