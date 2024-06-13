@@ -148,7 +148,7 @@ def check_obfuscated_info(insights_client, tmp_path, info_to_search):
     archive_name = "test_archive_" + str(uuid.uuid4()) + ".tar.gz"
     archive_location = tmp_path / archive_name
     logging.info(archive_location)
-    insights_client.run("--register", "--output-file=%s" % archive_location)
+    insights_client.run("--output-file=%s" % archive_location)
     info_exist = []
     with tarfile.open(archive_location, "r") as tar:
         for w_file in tar.getmembers():
