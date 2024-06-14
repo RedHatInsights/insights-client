@@ -139,3 +139,63 @@ def test_invalid_display_name(invalid_display_name, insights_client):
     assert (
         origin_display_name == record["display_name"]
     ), "display-name should remain unchanged when new display-name is rejected"
+
+
+def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_config):
+    """
+    Ref : https://issues.redhat.com/browse/ESSNTL-2230
+
+    Steps:
+    1. Register rhel system for subscriptions.
+    2. In the insights-client.conf:
+    Set auto_config=False auto_update=False, and set display_name.
+
+        Note:
+        1) When auto_config=false, need to also configure:
+
+        auto_config=False
+        base_url=satellite_IP:443/redhat_access/r/insights
+        cert_verify=True
+        authmethod=CERT
+
+        Refer: https://issues.redhat.com/browse/RHEL-19435
+
+        2) This case works with legacy_upload=False on prod and stage envs,
+        and works with both legacy_upload=False and legacy_upload=True
+        on Satellite env.
+
+    3. Register insights.
+    4. Check the results:
+        1) Registration insights with display name is successful.
+        2) Host visible in the c.r.c.
+    """
+    # configuration on insights-client.conf
+    if "satellite" in test_config.environment:
+        satellite_hostname = test_config.get("candlepin", "host")
+        satellite_port = test_config.get("candlepin", "port")
+        insights_client.config.base_url = (
+            satellite_hostname + ":" + str(satellite_port) + "/redhat_access/r/insights"
+        )
+    elif "prod" in test_config.environment:
+        insights_client.config.base_url = "cert.cloud.redhat.com/api"
+    elif "stage" in test_config.environment:
+        insights_client.config.base_url = "cert.cloud.stage.redhat.com/api"
+    insights_client.config.auto_update = False
+    insights_client.config.auto_config = False
+    insights_client.config.cert_verify = True
+    insights_client.config.authmethod = "CERT"
+    unique_hostname = generate_unique_hostname()
+    insights_client.config.display_name = unique_hostname
+    insights_client.config.save()
+
+    # register insights
+    status = insights_client.run("--register")
+    assert loop_until(lambda: insights_client.is_registered)
+    assert unique_hostname in status.stdout
+
+    # check the display name on CRC
+    insights_client.run("--check-results")
+    host_details = read_host_details()
+    logger.debug(f"content of host-details.json {host_details}")
+    record = host_details["results"][0]
+    assert unique_hostname == record["display_name"]
