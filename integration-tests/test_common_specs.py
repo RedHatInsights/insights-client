@@ -1,15 +1,18 @@
 import json
 import os
 import pytest
+import platform
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
 def test_common_specs(insights_client, tmp_path):
-    """Verify that the specified specs can be collected and parsed as expected."""
+    """
+    Verify that the specified specs can be collected and parsed as expected.
+    Ref: https://issues.redhat.com/browse/RHINENG-10737
+    """
     common_specs = [
         "insights.specs.Specs.date.json",
-        "insights.specs.Specs.dmidecode.json",
         "insights.specs.Specs.fstab.json",
         "insights.specs.Specs.hostname.json",
         "insights.specs.Specs.hosts.json",
@@ -17,7 +20,6 @@ def test_common_specs(insights_client, tmp_path):
         "insights.specs.Specs.ip_addresses.json",
         "insights.specs.Specs.ls_dev.json",
         "insights.specs.Specs.lscpu.json",
-        "insights.specs.Specs.lspci.json",
         "insights.specs.Specs.meminfo.json",
         "insights.specs.Specs.mount.json",
         "insights.specs.Specs.mountinfo.json",
@@ -26,6 +28,13 @@ def test_common_specs(insights_client, tmp_path):
         "insights.specs.Specs.uname.json",
         "insights.specs.Specs.yum_repos_d.json",
     ]
+    if platform.processor() == "x86_64":
+        common_specs.extend(
+            [
+                "insights.specs.Specs.dmidecode.json",
+                "insights.specs.Specs.lspci.json",
+            ]
+        )
 
     # Running insights-client to collect data in tmp path
     insights_client.run(f"--output-dir={tmp_path}")
