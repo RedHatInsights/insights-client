@@ -28,7 +28,7 @@ def test_common_specs(insights_client, tmp_path):
         "insights.specs.Specs.uname.json",
         "insights.specs.Specs.yum_repos_d.json",
     ]
-    if platform.processor() == "x86_64":
+    if platform.machine() == "x86_64" or platform.machine() == "aarch64":
         common_specs.extend(
             [
                 "insights.specs.Specs.dmidecode.json",
