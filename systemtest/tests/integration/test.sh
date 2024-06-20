@@ -5,7 +5,12 @@ set -x
 # get to project root
 cd ../../../
 
-# runs the packit setup
+# Check for GitHub pull request ID and install build if needed.
+# This is for the downstream PR jobs.
+[ -z "${ghprbPullId+x}" ] || ./systemtest/copr-setup.sh
+
+# Simulate the packit setup on downstream builds.
+# This is for ad-hoc and compose testing.
 rpm -q insights-client || ./systemtest/guest-setup.sh
 
 . /etc/os-release
