@@ -376,18 +376,16 @@ def update_motd_message():
         # .registered or .unregistered exist, MOTD should not be displayed
         if os.path.lexists(MOTD_FILE):
             logger.debug(
-                ".registered or .unregistered exist; removing the MOTD file '{path}'",
+                ".registered or .unregistered exist; removing the MOTD file '%s'",
                 MOTD_FILE,
             )
             try:
                 os.remove(MOTD_FILE)
             except OSError as exc:
-                logger.debug(
-                    "could not remove the MOTD file '{path}': {exc}", MOTD_FILE, exc
-                )
+                logger.debug("could not remove the MOTD file '%s': %s", MOTD_FILE, exc)
         else:
             logger.debug(
-                ".registered or .unregistered exist; file '{motd}' correctly does not exist",
+                ".registered or .unregistered exist; file '%s' correctly does not exist",
                 MOTD_FILE,
             )
 
