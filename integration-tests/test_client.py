@@ -158,6 +158,7 @@ def test_insights_directory_files(insights_client):
     ]
 
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
 
     dir_content_registered = [
         entry.name for entry in os.scandir(directory) if entry.is_file()

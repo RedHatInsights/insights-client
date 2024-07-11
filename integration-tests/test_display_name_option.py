@@ -5,8 +5,8 @@ import uuid
 import logging
 import json
 import random
+import conftest
 
-from conftest import loop_until
 from constants import HOST_DETAILS
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def test_display_name(insights_client):
     """Test insights-client --display-name"""
     new_hostname = generate_unique_hostname()
     insights_client.run("--register")
-    assert loop_until(lambda: insights_client.is_registered)
+    assert conftest.loop_until(lambda: insights_client.is_registered)
 
     response = insights_client.run("--display-name", new_hostname)
     logger.debug(f"response from console {response}")
@@ -45,7 +45,7 @@ def test_display_name(insights_client):
         record = host_details["results"][0]
         return new_hostname == record["display_name"]
 
-    assert loop_until(display_name_changed)
+    assert conftest.loop_until(display_name_changed)
 
 
 def test_register_with_display_name(insights_client):
@@ -56,7 +56,7 @@ def test_register_with_display_name(insights_client):
     unique_hostname = generate_unique_hostname()
 
     status = insights_client.run("--register", "--display-name", unique_hostname)
-    assert loop_until(lambda: insights_client.is_registered)
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     assert unique_hostname in status.stdout
     insights_client.run("--check-results")
     host_details = read_host_details()
@@ -86,7 +86,7 @@ def test_register_twice_with_different_display_name(
         status = insights_client.run("--register", "--display-name", unique_hostname)
         assert unique_hostname in status.stdout
 
-        assert loop_until(lambda: insights_client.is_registered)
+        assert conftest.loop_until(lambda: insights_client.is_registered)
         insights_client.run("--check-results")
         host_details = read_host_details()
         record = host_details["results"][0]
@@ -100,7 +100,7 @@ def test_register_twice_with_different_display_name(
         registration_message = "This host has already been registered"
         assert registration_message in status.stdout
 
-        assert loop_until(lambda: insights_client.is_registered)
+        assert conftest.loop_until(lambda: insights_client.is_registered)
         insights_client.run("--check-results")
         host_details = read_host_details()
         logger.debug(f"content of host-details.json: {host_details}")
@@ -121,7 +121,7 @@ def test_invalid_display_name(invalid_display_name, insights_client):
     - empty string
     """
     insights_client.run("--register")
-    assert loop_until(lambda: insights_client.is_registered)
+    assert conftest.loop_until(lambda: insights_client.is_registered)
 
     insights_client.run("--check-results")
     host_details = read_host_details()
@@ -190,7 +190,7 @@ def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_co
 
     # register insights
     status = insights_client.run("--register")
-    assert loop_until(lambda: insights_client.is_registered)
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     assert unique_hostname in status.stdout
 
     # check the display name on CRC

@@ -40,22 +40,21 @@ def register_subman(
     yield subman_session
 
 
-def loop_until(pred, poll_sec=5, timeout_sec=90):
+def loop_until(predicate, poll_sec=5, timeout_sec=120):
     """
     An helper function to handle a time periond waiting for an external service
     to update its state.
 
     an example:
 
-       result = loop_until(lambda: insights_client.is_registered)
-       assert result == True
+       assert loop_until(lambda: insights_client.is_registered)
 
     The loop function will retry to run predicate every 5secs
-    untill the total time exceeds timeout_sec.
+    until the total time exceeds timeout_sec.
     """
     start = time.time()
     ok = False
     while (not ok) and (time.time() - start < timeout_sec):
         time.sleep(poll_sec)
-        ok = pred()
+        ok = predicate()
     return ok

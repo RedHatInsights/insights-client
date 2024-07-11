@@ -30,7 +30,8 @@ def test_status_unregistered(external_candlepin, insights_client):
     # running unregistration to ensure system is unregistered
     with contextlib.suppress(Exception):
         insights_client.unregister()
-    assert not insights_client.is_registered
+    assert conftest.loop_until(lambda: not insights_client.is_registered)
+
     registration_status = insights_client.run("--status", check=False)
     if insights_client.config.legacy_upload:
         assert registration_status.returncode == 1
