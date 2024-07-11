@@ -11,7 +11,7 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 def test_register(insights_client):
     """Test `insights-client --register` on an unregistered client"""
     register_result = insights_client.run("--register")
-    assert insights_client.is_registered
+    assert conftest.loop_until(lambda: insights_client.is_registered)
 
     assert "Starting to collect Insights data" in register_result.stdout
     assert "Successfully uploaded report" in register_result.stdout
@@ -37,7 +37,7 @@ def test_register_auth_proxy(insights_client, test_config):
     insights_client.config.save()
 
     register_result = insights_client.run("--register", "--verbose")
-    assert insights_client.is_registered
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     assert "Proxy Scheme: http://" in register_result.stdout
     assert f"Proxy Location: {proxy_host}" in register_result.stdout
     assert f"Proxy User: {proxy_user}" in register_result.stdout
@@ -57,7 +57,7 @@ def test_register_noauth_proxy(insights_client, test_config):
     insights_client.config.save()
 
     register_result = insights_client.run("--register", "--verbose")
-    assert insights_client.is_registered
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     assert f"CONF Proxy: {no_auth_proxy}" in register_result.stdout
 
 

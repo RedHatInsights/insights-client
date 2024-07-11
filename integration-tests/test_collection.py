@@ -4,6 +4,7 @@ import tarfile
 import glob
 import json
 import pytest
+import conftest
 
 ARCHIVE_CACHE_DIRECTORY = "/var/cache/insights-client"
 
@@ -124,6 +125,7 @@ def test_cmd_timeout(insights_client):
     cmd_output_message = "Executing: [['timeout', '-s', '9', '10'"
 
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
 
     insights_client.config.cmd_timeout = 10
     insights_client.config.save()
@@ -140,6 +142,8 @@ def test_branch_info(insights_client):
     It uses branch_id and leaf_id to identify
     """
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
     insights_client.run("--no-upload")
 
     list_of_files = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")
@@ -185,6 +189,8 @@ def test_archive_structure(insights_client):
     ]
 
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
     insights_client.run("--no-upload")
 
     list_of_files = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")

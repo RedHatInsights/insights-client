@@ -33,6 +33,7 @@ def test_no_upload(insights_client):
     upload_message = "Successfully uploaded report"
 
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
 
     archive_file_before = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")
 
