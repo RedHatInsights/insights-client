@@ -157,7 +157,6 @@ Command line switches available and their explanations.
 - `--conf`, `-c` - Load a custom configuration file other than the default `/etc/insights-client/insights-client.conf`
 - `--offline` - Run with no network connectivity at all. Implies `--no-upload` and makes machine registration unnecessary.
 - `--logging-file` - Log to a file other than the default `/var/log/insights-client/insights-client.log`
-- `--force-reregister` - Force a new registration. This delete's the machine's existing machine-id and registers a new one.
 - `--verbose` - Run with all log output. This will print DEBUG level messages.
 - `--no-upload` - Collect the archive, but do not upload it.
 - `--keep-archive` - Collect the archive, and do not delete it after upload.
