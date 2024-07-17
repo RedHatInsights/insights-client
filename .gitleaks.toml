@@ -1,0 +1,12 @@
+[extend]
+useDefault = true
+
+
+[allowlist]
+description = "Repository-specific configuration"
+
+paths = [
+    # Tests for insights-core contain public and private GPG keypair. They were
+    # generated specifically for this usecase.
+    "systemtest/insights-core-setup.sh",
+]
