@@ -169,12 +169,10 @@
                 "BIOS Hyper-V UEFI Release",
                 "Brought up ",
                 "CIFS VFS: protocol revalidation - security settings mismatch",
-                "CSUM",
                 "CVE-2017-1000364",
                 "CVE-2018-14634",
                 "Dazed and confused, but trying to continue",
                 "Device is ineligible for IOMMU domain attach due to platform RMRR requirement",
-                "Dropping TSO",
                 "EDAC ",
                 "Emulex OneConnect OCe10100, FCoE Initiator",
                 "FEATURE IBPB_SUPPORT",
@@ -211,7 +209,6 @@
                 "l1tf",
                 "mce: ",
                 "migration_entry_wait_on_locked",
-                "netconsole: network logging started",
                 "nfsd: too many open connections, consider increasing the number of threads",
                 "page allocation failure: order:",
                 "resetting",
@@ -318,6 +315,11 @@
             "symbolic_name": "ethtool_k"
         },
         {
+            "command": "/opt/CrowdStrike/falconctl -g --aid",
+            "pattern": [],
+            "symbolic_name": "falconctl_aid"
+        },
+        {
             "command": "/opt/CrowdStrike/falconctl -g --backend",
             "pattern": [],
             "symbolic_name": "falconctl_backend"
@@ -326,6 +328,11 @@
             "command": "/opt/CrowdStrike/falconctl -g --rfm-state",
             "pattern": [],
             "symbolic_name": "falconctl_rfm"
+        },
+        {
+            "command": "/opt/CrowdStrike/falconctl -g --version",
+            "pattern": [],
+            "symbolic_name": "falconctl_version"
         },
         {
             "command": "/usr/sbin/fcoeadm -i",
@@ -1001,6 +1008,11 @@
             "symbolic_name": "pcs_status"
         },
         {
+            "command": "/usr/bin/pidstat",
+            "pattern": [],
+            "symbolic_name": "pidstat"
+        },
+        {
             "command": "/usr/bin/pmrep -t 1s -T 1s network.interface.out.packets network.interface.collisions swap.pagesout mssql.memory_manager.stolen_server_memory mssql.memory_manager.total_server_memory -o csv",
             "pattern": [],
             "symbolic_name": "pmrep_metrics"
@@ -1065,11 +1077,8 @@
                 "dlm_controld",
                 "dnsmasq",
                 "docker-runc-current",
-                "elasticsearch",
                 "gnocchi-metricd",
                 "gnome-shell",
-                "gunicorn",
-                "haproxy",
                 "heat-engine",
                 "histserver",
                 "httpd",
@@ -1127,7 +1136,6 @@
                 "/usr/bin/openshift start node",
                 "/usr/bin/teamd",
                 "COMMAND",
-                "STAP/8.2",
                 "SystemPerformance",
                 "abrtd",
                 "auditd",
@@ -1146,11 +1154,8 @@
                 "diagxps",
                 "dlm_controld",
                 "docker-runc-current",
-                "elasticsearch",
                 "gnocchi-metricd",
                 "gnome-shell",
-                "gunicorn",
-                "haproxy",
                 "heat-engine",
                 "histserver",
                 "httpd",
@@ -1165,7 +1170,6 @@
                 "nova-compute",
                 "nova-conductor",
                 "ntpd",
-                "oc observe csr",
                 "octavia-worker",
                 "openshift start master api",
                 "openshift start master controllers",
@@ -1208,7 +1212,6 @@
             "command": "/bin/ps auxww",
             "pattern": [
                 "/opt/perf/bin/midaemon",
-                "/sbin/multipathd",
                 "/sbin/rngd",
                 "/usr/bin/openshift start master",
                 "/usr/bin/openshift start node",
@@ -1233,13 +1236,10 @@
                 "diagxps",
                 "dlm_controld",
                 "docker-runc-current",
-                "elasticsearch",
                 "gnocchi-metricd",
                 "gnome-shell",
                 "goferd",
                 "greenplum",
-                "gunicorn",
-                "haproxy",
                 "heat-engine",
                 "histserver",
                 "httpd",
@@ -1317,11 +1317,8 @@
                 "diagxps",
                 "dlm_controld",
                 "docker-runc-current",
-                "elasticsearch",
                 "gnocchi-metricd",
                 "gnome-shell",
-                "gunicorn",
-                "haproxy",
                 "heat-engine",
                 "histserver",
                 "httpd",
@@ -1481,9 +1478,17 @@
         {
             "command": "/usr/bin/find /etc/pki/product-default/ /etc/pki/product/ -name '*pem' -exec rct cat-cert --no-content '{}' \\;",
             "pattern": [
-                "ID:"
+                "ID:",
+                "Path:",
+                "Product Certificate",
+                "Tags:"
             ],
             "symbolic_name": "subscription_manager_installed_product_ids"
+        },
+        {
+            "command": "/usr/sbin/subscription-manager status",
+            "pattern": [],
+            "symbolic_name": "subscription_manager_status"
         },
         {
             "command": "/bin/ls -lH /etc/ssh/sshd_config",
@@ -1747,6 +1752,11 @@
             "symbolic_name": "insights_client_conf"
         },
         {
+            "file": "/etc/pam.d/login",
+            "pattern": [],
+            "symbolic_name": "login_pam_conf"
+        },
+        {
             "file": "/etc/redhat-access-insights/machine-id",
             "pattern": [],
             "symbolic_name": "machine_id"
@@ -1772,6 +1782,11 @@
             "file": "/etc/cloud/cloud.cfg.d/99-custom-networking.cfg",
             "pattern": [],
             "symbolic_name": "cloud_init_custom_network"
+        },
+        {
+            "file": "/run/cloud-init/cloud.cfg",
+            "pattern": [],
+            "symbolic_name": "cloud_init_cfg_run"
         },
         {
             "file": "/var/log/cloud-init.log",
@@ -1854,6 +1869,13 @@
             "file": "/var/lib/pacemaker/cib/cib.xml",
             "pattern": [],
             "symbolic_name": "cib_xml"
+        },
+        {
+            "file": "/proc/fs/cifs/DebugData",
+            "pattern": [
+                "DFS origin"
+            ],
+            "symbolic_name": "cifs_debug_data"
         },
         {
             "file": "/etc/cinder/cinder.conf",
@@ -1971,11 +1993,6 @@
             "symbolic_name": "cups_files_conf"
         },
         {
-            "file": "/etc/cups/ppd/()*",
-            "pattern": [],
-            "symbolic_name": "cups_ppd"
-        },
-        {
             "file": "/sys/kernel/debug/x86/retp_enabled",
             "pattern": [],
             "symbolic_name": "x86_retp_enabled"
@@ -2047,7 +2064,6 @@
         {
             "file": "/etc/etcd/etcd.conf",
             "pattern": [
-                "ETCD_DATA_DIR",
                 "["
             ],
             "symbolic_name": "etcd_conf"
@@ -2358,7 +2374,6 @@
                 "/input/input",
                 "/usr/lib/ocf/resource.d/heartbeat/azure-lb: line 91: kill: Binary: arguments must be process or job IDs",
                 "17763",
-                ": segfault at ",
                 "> audit_backlog_limit=",
                 "Abort command issued",
                 "Audit daemon is suspending logging due to logfile size",
@@ -2382,10 +2397,8 @@
                 "High mssql stolen node memory",
                 "Hyper-V Host",
                 "Hyper-V Host Build:",
-                "List /apis/image.openshift.io/v1/images",
                 "Loop callback failed with: Cannot allocate memory",
                 "Low random number entropy available",
-                "MDC/MDIO access timeout",
                 "Medium access timeout failure. Offlining disk!",
                 "NETDEV WATCHDOG",
                 "Neighbour table overflow",
@@ -2420,7 +2433,6 @@
                 "audispd: queue is full - dropping events",
                 "audit: kauditd hold queue overflow",
                 "blocked FC remote port time out: removing target and saving binding",
-                "callbacks suppressed",
                 "canceled DHCP transaction, DHCP client pid",
                 "clearing Tx timestamp hang",
                 "device-mapper: multipath: Failing path",
@@ -2429,15 +2441,10 @@
                 "drivers/input/input-leds.c:115 input_leds_connect",
                 "enabling it in",
                 "end_request: I/O error, dev",
-                "eviction manager: must evict pod(s) to reclaim nodefsInodes",
-                "ext4_ext_search_left",
-                "failed while handling",
                 "failed with error -110",
                 "failed: Device or resource busy",
                 "failed: Invalid argument",
-                "fiid_obj_get: 'present_countdown_value': data not available",
                 "firewalld - dynamic firewall daemon",
-                "from image service failed: rpc error: code = Canceled desc = context canceled",
                 "host not found in upstream",
                 "hv_netvsc vmbus_",
                 "hv_netvsc: probe of vmbus_",
@@ -2445,7 +2452,6 @@
                 "ill process ",
                 "imjournal: fopen() failed for path: '/var/lib/rsyslog/imjournal.state.tmp': Permission denied",
                 "imjournal: open on state file `/var/lib/rsyslog/imjournal.state' failed",
-                "in libnl.so.1",
                 "initiating reset due to tx timeout",
                 "invalid key/value pair in file /usr/lib/udev/rules.d/59-fc-wwpn-id.rules",
                 "irq handler for vector (irq -1)",
@@ -2454,19 +2460,13 @@
                 "is marked executable.",
                 "is marked world-writable.",
                 "iscsiadm: iscsiadm: Could not log into all portals",
-                "kernel: BUG: soft lockup",
-                "kernel: CIFS VFS: Unexpected SMB signature",
                 "kernel: INFO: task xfsaild/md",
                 "kernel: Linux version",
-                "kernel: Memory cgroup out of memory: Kill process",
                 "kernel: TCP: out of memory -- consider tuning tcp_mem",
                 "kernel: bnx2fc: byte_count",
-                "kernel: lockd: Unknown symbol register_inet6addr_notifier",
-                "kernel: lockd: Unknown symbol unregister_inet6addr_notifier",
                 "kernel: megaraid_sas: FW detected to be in faultstate, restarting it",
                 "kernel: megasas: Found FW in FAULT state, will reset adapter.",
                 "kernel: nfs: server",
-                "khash_super_prune_nolock",
                 "link status up for interface",
                 "migration_entry_wait_on_locked",
                 "multipathd.service operation timed out. Terminating",
@@ -2475,36 +2475,28 @@
                 "not responding, timed out",
                 "per_source_limit from",
                 "platform microcode: firmware: requesting",
-                "quorum using qdevice is distrusted for SBD as qdevice-sync_timeout",
                 "rejecting connections on daemon MTA: load average",
                 "reservation conflict",
                 "returned a bad sequence-id error",
-                "rhsm",
                 "rhsmd: rhsmd process exceeded runtime and was killed",
                 "rsyslogd: too many tcp sessions",
                 "scope: Connection timed out",
                 "shm_open failed, Permission denied",
                 "shutting down the system because of error 1",
-                "skb_copy",
                 "smb2_reconnect.part.0+0x",
                 "socket error sending to node",
                 "start request repeated too quickly for docker.service",
                 "state changed timeout -> done",
-                "swapper: page allocation failure",
                 "systemd: Reloading.",
                 "systemd[1]: Reloading.",
-                "tg3_start_xmit",
                 "timed out",
                 "timeout before we got a set response",
                 "timing out command, waited",
                 "transmit queue",
-                "udev: renamed network interface",
                 "unable to create worker thread",
                 "unknown filesystem type 'binfmt_misc'",
                 "ut of memory: ",
-                "warning: inquisitor_child: Latency: No liveness for",
                 "was not terminated (reboot) by <anyone> on behalf of",
-                "watch chan error: etcdserver: mvcc: required revision has been compacted",
                 "watchdog: BUG: soft lockup",
                 "watchdog: BUG: soft lockup - CPU"
             ],
@@ -2881,22 +2873,31 @@
             "file": "/etc/rsyslog.conf",
             "pattern": [
                 "$ActionQueueFileName",
+                "$IncludeConfig",
                 "$ModLoad imjournal",
                 "(",
                 ")",
                 "/var/log/messages",
                 "/var/log/secure",
+                "@@",
+                "ActionQueueFileName",
+                "ActionResumeRetryCount",
                 "DefaultNetstreamDriver",
                 "InputTCPMaxSessions",
                 "MaxOpenFiles",
                 "MaxSessions",
                 "OmitLocalLogging",
+                "Protocol",
                 "StreamDriver",
                 "SysSock.Use=\"off\"",
                 "SystemLogSocketName",
+                "Target",
+                "action.resumeRetryCount",
                 "imjournal",
+                "imuxsock",
                 "load=\"imjournal\"",
-                "load=\"imuxsock\"",
+                "queue.filename",
+                "type",
                 "{",
                 "}"
             ],
@@ -2995,6 +2996,11 @@
                 "pam_unix(passwd:chauthtok): password changed for"
             ],
             "symbolic_name": "secure"
+        },
+        {
+            "file": "/etc/securetty",
+            "pattern": [],
+            "symbolic_name": "securetty"
         },
         {
             "file": "/etc/selinux/config",
@@ -3170,6 +3176,11 @@
             "symbolic_name": "sysconfig_oracleasm"
         },
         {
+            "file": "/etc/sysconfig/pcsd",
+            "pattern": [],
+            "symbolic_name": "sysconfig_pcsd"
+        },
+        {
             "file": "/etc/sysconfig/prelink",
             "pattern": [],
             "symbolic_name": "sysconfig_prelink"
@@ -3233,6 +3244,11 @@
             "file": "/run/tmpfiles.d/()*.*\\.conf",
             "pattern": [],
             "symbolic_name": "tmpfilesd"
+        },
+        {
+            "file": "/sys/class/tty/console/active",
+            "pattern": [],
+            "symbolic_name": "tty_console_active"
         },
         {
             "file": "/etc/sysconfig/rhn/up2date",
@@ -3639,22 +3655,31 @@
             "glob": "/etc/rsyslog.d/*.conf",
             "pattern": [
                 "$ActionQueueFileName",
+                "$IncludeConfig",
                 "$ModLoad imjournal",
                 "(",
                 ")",
                 "/var/log/messages",
                 "/var/log/secure",
+                "@@",
+                "ActionQueueFileName",
+                "ActionResumeRetryCount",
                 "DefaultNetstreamDriver",
                 "InputTCPMaxSessions",
                 "MaxOpenFiles",
                 "MaxSessions",
                 "OmitLocalLogging",
+                "Protocol",
                 "StreamDriver",
                 "SysSock.Use=\"off\"",
                 "SystemLogSocketName",
+                "Target",
+                "action.resumeRetryCount",
                 "imjournal",
+                "imuxsock",
                 "load=\"imjournal\"",
-                "load=\"imuxsock\"",
+                "queue.filename",
+                "type",
                 "{",
                 "}"
             ],
@@ -3737,6 +3762,7 @@
                 "Ciphers",
                 "INCLUDE",
                 "Include",
+                "KexAlgorithms",
                 "MACS",
                 "MACs",
                 "Macs",
@@ -3766,5 +3792,5 @@
     "pre_commands": {
         "iface": "/sbin/ip -o link | awk -F ': |@' '/.*link\\/ether/ {print $2}'"
     },
-    "version": "2024-05-23T08:13:20.220663"
+    "version": "2024-07-18T09:40:42.628834"
 }
