@@ -5,6 +5,7 @@ import glob
 import json
 import pytest
 import conftest
+import uuid
 
 ARCHIVE_CACHE_DIRECTORY = "/var/cache/insights-client"
 
@@ -135,11 +136,14 @@ def test_cmd_timeout(insights_client):
 
 
 @pytest.mark.usefixtures("register_subman")
-def test_branch_info(insights_client):
+def test_branch_info(insights_client, test_config, subman):
     """
     Test that branch_info includes all required information
-    branch_info is used to identify the host when it is connectec via Satellite.
-    It uses branch_id and leaf_id to identify
+    branch_info is used to identify the host when it is connected via Satellite.
+    It uses branch_id and leaf_id to identify.
+    Ref:
+    https://docs.google.com/document/d/193mN5aBwxtzpP4U-vnL3yVawPxiG20n0zkzDYsam-eU/edit
+
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
@@ -156,8 +160,13 @@ def test_branch_info(insights_client):
     branch_info_path = os.path.join(directory_name, "branch_info")
     with open(branch_info_path, "r") as file:
         data = json.load(file)
-        assert data["remote_branch"] == -1, "Incorrect remote_branch value"
-        assert data["remote_leaf"] == -1, "Incorrect remote_leaf value"
+        if "satellite" in test_config.environment:
+            assert data["product"]["type"] == "Satellite"
+            assert isinstance(uuid.UUID(data["remote_branch"]), uuid.UUID)
+            assert uuid.UUID(data["remote_leaf"]) == subman.uuid
+        else:
+            assert data["remote_branch"] == -1, "Incorrect remote_branch value"
+            assert data["remote_leaf"] == -1, "Incorrect remote_leaf value"
 
 
 @pytest.mark.usefixtures("register_subman")
