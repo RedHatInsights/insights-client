@@ -32,7 +32,14 @@ MOTD_FILE = "/etc/motd.d/insights-client"
 REGISTERED_FILE = "/etc/insights-client/.registered"
 UNREGISTERED_FILE = "/etc/insights-client/.unregistered"
 
-TEMPORARY_GPG_HOME_PARENT_DIRECTORY = "/var/lib/insights/"
+# If we run as root, use the SELinux-safe temporary directory;
+# otherwise, rely on the default temporary directory.
+# This should be OK as the only operation doable as non-root is
+# --version, and everything else already errors.
+if os.geteuid() == 0:
+    TEMPORARY_GPG_HOME_PARENT_DIRECTORY = "/var/lib/insights/"
+else:
+    TEMPORARY_GPG_HOME_PARENT_DIRECTORY = None
 
 
 logger = logging.getLogger(__name__)
