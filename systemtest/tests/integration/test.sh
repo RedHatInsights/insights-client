@@ -8,17 +8,6 @@ cd ../../../
 # runs the packit setup
 rpm -q insights-client || ./systemtest/guest-setup.sh
 
-. /etc/os-release
-if test "${ID}" = fedora -a ${VERSION_ID} -ge 39; then
-  # HACK
-  # on newer gnupg import the key to the local keyring; this will be solved
-  # once both insights-core and insights-client are fixed to not rely on
-  # root's .gnupg directory:
-  # - https://github.com/RedHatInsights/insights-core/pull/3930
-  # - https://github.com/RedHatInsights/insights-client/pull/154
-  gpg --import /etc/insights-client/redhattools.pub.gpg
-fi
-
 dnf --setopt install_weak_deps=False install -y \
   podman git-core python3-pip python3-pytest logrotate bzip2
 
