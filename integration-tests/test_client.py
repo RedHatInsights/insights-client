@@ -5,12 +5,29 @@ import subprocess
 import pytest
 import conftest
 
+"""
+:requirement: RHSS-291297
+:subsystemteam: sst_csi_client_tools
+:caseautomation: Automated
+:upstream: Yes
+"""
+
 
 @pytest.mark.usefixtures("register_subman")
 def test_client_files_permission(insights_client):
-    """Verify that permission for lastupload file is 0644:
-     file /etc/insights-client/.lastupload
-    Ref: https://bugzilla.redhat.com/show_bug.cgi?id=1924990
+    """
+    :title: Verify Client Files Permission
+    :description: Verify that the permission for the last upload file
+    '/etc/insights-client'/.lastupload is set to 0644
+    :tier: Tier 0
+    :steps:
+        1. Remove /etc/insights-client/.lastupload if it exists
+        2. Register insights-client
+        3. Verify the file permissions
+    :expected results:
+        1. The file /etc/insights-client/.lastupload does not exist
+        2. The insights-client registers successfully
+        3. The permission of /etc/insights-client/.lastupload is set to 0644
     """
     file_last_upload = "/etc/insights-client/.lastupload"
     with contextlib.suppress(FileNotFoundError):
@@ -46,7 +63,15 @@ def rpm_ql_insights_client():
 )
 def test_client_rpm_mandatory_files(filename, rpm_ql_insights_client):
     """
-    Verify the existence of mandatory files for insights-client rpm
+    :title: Verify mandatory files for RPM
+    :description: Verify the existence of mandatory files for the insights-client RPM
+    :tier: Tier 0
+    :steps:
+        1. List all files in the insights-client RPM package
+        2. Check if each mandatory file existsin the package
+    :expected results:
+        1. A list of files is generated
+        2. All of the mandatory files are present in the RPM
     """
     assert (
         filename in rpm_ql_insights_client
@@ -55,9 +80,17 @@ def test_client_rpm_mandatory_files(filename, rpm_ql_insights_client):
 
 @pytest.mark.usefixtures("register_subman")
 def test_client_logfiles_mask(insights_client):
-    """Verify that files in /var/log/insights-client have the right mode: 0600
-
-    Ref: https://bugzilla.redhat.com/show_bug.cgi?id=1955724
+    """
+    :title: Verify Client logfiles Mask
+    :description: Verify that the log files in
+    /var/log/insights-client have the correct mode 0600
+    :tier: Tier 0
+    :steps:
+        1. Register the insights-client to generate log files
+        2. Check the file permission of each log file generated
+    :expected results:
+        1. Insights-client is registered and log files are generated
+        2. The file permissions for all log files are 0600
     """
     # It is necessary to perform some command using insights-client
     # to populate logs
@@ -68,8 +101,13 @@ def test_client_logfiles_mask(insights_client):
 
 
 def test_client_logdir_permissions():
-    """Verify that permissions on directory /var/log/insights-client
-    have the right mode: 0700
+    """
+    :title: Verify log directory permissions
+    :description: Verify that the permissions on the directory
+    /var/log/insights-client are set to 0700
+    :tier: Tier 0
+    :steps: Check the directory permissions of /var/log/insights-client
+    :expected results: The directory permissions are set to 0700
     """
     logdir_name = "/var/log/insights-client"
     assert oct(os.stat(logdir_name).st_mode & 0o777) == "0o700"
@@ -78,15 +116,23 @@ def test_client_logdir_permissions():
 @pytest.mark.usefixtures("register_subman")
 def test_verify_logrotate_feature(insights_client):
     """
-    Verify that the standard logrotate works for insights-client
-    Ref : https://bugzilla.redhat.com/show_bug.cgi?id=1940267
-
-    Test Steps:
-        1 - Perform register and payload operation to ensure both
-            insights-client.log and insights-client-payload.log files have logs
-        2 - Rotate logs by running logrotate command on CLI for insights-client
-        3 - Verify insights-client.log and insights-client-payload.log size is 0B
-        4 - Verify rotated files are created in log dir by comparing number of log files
+    :title: Verify Logrotate feature
+    :description: Verify that the logrotate works properly for insights-client
+    :tier: Tier 1
+    :steps:
+        1. Ensure the logrotate configuration file exists
+        2. Register insights-client and perform pazload operations
+        3. Run the logrotate command
+        4. Verify that 2 new log files were created
+        5. Verify the size of insights-client.log
+        6. Verify the size of insights-client-payload.log
+    :expected results:
+        1. The logrotate config file exists
+        2. The insights-client registers successfully and logs are populated
+        3. The logrotate command is executed successfully
+        4. Two new log files were created
+        5. The size is 0B
+        6. The size is 0B
     """
 
     logrotate_conf_file_path = "/etc/logrotate.d/insights-client"
@@ -131,8 +177,19 @@ def test_verify_logrotate_feature(insights_client):
 @pytest.mark.usefixtures("register_subman")
 def test_insights_details_file_exists(insights_client):
     """
-    This test verifies that /var/lib/insights/insights-details.json exists
-    when --check-results is called
+    :title: Verify insights-client details file exists
+    :description: Verify that the file /var/lib/insights/insights-client.json exists
+    :tier: Tier 0
+    :steps:
+        1. Register the insights-client
+        2. Delete /var/lib/insights/insights-client.json if it exists
+        3. run the --check-results command
+        4. Verify the existence of /var/lib/insights/insights-client.json
+    :expected results:
+        1. Insights-client is registrated
+        2. The file /var/lib/insights/insights-client.json does not exists
+        3. The --check-results command is executed successfully
+        4. The file /var/lib/insights/insights-client.json exists
     """
     output_file = "/var/lib/insights/insights-details.json"
     insights_client.register()
@@ -149,7 +206,17 @@ def test_insights_details_file_exists(insights_client):
 @pytest.mark.usefixtures("register_subman")
 def test_insights_directory_files(insights_client):
     """
-    Test that /var/lib/insights have content available
+    :title: Verify insights directory files
+    :description: Verify that the /var/lib/insights directory has the expected content
+    :tier: Tier 0
+    :steps:
+        1. Register the insights-client
+        2. Check the content of /var/lib/insights directory
+        3. Verify specific files exists
+    :expected results:
+        1. Insights-client is registered
+        2. The list of contents of /var/lib/insights directory is created
+        3. All specified files are present
     """
     directory = "/var/lib/insights"
     registered_contents = [
