@@ -158,6 +158,7 @@ def _remove_gpg_home(home):
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
+        env={"LC_ALL": "C.UTF-8"},
     )
     stdout, stderr = shutdown_process.communicate()
     if shutdown_process.returncode != 0:
@@ -218,6 +219,7 @@ def gpg_validate(path):
         import_command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        env={"LC_ALL": "C.UTF-8"},
     )
     import_process.communicate()
     if import_process.returncode != 0:
@@ -239,7 +241,10 @@ def gpg_validate(path):
     ]
     logger.debug("Running command: %s", debug_command(verify_command))
     verify_process = subprocess.Popen(
-        verify_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        verify_command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env={"LC_ALL": "C.UTF-8"},
     )
     verify_process.communicate()
     _remove_gpg_home(home)
