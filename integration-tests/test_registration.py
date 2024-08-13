@@ -74,6 +74,7 @@ def test_machineid_exists_only_when_registered(insights_client):
     assert not os.path.exists(MACHINE_ID_FILE)
 
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     assert os.path.exists(MACHINE_ID_FILE)
 
     insights_client.unregister()
@@ -158,6 +159,7 @@ def test_registered_and_unregistered_files_are_created_and_deleted(insights_clie
     assert not os.path.exists("/etc/insights-client/.registered")
 
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     assert os.path.exists("/etc/insights-client/.registered")
     assert not os.path.exists("/etc/insights-client/.unregistered")
 

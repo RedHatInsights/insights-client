@@ -1,4 +1,5 @@
 import contextlib
+import conftest
 import os
 import subprocess
 import pytest
@@ -45,6 +46,7 @@ def test_motd(insights_client):
 
     # After registration, the file should not exist.
     insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
     assert not os.path.exists(MOTD_PATH)
 
     # The system was unregistered. Because .unregistered file exists,
@@ -65,6 +67,7 @@ def test_motd_dev_null(insights_client):
         assert os.path.samefile(os.devnull, MOTD_PATH)
 
         insights_client.register()
+        assert conftest.loop_until(lambda: insights_client.is_registered)
         assert os.path.samefile(os.devnull, MOTD_PATH)
 
         insights_client.unregister()
