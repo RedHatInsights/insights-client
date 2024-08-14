@@ -1,3 +1,11 @@
+"""
+:casecomponent: insights-client
+:requirement: RHSS-291297
+:subsystemteam: sst_csi_client_tools
+:caseautomation: Automated
+:upstream: Yes
+"""
+
 import json
 import tarfile
 import pytest
@@ -13,18 +21,22 @@ def test_file_workflow_with_an_archive_with_only_one_canonical_fact(
     insights_client, tmp_path
 ):
     """
-    Verify uploading an Insights Archive with just one canonical fact
-    creates a new host on Inventory
-
-        test_steps:
-            1. Remove canonical facts files from the pre-collected archive
-               except the file that has the insights-id
-            2. Upload the pre-collected archive
-            3. Retrieve the system from Inventory
-        expected_results:
-            1. The pre-collected archive is successfully uploaded
-            2. The host FQDN returned in host data retrieved from Inventory on step 3
-               matches the hostname set in the archive
+    :id: 816e341e-2477-4f24-8e37-dacf308413f5
+    :title: Test File Workflow with an Archive with only One Canonical Fact
+    :description:
+        Verify uploading an Insights Archive with just one
+        canonical fact creates a new host on Inventory
+    :tier: Tier 1
+    :steps:
+        1. Remove canonical facts files from the pre-collected archive
+            except the file that has the insights-id
+        2. Upload the pre-collected archive
+        3. Retrieve the system from Inventory
+    :expectedresults:
+        1. The facts are removed
+        2. The pre-collected archive is successfully uploaded
+        3. The host FQDN returned in host data retrieved from Inventory on step 3
+            matches the hostname set in the archive
     """
     archive_name = tmp_path / "archive.tar.gz"
     modified_archive = tmp_path / "archive_modified.tar.gz"
@@ -60,17 +72,20 @@ def test_file_workflow_with_an_archive_without_canonical_facts(
     insights_client, tmp_path
 ):
     """
-    Verify uploading an Insights Archive without canonical facts
-    does NOT create a new host on Inventory
-
-        test_steps:
-            1. Remove all canonical facts files from the pre-collected archive
-            2. Upload the pre-collected archive
-            3. validate that new host is not created in inventory
-        expected_results:
-            1. The pre-collected archive is successfully uploaded
-            2. host is not found in inventory
-
+    :id: 46428b70-7803-4fb6-b694-66c88a0236e3
+    :title: Test File Workflow with an Archive without Canonical Facts
+    :description:
+        Verify uploading an Insights Archive without canonical facts
+        does NOT create a new host on Inventory
+    :tier: Tier 1
+    :steps:
+        1. Remove all canonical facts files from the pre-collected archive
+        2. Upload the pre-collected archive
+        3. Validate that new host is not created in inventory
+    :expectedresults:
+        1. The facts are removed
+        2. The pre-collected archive is successfully uploaded
+        3. Host is not found in inventory
     """
     archive_name = tmp_path / "archive.tar.gz"
     modified_archive = tmp_path / "archive_modified.tar.gz"
