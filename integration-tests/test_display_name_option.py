@@ -170,22 +170,23 @@ def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_co
         2) Host visible in the c.r.c.
     """
     # configuration on insights-client.conf
+    insights_client.config.cert_verify = True
+    insights_client.config.auto_update = False
+    insights_client.config.auto_config = False
+    insights_client.config.authmethod = "CERT"
+    unique_hostname = generate_unique_hostname()
+    insights_client.config.display_name = unique_hostname
     if "satellite" in test_config.environment:
         satellite_hostname = test_config.get("candlepin", "host")
         satellite_port = test_config.get("candlepin", "port")
         insights_client.config.base_url = (
             satellite_hostname + ":" + str(satellite_port) + "/redhat_access/r/insights"
         )
+        insights_client.config.cert_verify = "/etc/rhsm/ca/katello-server-ca.pem"
     elif "prod" in test_config.environment:
         insights_client.config.base_url = "cert.cloud.redhat.com/api"
     elif "stage" in test_config.environment:
         insights_client.config.base_url = "cert.cloud.stage.redhat.com/api"
-    insights_client.config.auto_update = False
-    insights_client.config.auto_config = False
-    insights_client.config.cert_verify = True
-    insights_client.config.authmethod = "CERT"
-    unique_hostname = generate_unique_hostname()
-    insights_client.config.display_name = unique_hostname
     insights_client.config.save()
 
     # register insights
