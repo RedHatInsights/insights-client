@@ -461,7 +461,7 @@ def _main():
         if os.getuid() != 0:
             sys.exit("Insights client must be run as root.")
 
-        # handle client instantation here so that it isn't done multiple times in __init__
+        # handle client instantiation here so that it isn't done multiple times in __init__
         # The config can be passed now by parameter
         client = InsightsClient(config, False)  # read config, but dont setup logging
         logger.debug("InsightsClient initialized. Egg version: %s", client.version())

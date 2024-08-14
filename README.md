@@ -88,7 +88,7 @@ The egg is a bundle that contains the Insights Core module with all the main fun
 ## Phases
 
 The Insights Client runs in four phases.
-They are modularized, so if one of them crashes due to a bad egg, the proces can be resumed at that phase using the egg that's next in the priority list.
+They are modularized, so if one of them crashes due to a bad egg, the process can be resumed at that phase using the egg that's next in the priority list.
 
    1. **Pre-Update**  
    Execute any flags that exit immediately (except `--status` and `--unregister`).
