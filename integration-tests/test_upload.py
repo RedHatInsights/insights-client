@@ -1,5 +1,12 @@
-import os
+"""
+:casecomponent: insights-client
+:requirement: RHSS-291297
+:subsystemteam: sst_csi_client_tools
+:caseautomation: Automated
+:upstream: Yes
+"""
 
+import os
 import pytest
 import conftest
 
@@ -7,10 +14,25 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 
 
 def test_upload_pre_collected_archive(insights_client, tmp_path):
-    """This test verifies that a pre-collect insights-archive can be uploaded
-    using --payload operation.
     """
-
+    :id: 9eba5a67-d013-4d43-98c7-c41ed38bcede
+    :title: Test Upload of Pre-Collected Archive
+    :description:
+        This test verifies that a pre-collect insights-archive
+        can be uploaded using --payload operation.
+    :tier: Tier 1
+    :steps:
+        1. Register insights-client
+        2. Run insights-client in an offline mode to generate an archive
+            and save it
+        3. Run the insights-client with the --payload option and valid --content-type
+        4. Verify the successfull upload of the archive
+    :expectedresults:
+        1. Insights-client is registered
+        2. The archive is successfully generated and saved
+        3. The upload process starts and the output message is as expected
+        4. The upload completes successfully with the message as expected
+    """
     archive_name = "archive.tar.gz"
     archive_location = tmp_path / archive_name
 
@@ -31,9 +53,25 @@ def test_upload_pre_collected_archive(insights_client, tmp_path):
 
 
 def test_upload_wrong_content_type(insights_client, tmp_path):
-    """This test verifies that uploading an archive with wrong content
-    type throws appropriate error message.
-    Generate an archive and upload using --payload but wrong --content-type
+    """
+    :id: bb9ee84a-d262-4c42-ae16-9b45bf5a385c
+    :title: Test Upload with Wrong Content Type
+    :description:
+        This test verifies that uploading an archive with wrong content
+        type throws appropriate error message. Generate an archive and upload using
+        --payload but wrong --content-type
+    :tier: Tier 1
+    :steps:
+        1. Register insights-client
+        2. Run the insights-client in offline mode to generate an archive and save it
+        3. Run the insights-client with --payload option and invalid --content-type
+        4. Run the insigts-client with a valid --content-type but different from
+            compressor used
+    :expectedresults:
+        1. Insights-client is registered
+        2. The archive is generated and saved
+        3. The upload process fails with the appropriate message
+        4. The upload process fails with the appropriate message
     """
     archive_name = "archive.tar.gz"
     archive_location = tmp_path / archive_name
@@ -60,9 +98,23 @@ def test_upload_wrong_content_type(insights_client, tmp_path):
 
 
 def test_upload_too_large_archive(insights_client, tmp_path):
-    """This test verifies that an attempt to upload too large archive
-    results in failure."""
-
+    """
+    :id: bb9ee84a-d262-4c42-ae16-9b45bf5a385c
+    :title: Test Upload of Too Large Archive
+    :description:
+        This test verifies that an attempt to upload too large archive
+        results in failure
+    :tier: Tier 1
+    :steps:
+        1. Register insights-client
+        2. Create a large archive file in the temporary directory
+        3. Run insights-client with --payload option and --content-type
+            pointing to the archive
+    :expectedresults:
+        1. Insights-client is registered
+        2. A large archive is created in the temporary directory
+        3. The upload process fails with an appropriate message
+    """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
 
@@ -94,8 +146,22 @@ def test_upload_compressor_options(
     expected_extension,
 ):
     """
-    This test verifies that valid compression types can be used
-    with --compressor to create archives and upload data using --payload
+    :id: 69a06826-6093-46de-a7a6-9726ae141820
+    :title: Test upload with Different Compressor Options
+    :description:
+        This test verifies that valid compression types can be used
+        with --compressor to create archives and upload data using --payload
+    :tier: Tier 1
+    :steps:
+        1. Register insights-client
+        2. Run insights-client with --compressor option to generate an archive
+            with specified type
+        3. Verify the archive has the correct file extension based on the compression
+            type
+    :expectedresults:
+        1. Insights-client is registered
+        2. The archive is successfully generated
+        3. The file has expected file extension
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
@@ -118,9 +184,28 @@ def test_upload_compressor_options(
 
 def test_retries(insights_client):
     """
-    This test verifies that client tries to upload archive if upload fails.
-    setting retries to 2 only because between each attempt the wait time is 180 sec.
-    set wrong base_url in insights-client.config to fail upload operation
+    :id: dafeb86e-463e-42fd-88e5-4551f1ba8f66
+    :title: Test Retries on Upload Failure
+    :description:
+        This test verifies that client tries to upload archive if upload
+        fails. Setting retries to 2 only because between each attempt the wait time is
+        180 sec. Set wrong base_url in insights-client.config to fail upload operation
+    :tier: Tier 1
+    :steps:
+        1. Register insights-client
+        2. Save the archive
+        3. Modify the configuration to use a non-existent base URL
+        4. Run insights-client with --payload option specifying --retry=2
+            to attempt upload twice
+        5. verify the retry mechanism
+        6. verify the final failure message
+    :expectedresults:
+        1. Insights-client is registered
+        2. Archive is saved
+        3. The configuration is modified and saved
+        4. The command is run
+        5. Each of the retry failed with expected error message
+        6. the final error message is as expected
     """
     reg_result = insights_client.run("--register", "--keep-archive")
     assert conftest.loop_until(lambda: insights_client.is_registered)
@@ -146,8 +231,24 @@ def test_retries(insights_client):
 
 def test_retries_not_happening_on_unrecoverable_errors(insights_client):
     """
-    This test verifies that client retries won't happen during unrecoverable errors.
-    The client should try to upload just once and then fail.
+    :id: 1d740d1c-e98b-4571-86ac-10a233ff65ce
+    :title: Test No Retries on Uncoverable Errors
+    :description:
+        This test verifies that client retries won't happen during
+        unrecoverable errors. The client should try to upload just once and then fail.
+    :tier: Tier 1
+    :steps:
+        1. Register insights-client
+        2. Save the archive
+        3. Run insights-client with --payload option specifying invalid --content-type
+        4. Verify the output of the command
+        5. Verify no-retries occur
+    :expectedresults:
+        1. Insights-client is registered
+        2. Archive is saved
+        3. The command is run
+        4. The process fails with an appropriate message
+        5. No retries occured
     """
     reg_result = insights_client.run("--register", "--keep-archive")
     assert conftest.loop_until(lambda: insights_client.is_registered)
