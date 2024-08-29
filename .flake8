@@ -11,10 +11,6 @@ ignore =
     E203,
     # W503: line break before binary operator
     W503
-per-file-ignores =
-    # some lines are longer than 88
-    src/insights_client/__init__.py: E501
-    integration-tests/test_unregister.py: E501
 extend-exclude =
     # default build directory
     build/,
