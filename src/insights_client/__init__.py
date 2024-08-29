@@ -397,7 +397,8 @@ def update_motd_message():
                 logger.debug("could not remove the MOTD file '%s': %s", MOTD_FILE, exc)
         else:
             logger.debug(
-                ".registered or .unregistered exist; file '%s' correctly does not exist",
+                ".registered or .unregistered exist; file '%s' correctly does "
+                "not exist",
                 MOTD_FILE,
             )
 
