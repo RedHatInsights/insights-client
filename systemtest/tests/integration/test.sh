@@ -30,6 +30,7 @@ retval=$?
 
 if [ -d "$TMT_PLAN_DATA" ]; then
   cp ./junit.xml "$TMT_PLAN_DATA/junit.xml"
+  cp -r ./artifacts "$TMT_PLAN_DATA/"
 fi
 
 exit $retval
