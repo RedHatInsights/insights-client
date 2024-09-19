@@ -22,7 +22,7 @@ def test_ultralight_checkin(insights_client, test_config):
         stale_ts_before_checkin = data["results"][0]["stale_timestamp"]
         updated_ts_before_checkin = data["results"][0]["updated"]
 
-    # Performing an ultra light checkin
+    # Performing an ultra light check-in
     insights_client.run("--checkin")
     insights_client.run("--check-results")
 
@@ -36,7 +36,7 @@ def test_ultralight_checkin(insights_client, test_config):
 
 
 def test_client_checkin_unregistered(insights_client):
-    """Call insights client checkin with unregistered client."""
+    """Call insights client check-in with unregistered client."""
     with contextlib.suppress(Exception):
         insights_client.unregister()
     assert conftest.loop_until(lambda: not insights_client.is_registered)

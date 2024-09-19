@@ -143,7 +143,7 @@ def test_output_file_with_relative_path(insights_client):
     :tier: Tier 1
     :steps:
         1. Define a relative path pointing to a directory
-        2. Run insights-client with the --output file option poining to
+        2. Run insights-client with the --output file option pointing to
             this relative path
         3. Verify that the command fails with a return code of 1
         4. Verify the error message says that --output

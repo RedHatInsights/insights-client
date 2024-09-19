@@ -18,7 +18,7 @@ def test_connection(insights_client):
     :title: Test connection
     :description:
         This test verifies that the --test-connection option works
-        properly, confirming successfull connection
+        properly, confirming successful connection
     :tier: Tier 1
     :steps:
         1. Run insights-client with --test-connection option
