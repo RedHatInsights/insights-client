@@ -1,6 +1,13 @@
+"""
+:casecomponent: insights-client
+:requirement: RHSS-291297
+:subsystemteam: sst_csi_client_tools
+:caseautomation: Automated
+:upstream: Yes
+"""
+
 import contextlib
 import json
-
 import pytest
 from constants import HOST_DETAILS
 import conftest
@@ -9,8 +16,29 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 
 
 def test_ultralight_checkin(insights_client, test_config):
-    """test --checkin
-    Sends nothing but canonical facts to update the host stale and updated timestamp
+    """
+    :id: c662fd5e-0751-45e4-8477-6b0d27f735ac
+    :title: Test verify ultra-light check-in updates timestamps
+    :description:
+        This test verifies that performing an ultra-light check-in with the
+        insights-client updates the host's 'stale_timestamps' and 'updated'
+        fields on the server
+    :reference:
+    :tier: Tier 2
+    :steps:
+        1. Register the insights-client
+        2. Run '--check-results' and record the 'stale_timestamp' and 'updated'
+            timestamps before check-in
+        3. Perform an ultra-light check-in ny running '--checkin'
+        4. Run '--check-results' and record the 'stale_timestamp' and 'updated'
+            timestamps again
+        5. Verify that timestamps were updated successfully
+    :expectedresults:
+        1. Insights-client is registered
+        2. The initial timestamps were retrieved and recorded
+        3. The check-in completes without any errors
+        4. The updated timestamps were retrieved and recorded
+        5. Both updated timestamps will be greater than before check-in
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
@@ -36,7 +64,22 @@ def test_ultralight_checkin(insights_client, test_config):
 
 
 def test_client_checkin_unregistered(insights_client):
-    """Call insights client check-in with unregistered client."""
+    """
+    :id: 91331995-20c2-4d44-8abe-74a3e7d28309
+    :title: Test check-in fails for unregistered client
+    :description:
+        This test verifies that attempting to perform check-in while unregistered
+        fails with appropriate error message
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Unregister the insights-client if registered
+        2. Attempt to perform a check-in by running '--checkin'
+    :expectedresults:
+        1. Insights-client is unregistered successfully
+        2. The check-in fails with return code 1 and message '"Error: failed
+            to find host with matching machine-id'
+    """
     with contextlib.suppress(Exception):
         insights_client.unregister()
     assert conftest.loop_until(lambda: not insights_client.is_registered)
