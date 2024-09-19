@@ -14,7 +14,7 @@ The `test-case` requires:
 - The output XML file path (will be overwritten if exists)
 
 
-There shoud also be a custom config file specified for pythonpath for Betelgeuse to correctly read all the custom fields in the docstrings. The file is saved in integration-tests/custom_betelgeuse_config.py
+There should also be a custom config file specified for pythonpath for Betelgeuse to correctly read all the custom fields in the docstrings. The file is saved in integration-tests/custom_betelgeuse_config.py
 
 Example:
 

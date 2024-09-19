@@ -26,7 +26,7 @@ def test_upload_pre_collected_archive(insights_client, tmp_path):
         2. Run insights-client in an offline mode to generate an archive
             and save it
         3. Run the insights-client with the --payload option and valid --content-type
-        4. Verify the successfull upload of the archive
+        4. Verify the successful upload of the archive
     :expectedresults:
         1. Insights-client is registered
         2. The archive is successfully generated and saved
@@ -248,7 +248,7 @@ def test_retries_not_happening_on_unrecoverable_errors(insights_client):
         2. Archive is saved
         3. The command is run
         4. The process fails with an appropriate message
-        5. No retries occured
+        5. No retries occurred
     """
     reg_result = insights_client.run("--register", "--keep-archive")
     assert conftest.loop_until(lambda: insights_client.is_registered)
