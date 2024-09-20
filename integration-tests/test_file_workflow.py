@@ -7,7 +7,11 @@
 """
 
 import json
+import random
+import string
+import subprocess
 import tarfile
+from time import sleep
 import pytest
 from constants import HOST_DETAILS
 from constants import MACHINE_ID_FILE
@@ -114,6 +118,34 @@ def test_file_workflow_with_an_archive_without_canonical_facts(
     assert "Error: failed to find host with matching machine-id" in check_results.stdout
 
 
+def test_file_workflow_archive_update_host_info(insights_client, external_inventory):
+    """Verify updating files in an Insights Archive updates host
+    information on Inventory.
+    test_steps:
+            1. Register Insights-client and upload data
+            2. Update hostname and recollect the data
+            3. Upload the new archive
+            4. Retrieve the host data from Inventory and check display name
+    expected_results:
+            1. System is registered and archive successfully uploaded
+            2. display_name returned in step 5 matches updated hostname
+    """
+    insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+    current_hostname = subprocess.check_output("hostname", shell=True).decode().strip()
+    try:
+        # set a new hostname
+        new_hostname = set_hostname()
+        # collect data and upload again
+        insights_client.run()
+        sleep(30)  # small wait for data to get reflected in inventory
+        host_data = external_inventory.this_system()
+        assert host_data["display_name"] == new_hostname
+
+    finally:
+        set_hostname(current_hostname)
+
+
 def remove_files_from_archive(original_archive, files_to_remove, modified_archive):
     with tarfile.open(original_archive, "r:gz") as tar:
         file_list = tar.getnames()
@@ -127,3 +159,14 @@ def remove_files_from_archive(original_archive, files_to_remove, modified_archiv
             for member in tar.getmembers():
                 if member.name in files_to_keep:
                     new_tar.addfile(member, tar.extractfile(member))
+
+
+def set_hostname(hostname=None):
+    if hostname is None:
+        hostname = (
+            "".join(random.choices(string.ascii_lowercase + string.digits, k=10))
+            + "-new-hostname.example.com"
+        )
+
+    subprocess.run(["hostnamectl", "set-hostname", hostname], check=True)
+    return hostname
