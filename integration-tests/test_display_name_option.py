@@ -1,5 +1,12 @@
-import string
+"""
+:casecomponent: insights-client
+:requirement: RHSS-291297
+:subsystemteam: sst_csi_client_tools
+:caseautomation: Automated
+:upstream: Yes
+"""
 
+import string
 import pytest
 import uuid
 import logging
@@ -28,7 +35,23 @@ def create_random_string(n: int):
 
 
 def test_display_name(insights_client):
-    """Test insights-client --display-name"""
+    """
+    :id: 4758cb21-03b4-4334-852c-791b7c82b50a
+    :title: Test updating display name via '--display-name'
+    :description:
+        This test verifies that a registered host's display name can be
+        updated using the --display name option.
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Generate a unique hostname and register the insights-client
+        2. Update the display name using --display-name <NEW_HOSTNAME>
+        3. Verify the display name has been updated in the host details
+    :expectedresults:
+        1. A unique hostname is generated and insights-client is registered
+        2. The command outputs 'Display name updated to <NEW_HOSTNAME>'
+        3. The display_name in host detailes matches the new hostname
+    """
     new_hostname = generate_unique_hostname()
     insights_client.run("--register")
     assert conftest.loop_until(lambda: insights_client.is_registered)
@@ -49,9 +72,22 @@ def test_display_name(insights_client):
 
 
 def test_register_with_display_name(insights_client):
-    """Test insights-client --register --display-name SOME_NEW_HOSTNAME
-
-    The current display name should appear in inventory
+    """
+    :id: d127b2bf-2f6d-4b02-bb8e-99036bfc4291
+    :title: Test registration with custom display name
+    :description:
+        This test ensures that registering the insights-client with a custom
+        display name sets the display name correctly in host details
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Generate a unique hostname
+        2. Register the insights-client using '--register --display_name'
+        3. Verify the display_name in host details
+    :expectedresults:
+        1. Unique hostname is generated
+        2. The client registers and successfully outputs the unique hostname
+        3. The display_name in host details matches the unique hostname
     """
     unique_hostname = generate_unique_hostname()
 
@@ -70,13 +106,29 @@ def test_register_with_display_name(insights_client):
 def test_register_twice_with_different_display_name(
     insights_client, test_config, subtests
 ):
-    """Try to register a host but with different display-name than set before
-
-    Set new display_name and try to register twice.
-
-    Registering twice, even with a different display_name set, will do nothing.
-    The `register` method does check if the host changed at all,
-    it only checks the machine_id
+    """
+    :id: 3d28562d-16c4-4fb1-b9b1-f39044e05ef5
+    :title: Test re-registration with different display names
+    :description:
+        This test checks that registering the insights-client twice with different
+        display names does not change the insights_id and display_name is updated
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Generate a unique hostname
+        2. Register the insights-client using '--register --display_name'
+        3. Record the machine ID and display_name
+        4. Generate another unique hostname
+        5. Register the insights-client using '--register --display_name'
+        6. Compare the old display_name and insights_id with those updated
+    :expectedresults:
+        1. Unique hostname is generated
+        2. The client registers and successfully outputs the unique hostname
+        3. Informations are successfully retrieved and stored
+        4. Unique hostname is generated
+        5. The output indicates that the host is already registered but updates the
+            display_name to the new one
+        6. Insights_id stayed unchaned while display_name changed to the latest one
     """
     insights_id = None
     unique_hostname = generate_unique_hostname()
@@ -114,11 +166,25 @@ def test_register_twice_with_different_display_name(
 
 @pytest.mark.parametrize("invalid_display_name", [create_random_string(201), ""])
 def test_invalid_display_name(invalid_display_name, insights_client):
-    """Tries to set an invalid display name.
-    invalid display names:
-
-    - bigger than 200 characters
-    - empty string
+    """
+    :id: 9cbdd1a6-9ee3-4799-baaf-15c3894ca55b
+    :title: Test handling of invalid display names
+    :description:
+        This test verifies that attempting to set an invalid display_name is rejected
+        and does not alter the current display_name value
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Register the insights-client
+        2. Record the original display_name value
+        3. Attemt to update the display_name using an invalid value
+        4. Verify that display_name stayed unchanged
+    :expectedresults:
+        1. Insights-client is registered
+        2. Original display_name value is saved
+        3. The command fails with an error code 1 and a message
+            'Could not update display name'
+        4. The display_name in host details matches the saved original
     """
     insights_client.run("--register")
     assert conftest.loop_until(lambda: insights_client.is_registered)
@@ -143,31 +209,25 @@ def test_invalid_display_name(invalid_display_name, insights_client):
 
 def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_config):
     """
-    Ref : https://issues.redhat.com/browse/ESSNTL-2230
-
-    Steps:
-    1. Register rhel system for subscriptions.
-    2. In the insights-client.conf:
-    Set auto_config=False auto_update=False, and set display_name.
-
-        Note:
-        1) When auto_config=false, need to also configure:
-
-        auto_config=False
-        base_url=satellite_IP:443/redhat_access/r/insights
-        cert_verify=True
-        authmethod=CERT
-
-        Refer: https://issues.redhat.com/browse/RHEL-19435
-
-        2) This case works with legacy_upload=False on prod and stage envs,
-        and works with both legacy_upload=False and legacy_upload=True
-        on Satellite env.
-
-    3. Register insights.
-    4. Check the results:
-        1) Registration insights with display name is successful.
-        2) Host visible in the c.r.c.
+    :id: 8cdbc0ff-42ba-41e8-bd3f-31550ccac081
+    :title: Test registration with display_name when auto-config and auto-update
+        are disabled
+    :description:
+        This test verifies that the insights-client can be registered with a
+        display_name name even when auto_config and auto_update are set to
+        False and host appears on cloud with the correct display name
+    :reference: https://issues.redhat.com/browse/RHEL-19435
+    :tier: Tier 2
+    :steps:
+        1. Configure insights-client.conf with auto_config and auto_update set to False
+            and display_name set
+        2. Register the insights-client
+        3. Verify the host is visible in cloud.redhat.com with the correct display_name
+            set in the configuration file
+    :expectedresults:
+        1. Configuration is set and successfully saved
+        2. Insights-client is registered
+        3. Host appears in inventory with the display name matching the one that was set
     """
     # configuration on insights-client.conf
     insights_client.config.cert_verify = True
