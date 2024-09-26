@@ -1,3 +1,11 @@
+"""
+:casecomponent: insights-client
+:requirement: RHSS-291297
+:subsystemteam: sst_csi_client_tools
+:caseautomation: Automated
+:upstream: Yes
+"""
+
 import pytest
 import tarfile
 import logging
@@ -8,6 +16,28 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 
 
 def test_ip_obfuscation(insights_client, tmp_path):
+    """
+    :id: 59c073f7-d207-42ae-85ee-a7a5d6fc6f8d
+    :title: Test IP obfuscation functionality
+    :description:
+        This test verifies that when IP obfuscation is enabled in the
+        insights-client configuration, the system's IP address is not
+        present in the collected archive
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Record the system's IP address
+        2. Disable obfuscation in the configuration
+        3. Run the insights-client and check archive for an IP address
+        4. Enable obfuscation in the configuration
+        5. Run the insights-client and check archive for an IP address
+    :expectedresults:
+        1. The system's IP address is recorded
+        2. Configuration is updated and saved
+        3. The IP address is found in the collected archive
+        4. Configuration is updated and saved
+        5. The IP address is not found in the collected archive
+    """
     # Record the system ip
     hostname = socket.gethostname()
     system_ip = socket.gethostbyname(hostname)
@@ -26,6 +56,28 @@ def test_ip_obfuscation(insights_client, tmp_path):
 
 
 def test_hostname_obfuscation(insights_client, tmp_path):
+    """
+    :id: 68196220-f633-4a40-8040-6924d0e71b46
+    :title: Test hostname obfuscation functionality
+    :description:
+        This test verifies that when hostname obfuscation is enabled in the
+        insights-client configuration, the system's hostname is not present
+        in the collected archive
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Record the system's hostname
+        2. Disable hostname obfuscation in the configuration
+        3. Run the insights-client and check archive for a hostname
+        4. Enable hostname obfuscation in the configuration
+        5. Run the insights-client and check archive for a hostname
+    :expectedresults:
+        1. The system's hostname is recorded
+        2. Configuration is updated and saved
+        3. The hostname is found in the collected archive
+        4. Configuration is updated and saved
+        5. The hostname is not found in the collected archive
+    """
     # Record the system hostname
     system_hostname = socket.gethostname()
 
@@ -45,9 +97,30 @@ def test_hostname_obfuscation(insights_client, tmp_path):
 @pytest.mark.parametrize("password_file", ["/etc/redhat-release", "/etc/hosts"])
 def test_password_obfuscation(insights_client, tmp_path, password_file):
     """
-    Add an item of password in some files,
-    no matter obfuscate=True or obfuscate=False in insights_client.conf,
-    the password is not in the collected file and there are asterisks instead
+    :id: ad3f22b2-8792-45fb-abdd-d29d58db5c41
+    :title: Test password obfuscation in collected files
+    :description:
+        This test ensures that sensitive information such as passwords is obfuscated
+        in collected files, regardless of the obfuscation setting in the configuration
+        file
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Backup the original content of the test file
+        2. Append a password string to the test file
+        3. Make sure obfuscation is disabled in the configuration file
+        4. Run the insights-client and check for the password in the archive
+        5. Enable obfuscation
+        6. Run the insights-client and check for the password in the archive
+        7. Restore the original content of the test file
+    :expectedresults:
+        1. Original content is backed up
+        2. Password string is added without errors
+        3. Configuration is updated and saved
+        4. Password is not found in the test file
+        5. Configuration is updated and saved
+        6. Password is still not present in the test file
+        7. Original content is restored
     """
     # backup the original content of tested files
     with open(password_file, "r+") as f:
@@ -86,17 +159,23 @@ def test_password_obfuscation(insights_client, tmp_path, password_file):
 def test_no_obfuscation_on_package_version(
     insights_client, tmp_path, package_info_file
 ):
-    """Test exclusion of certain Specs from IP address obfuscation:
-    Examine the files produced by these Specs:
-            • insights.specs.Specs.installed_rpms
-            • insights.specs.Specs.dnf_modules
-            • insights.specs.Specs.yum_list_available
-            • insights.specs.Specs.yum_updates
-    Verify that version strings consisting of four parts
-         like shadow-utils-4.1.5.1-24.el7.x86_64 are not obfuscated
-         as if they were IPv4 addresses. An obfuscated string would
-         look like this: shadow-utils-10.230.230.21-24.el7.x86_64
-    Related Bug: https://issues.redhat.com/browse/ESSNTL-444
+    """
+    :id: aa2eb4cf-9fed-4fe9-8423-87bbf2f2dd95
+    :title: Test package versions are not obfuscated when obfuscation is enabled
+    :description:
+        This test ensures that version strings in package information files
+        are not incorrectly obfuscated as IP addresses when obfuscation is
+        enabled
+    :reference: https://issues.redhat.com/browse/ESSNTL-444
+    :tier: Tier 1
+    :steps:
+        1. Enable obfuscation in the configuration file
+        2. Run the insights-client and collect the archive
+        3. Check the specified package information files in the archive
+    :expectedresults:
+        1. Configuration is updated and saved
+        2. Archive is collected
+        3. Version strings are not obfuscated and are present
     """
     # Obfuscate IP
     insights_client.config.obfuscate = True
@@ -115,18 +194,23 @@ def test_no_obfuscation_on_package_version(
 
 def test_no_obfuscation_on_display_name(insights_client, tmp_path):
     """
-    Check the ip obfuscation does not affect the display_name:
-    method 1:
-        (1) Set ip obfuscation
-        (2) Run insights-client --display-name=xxx
-        (3) Check the display_name on CRC: it shows correctly without obfuscation
-    method 2:
-        (1) Set ip obfuscation
-        (2) Set the display_name in /etc/insights-client/insights-client.conf
-        (3) Run insights-client --no-upload
-        (4) Check the archive: display_name is not obfuscated
+    :id: a5b73cba-928d-4e78-9792-6a667e5c4c2b
+    :title: Test display_name is not obfuscated when obfuscation is enabled
+    :description:
+        This test ensures that display_name in package information files
+        are not incorrectly obfuscated as IP addresses when obfuscation is
+        enabled
+    :reference:
+    :tier: Tier 1
+    :steps:
+        1. Enable obfuscation in the configuration file
+        2. Run the insights-client and collect the archive
+        3. Check the display_name information in the archive
+    :expectedresults:
+        1. Configuration is updated and saved
+        2. Archive is collected
+        3. Display_name is not obfuscated and is present
     """
-
     # Set IP obfuscation and set display_name in insights-client.conf
     display_name_setting = "test_display_name" + str(uuid.uuid4())
     insights_client.config.obfuscate = True
