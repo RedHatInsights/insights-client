@@ -40,7 +40,7 @@ def test_display_name(insights_client):
     :title: Test updating display name via '--display-name'
     :description:
         This test verifies that a registered host's display name can be
-        updated using the --display name option.
+        updated using the --display-name option.
     :reference:
     :tier: Tier 1
     :steps:
@@ -82,7 +82,7 @@ def test_register_with_display_name(insights_client):
     :tier: Tier 1
     :steps:
         1. Generate a unique hostname
-        2. Register the insights-client using '--register --display_name'
+        2. Register the insights-client using '--register --display-name'
         3. Verify the display_name in host details
     :expectedresults:
         1. Unique hostname is generated
@@ -116,7 +116,7 @@ def test_register_twice_with_different_display_name(
     :tier: Tier 1
     :steps:
         1. Generate a unique hostname
-        2. Register the insights-client using '--register --display_name'
+        2. Register the insights-client using '--register --display-name'
         3. Record the machine ID and display_name
         4. Generate another unique hostname
         5. Register the insights-client using '--register --display_name'
