@@ -18,7 +18,7 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 def test_ultralight_checkin(insights_client, test_config):
     """
     :id: c662fd5e-0751-45e4-8477-6b0d27f735ac
-    :title: Test verify ultra-light check-in updates timestamps
+    :title: Test lightweight check-in updates staleness timestamps
     :description:
         This test verifies that performing an ultra-light check-in with the
         insights-client updates the host's 'stale_timestamps' and 'updated'
@@ -77,7 +77,7 @@ def test_client_checkin_unregistered(insights_client):
         2. Attempt to perform a check-in by running '--checkin'
     :expectedresults:
         1. Insights-client is unregistered successfully
-        2. The check-in fails with return code 1 and message '"Error: failed
+        2. The check-in fails with return code 1 and message 'Error: failed
             to find host with matching machine-id'
     """
     with contextlib.suppress(Exception):
