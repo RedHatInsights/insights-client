@@ -23,6 +23,7 @@ jobs:
     targets:
       - centos-stream-8
       - centos-stream-9
+      - centos-stream-10
       - fedora-all
       - rhel-8
       - rhel-9
@@ -35,6 +36,7 @@ jobs:
     targets:
       - centos-stream-8
       - centos-stream-9
+      - centos-stream-10
       - fedora-all
       - rhel-8
       - rhel-9
@@ -45,6 +47,7 @@ jobs:
     targets:
       - centos-stream-8
       - centos-stream-9
+      - centos-stream-10
     labels:
       - unit
     tf_extra_params:
