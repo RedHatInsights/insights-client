@@ -30,7 +30,7 @@ def test_file_workflow_with_an_archive_with_only_one_canonical_fact(
     :description:
         Verify uploading an Insights Archive with just one
         canonical fact creates a new host on Inventory
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Remove canonical facts files from the pre-collected archive
             except the file that has the insights-id
@@ -81,7 +81,7 @@ def test_file_workflow_with_an_archive_without_canonical_facts(
     :description:
         Verify uploading an Insights Archive without canonical facts
         does NOT create a new host on Inventory
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Remove all canonical facts files from the pre-collected archive
         2. Upload the pre-collected archive

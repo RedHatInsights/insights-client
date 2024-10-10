@@ -26,7 +26,7 @@ def test_set_ansible_host_info(insights_client):
         This test verifies that the --ansible-host option can be used
         to set the ansible host with a satellite-registered system
     :reference: https://issues.redhat.com/browse/RHEL-3826
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Run insights-client with the --ansible-host=foo.example.com
@@ -55,7 +55,7 @@ def test_no_upload(insights_client):
         This test verifies that no traceback is returned when running --no-upload
         command and the archive is created and saved
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. List the archives in the cache directory before running --no-upload
@@ -92,7 +92,7 @@ def test_group(insights_client, tmp_path):
         This test verifies that the --group option is functional, ensuring that the
         group specified is created and packed in the archive
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Run insights-client in offline mode to generate archive
             with the --group option
@@ -138,7 +138,7 @@ def test_support(insights_client):
         This test verifies that the --support option provides the expected
         information and generates a support log for Red Hat insights
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Run insights-client with --support option
     :expectedresults:
@@ -166,7 +166,7 @@ def test_client_validate_no_network_call(insights_client):
         This test verifies that the --validate option does not attempt to
         connect to any network service
     :reference: https://bugzilla.redhat.com/show_bug.cgi?id=2009864
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Create an empty tags.yaml in /etc/insights-client/
         2. Modify the configuration to prevent any connection attempts to
@@ -214,7 +214,7 @@ def test_client_checkin_offline(insights_client):
         This test verifies that running the --checkin command in offline
         mode logs an appropriate message and exits with a failure code
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Run insights-client with --offline and --checkin options
@@ -238,7 +238,7 @@ def test_client_diagnosis(insights_client):
         This test verifies that on a registered system, the --diagnosis
         option retrieves the correct diagnostic information
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Run the --diagnosis option on unregistered system
         2. Register insights-client
@@ -275,7 +275,7 @@ def test_check_show_results(insights_client):
         This test verifies that when checking results from the Advisor (--check-results)
         and displaying them (--show-results), a remediation is advised
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Change permissions of /etc/ssh/sshd_config file to introduce a vulnerability

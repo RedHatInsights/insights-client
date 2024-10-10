@@ -55,7 +55,7 @@ def test_motd(insights_client):
         system and that it is appropriately removed or not recreated upon
         registration and unregistration
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Verify that MOTD file is present on an unregistered system
         2. Register the insights-client
@@ -95,7 +95,7 @@ def test_motd_dev_null(insights_client):
         /dev/null, it is not modified or removed during the client's registration
         and unregistration processes
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Create a symlink from MOTD_PATH to /dev/null
         2. Run insights-client with --status option
@@ -131,7 +131,7 @@ def test_motd_message():
         This test ensures that on unregistered system, the MOTD provides users
         with complete instructions on how to register
     :reference: https://issues.redhat.com/browse/CCT-264
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Ensure the host is unregistered
         2. Read the content of the MOTD file and verify that content matches

@@ -20,7 +20,7 @@ def test_upload_pre_collected_archive(insights_client, tmp_path):
     :description:
         This test verifies that a pre-collect insights-archive
         can be uploaded using --payload operation.
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Run insights-client in an offline mode to generate an archive
@@ -60,7 +60,7 @@ def test_upload_wrong_content_type(insights_client, tmp_path):
         This test verifies that uploading an archive with wrong content
         type throws appropriate error message. Generate an archive and upload using
         --payload but wrong --content-type
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Run the insights-client in offline mode to generate an archive and save it
@@ -104,7 +104,7 @@ def test_upload_too_large_archive(insights_client, tmp_path):
     :description:
         This test verifies that an attempt to upload too large archive
         results in failure
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Create a large archive file in the temporary directory
@@ -151,7 +151,7 @@ def test_upload_compressor_options(
     :description:
         This test verifies that valid compression types can be used
         with --compressor to create archives and upload data using --payload
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Run insights-client with --compressor option to generate an archive
@@ -190,7 +190,7 @@ def test_retries(insights_client):
         This test verifies that client tries to upload archive if upload
         fails. Setting retries to 2 only because between each attempt the wait time is
         180 sec. Set wrong base_url in insights-client.config to fail upload operation
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Save the archive
@@ -236,7 +236,7 @@ def test_retries_not_happening_on_unrecoverable_errors(insights_client):
     :description:
         This test verifies that client retries won't happen during
         unrecoverable errors. The client should try to upload just once and then fail.
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Save the archive
