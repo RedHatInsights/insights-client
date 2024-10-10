@@ -26,7 +26,7 @@ def test_output_file_valid_parameters(insights_client, tmp_path):
     :description:
         This test verifies that the --output-file option correctly
         creates a new archive file when provided with a valid path
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Define the archive name path
         2. Run insights-client in an offline mode with --output-file
@@ -56,7 +56,7 @@ def test_output_file_non_existing_path(insights_client):
     :description:
         Checks that the --output-file option fails with an appropriate error
         message when provided with a non-existent path
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Define an archive file path in a non-existing directory
             and define the parent directory path
@@ -89,7 +89,7 @@ def test_output_dir_without_specifying_a_path(insights_client):
     :description:
         Verifies that the --output-dir option fails with an appropriate
         error message when no path is specified
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Run insights-client with an empty --output-file option
         2. Verify that the command fails with a return code of 1
@@ -111,7 +111,7 @@ def test_output_specifying_both_dir_and_file(insights_client, tmp_path):
     :description:
         Verifies that specifying both output file and output directory
         option together fails with an appropriate error message
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Define both output file and directory paths
         2. Run insights-client with --output-file and --output-dir
@@ -140,7 +140,7 @@ def test_output_file_with_relative_path(insights_client):
     :description:
         Verifies that using a relative path that points to a directory
         with the --output-file option fails with an appropriate error message
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Define a relative path pointing to a directory
         2. Run insights-client with the --output file option pointing to
@@ -167,7 +167,7 @@ def test_output_dir_with_not_empty_directory(insights_client):
     :description:
         Verify that when the --output-dir option is used with an existing
         non-empty directory, the command fails with an appropriate error message
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Define a path to an existing non-empty directory
         2. Run insights-client with --output-dir option specified
@@ -196,7 +196,7 @@ def test_output_dir_creates_archive_for_directory(insights_client, tmp_path):
         Checks that when the --output-file option is used with a path
         that is an existing directory, the insights-client correctly generates
         an archive with the directory name appended with .tar.gz
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Define a directory path
         2. Run insights-client with the --output-file option pointing to that directory
@@ -225,7 +225,7 @@ def test_output_file_already_exists(insights_client, tmp_path):
         Verify that when the --output-file option is used with a path
         that points to an existing archive file, the command fails with an
         appropriate error message
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Create an archive file at a specified location
         2. Run insights-client with the --output-file option to this existing archive
@@ -256,7 +256,7 @@ def test_cmd_timeout(insights_client):
     :description:
         Verify that the cmd_timeout configuration correctly limits the
         execution time of commands, killing them if they exceed said limit
-    :tier: Tier 2
+    :tags: Tier 2
     :steps:
         1. Register insights-client
         2. Set the cmd_timeout option to 10 seconds
@@ -294,7 +294,7 @@ def test_branch_info(insights_client, test_config, subman):
         via Satellite
     :reference:
         https://docs.google.com/document/d/193mN5aBwxtzpP4U-vnL3yVawPxiG20n0zkzDYsam-eU/edit
-    :tier: Tier 2
+    :tags: Tier 2
     :steps:
         1. Register insights-client
         2. Run insights-client with the --no-upload option to generate the
@@ -340,7 +340,7 @@ def test_archive_structure(insights_client):
         Verify that the generated archive from insights-client has the
         correct directory structure and contains all the necessary directories
         and subdirectories
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Run insights-client with --no-upload

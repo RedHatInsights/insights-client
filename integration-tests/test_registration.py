@@ -24,7 +24,7 @@ def test_register(insights_client):
         This test verifies that the --register command successfully registers
         an unregistered client
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Run insights-client with --register option
         2. Verify the client successfully registered
@@ -52,7 +52,7 @@ def test_register_auth_proxy(insights_client, test_config):
         This test verifies that the --register command successfully registers the
         host when an authentication proxy is configured
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Set the proxy configuration in the insights-client.conf file
         2. Run the insights-client with --register option and verbose output
@@ -92,7 +92,7 @@ def test_register_noauth_proxy(insights_client, test_config):
         This test verifies that the --register command successfully registers the
         host when a unauthenticated proxy is configured
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Set the proxy configuration in the insights-client.conf file
         2. Run the insights-client with --register option and verbose output
@@ -125,7 +125,7 @@ def test_machineid_exists_only_when_registered(insights_client):
         This test verifies that the machine ID file is created only when the client
         is registered
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Verify the client is not registered and machine ID does not exist
         2. Run the insights-client without registration
@@ -164,7 +164,7 @@ def test_machineid_changes_on_new_registration(insights_client):
         This test verifies that the machine ID file content changes when
         the client is unregistered and then registered again
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client and store current machine ID
         2. Unregister the client
@@ -202,7 +202,7 @@ def test_double_registration(insights_client):
         This test verifies that the --register flag can be passed multiple
         times on a system that is already registered without causing errors
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register insights-client and store its machine ID
         2. Run the --register command again on the registered system
@@ -244,7 +244,7 @@ def test_register_group_option(insights_client, legacy_upload_value):
         This test verifies that the --register command works as expected when
         --group option is used
     :reference: https://issues.redhat.com/browse/RHINENG-7567
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Unregister the client if registered
         2. Set the legacy_upload value and save the configuration
@@ -278,7 +278,7 @@ def test_registered_and_unregistered_files_are_created_and_deleted(insights_clie
         is registered and the .unregistered file is created when the client is
         unregistered
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Verify that the client is not registered and .registered file does not exist
         2. Register the client and verify that the .registered file was created

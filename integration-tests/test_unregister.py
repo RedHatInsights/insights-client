@@ -19,7 +19,7 @@ def test_unregister(insights_client):
     :description:
         This test verifies that the insights-client can be unregistered
         successfully after being registered.
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register the insights-client if not registered
         2. Run `insights-client --unregister` command
@@ -50,7 +50,7 @@ def test_unregister_twice(insights_client):
         when it is already unregistered behaves as expected. It checks that
         the first unregistration succeeds and that subsequent unregistration
         attempts produce the appropriate error message and return code
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register the insights-client
         2. Unregister the client for the first time

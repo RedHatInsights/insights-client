@@ -15,7 +15,7 @@ def test_version(insights_client):
         This test verifies that running `insights-client --version` outputs
         both the client and core version information
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Run `insights-client --version`
         2. Check the output for "Client: " and "Core: "

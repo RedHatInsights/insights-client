@@ -19,7 +19,7 @@ def test_connection(insights_client):
     :description:
         This test verifies that the --test-connection option works
         properly, confirming successful connection
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Run insights-client with --test-connection option
         2. Verify that the connection to the upload URl is successful
@@ -44,7 +44,7 @@ def test_http_timeout(insights_client):
     :description:
         Verifies that setting a very low http_timeout value causes
         the connection to time out
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Set the http_timeout option to a very low value and save
         2. Run insights-client with the --test-conection option
@@ -71,7 +71,7 @@ def test_noauth_proxy_connection(insights_client, test_config):
     :description:
         Verifies that the insights-client can successfully connect
         through a no-auth proxy when using the --test-connection option
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Configure insights-client to use no-auth proxy and save
         2. Run insights-client with the --test-connection option
@@ -107,7 +107,7 @@ def test_auth_proxy_connection(insights_client, test_config):
     :description:
         Verifies that the insights-client can successfully connect
         through an authenticated proxy
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Configure insights-client to use auth proxy and save
         2. Run the insights-client with --test-connection option
@@ -146,7 +146,7 @@ def test_wrong_url_connection(insights_client):
     :description:
         Verifies that the insights-client fails to connect when an
         incorrect URL is configured
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Disable auto-configuration and auto-updates
         2. Set an incorrect base URL in the configuration
