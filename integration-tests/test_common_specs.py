@@ -21,7 +21,7 @@ def test_common_specs(insights_client, tmp_path):
         This test verifies that the specified specs can be collected,
         parsed and contain valid data without errors
     :reference:
-    :tier:  Tier 1
+    :tags:  Tier 1
     :steps:
         1. Define the list of common specs to be tested
         2. Run the insights-client to collect data and save it in the

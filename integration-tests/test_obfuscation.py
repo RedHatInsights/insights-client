@@ -24,7 +24,7 @@ def test_ip_obfuscation(insights_client, tmp_path):
         insights-client configuration, the system's IP address is not
         present in the collected archive
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Record the system's IP address
         2. Disable obfuscation in the configuration
@@ -64,7 +64,7 @@ def test_hostname_obfuscation(insights_client, tmp_path):
         insights-client configuration, the system's hostname is not present
         in the collected archive
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Record the system's hostname
         2. Disable hostname obfuscation in the configuration
@@ -104,7 +104,7 @@ def test_password_obfuscation(insights_client, tmp_path, password_file):
         in collected files, regardless of the obfuscation setting in the configuration
         file
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Backup the original content of the test file
         2. Append a password string to the test file
@@ -167,7 +167,7 @@ def test_no_obfuscation_on_package_version(
         are not incorrectly obfuscated as IP addresses when obfuscation is
         enabled
     :reference: https://issues.redhat.com/browse/ESSNTL-444
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Enable obfuscation in the configuration file
         2. Run the insights-client and collect the archive
@@ -201,7 +201,7 @@ def test_no_obfuscation_on_display_name(insights_client, tmp_path):
         are not incorrectly obfuscated as IP addresses when obfuscation is
         enabled
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Enable obfuscation in the configuration file
         2. Run the insights-client and collect the archive

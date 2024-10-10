@@ -22,7 +22,7 @@ def test_status_registered(external_candlepin, insights_client):
         This test verifies that when the insights client is registered, the
         `insights-client --status` command outputs the correct registration status
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register the insights-client
         2. Wait briefly to ensure inventory is up-to-date
@@ -54,7 +54,7 @@ def test_status_unregistered(external_candlepin, insights_client):
         `insights-client --status` command outputs the correct unregistration
         status
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Unregister the insights client to ensure it's unregistered
         2. Run `insights-client --status` command

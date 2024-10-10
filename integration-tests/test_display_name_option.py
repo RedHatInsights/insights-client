@@ -42,7 +42,7 @@ def test_display_name(insights_client):
         This test verifies that a registered host's display name can be
         updated using the --display-name option.
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Generate a unique hostname and register the insights-client
         2. Update the display name using --display-name <NEW_HOSTNAME>
@@ -79,7 +79,7 @@ def test_register_with_display_name(insights_client):
         This test ensures that registering the insights-client with a custom
         display name sets the display name correctly in host details
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Generate a unique hostname
         2. Register the insights-client using '--register --display-name'
@@ -113,7 +113,7 @@ def test_register_twice_with_different_display_name(
         This test checks that registering the insights-client twice with different
         display names does not change the insights_id and display_name is updated
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Generate a unique hostname
         2. Register the insights-client using '--register --display-name'
@@ -173,7 +173,7 @@ def test_invalid_display_name(invalid_display_name, insights_client):
         This test verifies that attempting to set an invalid display_name is rejected
         and does not alter the current display_name value
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Register the insights-client
         2. Record the original display_name value
@@ -217,7 +217,7 @@ def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_co
         display_name name even when auto_config and auto_update are set to
         False and host appears on cloud with the correct display name
     :reference: https://issues.redhat.com/browse/RHEL-19435
-    :tier: Tier 2
+    :tags: Tier 2
     :steps:
         1. Configure insights-client.conf with auto_config and auto_update set to False
             and display_name set

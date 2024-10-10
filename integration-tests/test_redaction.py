@@ -31,7 +31,7 @@ def test_redaction_not_on_cmd(insights_client, tmp_path, not_removed_command):
         `/etc/insights-client/file-redaction.yaml`, the outputs of the related
         commands are included in the collection archive
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Ensure no command redaction is configured
         2. Run the insights client to collect data
@@ -54,7 +54,7 @@ def test_redaction_on_cmd(insights_client, tmp_path, removed_command):
         `/etc/insights-client/file-redaction.yaml`, the outputs of the related
         commands are excluded from the collection archive
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Configure command redaction for the specified command
         2. Run the insights client to collect data
@@ -83,7 +83,7 @@ def test_redaction_not_on_file(insights_client, tmp_path, not_removed_file):
         `/etc/insights-client/file-redaction.yaml`, the related files are
         included in the collection archive
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Ensure no file redaction is configured
         2. Run the insights client to collect data
@@ -106,7 +106,7 @@ def test_redaction_on_file(insights_client, tmp_path, removed_file):
         `/etc/insights-client/file-redaction.yaml`, the related files are
         excluded from the collection archive
     :reference:
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Configure file redaction for the specified file
         2. Run the insights client to collect data
@@ -135,7 +135,7 @@ def test_redaction_on_pattern_hostname(insights_client, tmp_path):
         `/etc/insights-client/content-redaction.yaml`, the hostname is
         obfuscated in the collected data
     :reference: https://issues.redhat.com/browse/RHEL-2471
-    :tier: Tier 1
+    :tags: Tier 1
     :steps:
         1. Record the current system hostname
         2. Set a new hostname for testing
