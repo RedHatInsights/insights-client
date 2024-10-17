@@ -61,7 +61,8 @@ def test_http_timeout(insights_client):
 
     output = insights_client.run("--test-connection", check=False)
     assert output.returncode == 1
-    assert "timeout=0.01" in output.stdout
+    assert "Read timed out. (read timeout=0.1)" in output.stdout
+    assert "Traceback" not in output.stdout
 
 
 def test_noauth_proxy_connection(insights_client, test_config):
