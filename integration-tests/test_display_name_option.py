@@ -124,11 +124,11 @@ def test_register_twice_with_different_display_name(
     :expectedresults:
         1. Unique hostname is generated
         2. The client registers and successfully outputs the unique hostname
-        3. Informations are successfully retrieved and stored
+        3. Information are successfully retrieved and stored
         4. Unique hostname is generated
         5. The output indicates that the host is already registered but updates the
             display_name to the new one
-        6. Insights_id stayed unchaned while display_name changed to the latest one
+        6. Insights_id stayed unchanged while display_name changed to the latest one
     """
     insights_id = None
     unique_hostname = generate_unique_hostname()
@@ -177,7 +177,7 @@ def test_invalid_display_name(invalid_display_name, insights_client):
     :steps:
         1. Register the insights-client
         2. Record the original display_name value
-        3. Attemt to update the display_name using an invalid value
+        3. Attempt to update the display_name using an invalid value
         4. Verify that display_name stayed unchanged
     :expectedresults:
         1. Insights-client is registered

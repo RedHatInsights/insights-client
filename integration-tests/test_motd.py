@@ -61,7 +61,7 @@ def test_motd(insights_client):
         2. Register the insights-client
         3. Verify the MOTD file does not exists after registration
         4. Unregister the insights-client
-        5. Cerify the MOTD file still does not exist after unregistration
+        5. Verify the MOTD file still does not exist after unregistration
     :expectedresults:
         1. The MOTD file is present
         2. The client registers successfully
