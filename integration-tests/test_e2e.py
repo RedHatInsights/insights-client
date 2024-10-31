@@ -1,3 +1,11 @@
+"""
+:casecomponent: insights-client
+:requirement: RHSS-291297
+:subsystemteam: sst_csi_client_tools
+:caseautomation: Automated
+:upstream: Yes
+"""
+
 import pytest
 import conftest
 from pytest_client_tools.util import Version
@@ -7,16 +15,21 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 
 def test_insights_client_version_in_inventory(insights_client, external_inventory):
     """
-    Verify running insights-client creates a new host on Inventory and the host has
-    the insights client and egg version information available
-
-        test_steps:
-            1. Register the system to Insights
-            4. Retrieve the system profile from Inventory
-        expected_results:
-            1. Successful registration to insights server
-            2. The system profile is successfully retrieved from Inventory
-            3. system data retrieved from Inventory has client and egg version info
+    :id: 1d5d101e-94ad-4404-900f-f86a26450c3f
+    :title: Verify insights-client version in Inventory
+    :description:
+        Ensure that running insights-client creates a new host entry in the
+        Inventory and includes both the insights-client and egg version information
+    :reference:
+    :tags: Tier 1
+    :steps:
+        1. Register the system with insights-client
+        2. Confirm registration status
+        3. Retrieve the system profile from the Inventory
+    :expectedresults:
+        1. Insights-client is registered
+        2. The system profile is retrieved from the Inventory
+        3. The system profile includes insights-client and egg version information
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
