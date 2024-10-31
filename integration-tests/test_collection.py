@@ -9,14 +9,10 @@
 import contextlib
 import os
 import tarfile
-import glob
 import json
 import pytest
 import conftest
 import uuid
-
-
-ARCHIVE_CACHE_DIRECTORY = "/var/cache/insights-client"
 
 
 def test_output_file_valid_parameters(insights_client, tmp_path):
@@ -284,7 +280,7 @@ def test_cmd_timeout(insights_client):
 
 
 @pytest.mark.usefixtures("register_subman")
-def test_branch_info(insights_client, test_config, subman):
+def test_branch_info(insights_client, test_config, subman, tmp_path):
     """
     :id: 22c7063c-e09d-4fdf-80ea-864a7027d2ee
     :title: Test branch_info file includes all required information
@@ -296,39 +292,25 @@ def test_branch_info(insights_client, test_config, subman):
         https://docs.google.com/document/d/193mN5aBwxtzpP4U-vnL3yVawPxiG20n0zkzDYsam-eU/edit
     :tags: Tier 2
     :steps:
-        1. Register insights-client
-        2. Run insights-client with the --no-upload option to generate the
-            branch_info file
-        3. Extract the latest archive
-        4. Inspect the branch_info file to verify it contains correct values
+        1. Run insights-client with --output-dir
+        2. Inspect the branch_info file to verify it contains correct values
     :expectedresults:
-        1. The insights-client is registered
-        2. The branch_info file is generated
-        3. The latest archive is successfully extracted
-        4. The branch_info includes correct values
+        1. The branch_info file is generated
+        2. The branch_info includes correct values
     """
-    insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    insights_client.run("--output-dir", tmp_path.name)
 
-    insights_client.run("--no-upload")
-
-    list_of_files = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")
-    latest_file = max(list_of_files, key=os.path.getctime)
-
-    with tarfile.open(latest_file, "r:gz") as tar:
-        tar.extractall(path="/var/cache/insights-client/", filter="data")
-        directory_name = latest_file.replace(".tar.gz", "")
-
-    branch_info_path = os.path.join(directory_name, "branch_info")
+    branch_info_path: str = os.path.join(tmp_path.name, "branch_info")
     with open(branch_info_path, "r") as file:
         data = json.load(file)
-        if "satellite" in test_config.environment:
-            assert data["product"]["type"] == "Satellite"
-            assert isinstance(uuid.UUID(data["remote_branch"]), uuid.UUID)
-            assert uuid.UUID(data["remote_leaf"]) == subman.uuid
-        else:
-            assert data["remote_branch"] == -1, "Incorrect remote_branch value"
-            assert data["remote_leaf"] == -1, "Incorrect remote_leaf value"
+
+    if "satellite" in test_config.environment:
+        assert data["product"]["type"] == "Satellite"
+        assert isinstance(uuid.UUID(data["remote_branch"]), uuid.UUID)
+        assert uuid.UUID(data["remote_leaf"]) == subman.uuid
+    else:
+        assert data["remote_branch"] == -1, "Incorrect remote_branch value"
+        assert data["remote_leaf"] == -1, "Incorrect remote_leaf value"
 
 
 def test_archive_structure(insights_client, tmp_path):
