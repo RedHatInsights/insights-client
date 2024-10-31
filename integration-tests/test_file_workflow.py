@@ -119,16 +119,23 @@ def test_file_workflow_with_an_archive_without_canonical_facts(
 
 
 def test_file_workflow_archive_update_host_info(insights_client, external_inventory):
-    """Verify updating files in an Insights Archive updates host
-    information on Inventory.
-    test_steps:
-            1. Register Insights-client and upload data
-            2. Update hostname and recollect the data
-            3. Upload the new archive
-            4. Retrieve the host data from Inventory and check display name
-    expected_results:
-            1. System is registered and archive successfully uploaded
-            2. display_name returned in step 5 matches updated hostname
+    """
+    :id: 336abff9-4263-4f1d-9448-2cd05d40a371
+    :title: Verify Insights Archive Updates Host Information
+    :description:
+        Ensure that updating files within an Insights Archive reflects
+        the correct host information, such as hostname, in the Inventory
+    :tags: Tier 1
+    :steps:
+        1. Register the system with insights-client and confirm data upload
+        2. Change the system hostname
+        3. Collect and upload the new archive
+        4. Retrieve host data from Inventory and verify display name
+    :expectedresults:
+        1. The system is registered and the archive is uploaded successfully
+        2. The system hostname is updated successfully
+        3. A new archive is collected and uploaded successfully
+        4. The display name in the Inventory matches the updated hostname
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
