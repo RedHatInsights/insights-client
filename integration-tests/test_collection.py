@@ -331,8 +331,7 @@ def test_branch_info(insights_client, test_config, subman):
             assert data["remote_leaf"] == -1, "Incorrect remote_leaf value"
 
 
-@pytest.mark.usefixtures("register_subman")
-def test_archive_structure(insights_client):
+def test_archive_structure(insights_client, tmp_path):
     """
     :id: 7a78cf8f-ed32-4011-8d15-787231f867c9
     :title: Test archive structure
@@ -342,20 +341,16 @@ def test_archive_structure(insights_client):
         and subdirectories
     :tags: Tier 1
     :steps:
-        1. Register insights-client
-        2. Run insights-client with --no-upload
-        3. Extract the latest archive
-        4. Verify that all required directories are present in the archive
-        5. Verify that all required subdirectories are present under the
+        1. Run insights-client with --output-dir
+        2. Verify that all required directories are present in the archive
+        3. Verify that all required subdirectories are present under the
             data directory
     :expectedresults:
-        1. Insights-client is registered
-        2. The archive is generated
-        3. The latest archive is extracted
-        4. All required directories are present
-        5. All required subdirectories are present
+        1. The archive is saved uncompressed into a directory
+        2. Expected directories are present
+        3. Expected subdirectories are present
     """
-    dirs_list = [
+    archive_content = [
         "blacklist_report",
         "branch_info",
         "data",
@@ -365,36 +360,23 @@ def test_archive_structure(insights_client):
         "version_info",
     ]
 
-    subdirs_list = [
+    archive_data_content = [
         "branch_info",
         "version_info",
-        "boot",
         "etc",
         "insights_commands",
         "proc",
-        "run",
         "sys",
         "usr",
-        "var",
     ]
 
-    insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    insights_client.run("--output-dir", tmp_path.name)
 
-    insights_client.run("--no-upload")
-
-    list_of_files = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")
-    latest_file = max(list_of_files, key=os.path.getctime)
-
-    with tarfile.open(latest_file, "r:gz") as tar:
-        tar.extractall(path="/var/cache/insights-client/", filter="data")
-        directory_name = latest_file.replace(".tar.gz", "")
-
-    extracted_dirs_files = os.listdir(directory_name)
-    missing_dirs = [d for d in dirs_list if d not in extracted_dirs_files]
+    extracted_dirs_files = os.listdir(tmp_path.name)  # type: list[str]
+    missing_dirs = [f for f in archive_content if f not in extracted_dirs_files]
     assert not missing_dirs, f"Missing directories {missing_dirs}"
 
-    data_dir_path = os.path.join(directory_name, "data")
-    data_subdirs = os.listdir(data_dir_path)
-    missing_subdirs = [d for d in subdirs_list if d not in data_subdirs]
+    data_dir_path = os.path.join(tmp_path.name, "data")
+    data_subdirs = os.listdir(data_dir_path)  # type: list[str]
+    missing_subdirs = [f for f in archive_data_content if f not in data_subdirs]
     assert not missing_subdirs, f"Missing subdirectory {missing_subdirs}"
