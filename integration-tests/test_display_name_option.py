@@ -230,6 +230,7 @@ def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_co
         3. Host appears in inventory with the display name matching the one that was set
     """
     # configuration on insights-client.conf
+    insights_client.config.legacy_upload = False
     insights_client.config.cert_verify = True
     insights_client.config.auto_update = False
     insights_client.config.auto_config = False
