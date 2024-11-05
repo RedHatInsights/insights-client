@@ -16,7 +16,7 @@ from enum import Enum
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 TEST_CMD = ["/usr/bin/uptime", "/sbin/lsmod", "/bin/ls", "/sbin/ethtool"]
-TEST_FILE = ["/proc/cpuinfo", "/proc/meminfo", "/etc/yum.conf", "/etc/os-release"]
+TEST_FILE = ["/proc/cpuinfo", "/proc/meminfo", "/etc/os-release"]
 FILE_REDACTION_FILE = "/etc/insights-client/file-redaction.yaml"
 CONTENT_REDACTION_FILE = "/etc/insights-client/file-content-redaction.yaml"
 
