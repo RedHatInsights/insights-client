@@ -125,6 +125,10 @@ def test_redaction_on_file(insights_client, tmp_path, removed_file):
         os.remove(FILE_REDACTION_FILE)
 
 
+@pytest.mark.skipif(
+    "container" in os.environ.keys(),
+    reason="Containers cannot change hostnames",
+)
 def test_redaction_on_pattern_hostname(insights_client, tmp_path):
     """
     :id: 641edf11-ace1-4a98-9fb4-198cf9e5e4d0
