@@ -1,9 +1,7 @@
 import pytest
 import subprocess
 import time
-import logging
-
-logger = logging.getLogger(__name__)
+from pytest_client_tools.util import logged_run
 
 
 @pytest.fixture(scope="session")
@@ -58,3 +56,20 @@ def loop_until(predicate, poll_sec=5, timeout_sec=120):
         time.sleep(poll_sec)
         ok = predicate()
     return ok
+
+
+@pytest.fixture(scope="session", autouse=True)
+def collect_selinux_denials():
+    """This fixture helps in catching selinux denials
+    in the system after tests are run."""
+    yield
+    command = "ausearch -m avc -m user_avc -m selinux_err -i".split()
+    result = logged_run(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    if "<no matches>" not in result.stdout:
+        lines = result.stdout.split("\n")
+        for line in lines:
+            words = line.split()
+            if "denied" in words:
+                assert "permissive=1" in words, "SELinux AVC denials found"
