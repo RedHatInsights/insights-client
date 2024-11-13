@@ -15,6 +15,14 @@ import tempfile
 
 from distutils.version import LooseVersion
 
+try:
+    from .constants import InsightsConstants
+except ImportError:
+    # The source file is build from 'constants.py.in' and is not
+    # available during development
+    class InsightsConstants(object):
+        version = "development"
+
 
 LOG_FORMAT = "%(asctime)s %(levelname)8s %(name)s:%(lineno)s %(message)s"
 NO_COLOR = os.environ.get("NO_COLOR") is not None
@@ -448,14 +456,6 @@ def _main():
             sys.exit("Unable to load Insights Config")
 
         if config["version"]:
-            try:
-                from insights_client.constants import InsightsConstants
-            except ImportError:
-                # The source file is build from 'constants.py.in' and is not
-                # available during development
-                class InsightsConstants(object):
-                    version = "development"
-
             print("Client: %s" % InsightsConstants.version)
             print("Core: %s" % InsightsClient().version())
             return
