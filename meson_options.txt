@@ -2,3 +2,4 @@ option('python', type: 'string', value: 'python3', description: 'python interpre
 option('auto_registration', type: 'feature', value: 'disabled', description: 'enable automatic registration')
 option('checkin', type: 'feature', value: 'disabled', description: 'enable hourly check-in')
 option('redhat_access_insights', type: 'boolean', value: false, description: 'enable deprecated redhat-access-insights executable')
+option('core_selinux_policy', type: 'string', value: '', description: 'SELinux policy for insights-core (empty: none used)')
