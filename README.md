@@ -154,9 +154,7 @@ Command line switches available and their explanations.
 - `--retry=RETRIES` - Number of times to retry the collection archive upload. Default is 1.
 - `--quiet` - Run with limited console output. This will only print ERROR level messages.
 - `--silent` - Run with no console output at all.
-- `--conf`, `-c` - Load a custom configuration file other than the default `/etc/insights-client/insights-client.conf`
 - `--offline` - Run with no network connectivity at all. Implies `--no-upload` and makes machine registration unnecessary.
-- `--logging-file` - Log to a file other than the default `/var/log/insights-client/insights-client.log`
 - `--verbose` - Run with all log output. This will print DEBUG level messages.
 - `--no-upload` - Collect the archive, but do not upload it.
 - `--keep-archive` - Collect the archive, and do not delete it after upload.
