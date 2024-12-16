@@ -15,7 +15,6 @@ import pytest
     [
         "--checkin",
         "--compliance",
-        "--conf",
         "--content-type",
         "--diagnosis",
         "--disable-schedule",
@@ -24,7 +23,6 @@ import pytest
         "--group",
         "--keep-archive",
         "--list-specs",
-        "--logging-file",
         "--net-debug",
         "--no-upload",
         "--offline",
