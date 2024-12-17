@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "src/**"
+      - ".github/workflows/pytest.yml"
 
 jobs:
   pytest:
@@ -16,11 +17,7 @@ jobs:
           - name: "Fedora Latest"
             image: "registry.fedoraproject.org/fedora:latest"
           - name: "CentOS Stream 10"
-            image: "quay.io/centos/centos:stream10-development"
-          - name: "CentOS Stream 9"
-            image: "quay.io/centos/centos:stream9"
-          - name: "CentOS Stream 8"
-            image: "quay.io/centos/centos:stream8"
+            image: "quay.io/centos/centos:stream10"
 
     runs-on: "ubuntu-latest"
     container:
@@ -29,11 +26,6 @@ jobs:
     steps:
       - name: "Checkout the repository"
         uses: actions/checkout@v4
-
-      - name: "Use CentOS Vault"
-        if: matrix.name == 'CentOS Stream 8'
-        run: |
-          sed -i 's|#baseurl=http://mirror|baseurl=http://vault|' /etc/yum.repos.d/CentOS-Stream-*.repo
 
       - name: "Install dependencies"
         run: |
