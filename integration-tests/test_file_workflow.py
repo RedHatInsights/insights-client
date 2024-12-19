@@ -66,10 +66,14 @@ def test_file_workflow_with_an_archive_with_only_one_canonical_fact(
     insights_client.run("--check-results")  # to get host details from inventory
     with open(HOST_DETAILS, "r") as data_file:
         file_content = json.load(data_file)
-        host_data = file_content["results"][0]
 
-    assert host_data["insights_id"] == machine_id
-    assert host_data["fqdn"] is None
+    assert "count" in file_content.keys()
+    assert file_content["count"] == 1
+    assert "results" in file_content.keys()
+    host_data = file_content["results"][0]
+
+    assert host_data.get("insights_id") == machine_id
+    assert host_data.get("fqdn", None) is None
 
 
 def test_file_workflow_with_an_archive_without_canonical_facts(
