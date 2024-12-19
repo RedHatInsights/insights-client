@@ -128,10 +128,6 @@ Configuration variables available in the configuration file and their explanatio
 
 - `loglevel` - set the Python logger's default level (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). Default `DEBUG`
 - `auto_config` - attempt to auto-configure the network connection with Satellite or RHSM. Default `True`
-- `authmethod` - authentication method for the Portal (BASIC, CERT). Default is `BASIC`
-Note: when `auto_config` is enabled, `CERT` will be used if RHSM or Satellite is detected
-- `username` - username for basic auth. Blank by default
-- `password` - password for basic auth. Blank by default
 - `base_url` - base url for the Insights API. Default `cert-api.access.redhat.com:443/r/insights`
 - `cert_verify` - path to CA cert to verify SSL against. Default `/etc/insights-client/cert-api.access.redhat.com.pem`
 - `proxy` - proxy URL. Blank by default
@@ -196,74 +192,22 @@ These switches are undocumented and for developer use only.
 ## Recommended Developer Config
 For convenience, some sample configs are provided here for developers for connecting to the different environments the client can interface with. These configurations can be defined via config file or via environment variables using the naming described under **Environment Variables**. The following are in config file notation and can be used as drop-in configuration.
 
-### CI (Basic Auth)
-**Note:** CI requires basic auth.
-```
-[insights-client]
-auto_config=False
-username=<username>
-password=<password>
-legacy_upload=False
-base_url=ci.cloud.redhat.com/api
-cert_verify=False
-```
-### QA (Basic Auth)
-**Note:** QA requires basic auth.
-```
-[insights-client]
-auto_config=False
-username=<username>
-password=<password>
-legacy_upload=False
-base_url=qa.cloud.redhat.com/api
-cert_verify=False
-```
 ### Stage (RHSM Auth)
 **Note:** This configuration assumes that the system is registered to Stage RHSM. Insights Client will autoconfigure to interface with stage.
 ```
 [insights-client]
 proxy=http://squid.corp.redhat.com:3128
 ```
-### Stage (Basic Auth)
-```
-[insights-client]
-auto_config=False
-username=<username>
-password=<password>
-legacy_upload=False
-base_url=cert.cloud.stage.redhat.com/api
-cert_verify=True
-proxy=http://squid.corp.redhat.com:3128
-```
 ### Prod (RHSM Auth)
 ```
 [insights-client]
 auto_config=False
-authmethod=CERT
-legacy_upload=False
-base_url=cert.cloud.redhat.com/api
-cert_verify=True
-```
-### Prod (Basic Auth)
-```
-[insights-client]
-auto_config=False
-username=<username>
-password=<password>
 legacy_upload=False
 base_url=cert.cloud.redhat.com/api
 cert_verify=True
 ```
 ### Prod [classic API] (RHSM Auth)
 No additional configuration is required beyond the defaults. Insights Client will autoconfigure to interface with classic prod.
-
-### Prod [classic API] (Basic Auth)
-```
-[insights-client]
-auto_config=False
-username=<username>
-password=<password>
-```
 
 
 ## Collection
