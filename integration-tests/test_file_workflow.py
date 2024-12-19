@@ -7,6 +7,7 @@
 """
 
 import json
+import os
 import random
 import string
 import subprocess
@@ -122,6 +123,10 @@ def test_file_workflow_with_an_archive_without_canonical_facts(
     assert "Error: failed to find host with matching machine-id" in check_results.stdout
 
 
+@pytest.mark.skipif(
+    "container" in os.environ.keys(),
+    reason="Containers cannot change hostnames",
+)
 def test_file_workflow_archive_update_host_info(insights_client, external_inventory):
     """
     :id: 336abff9-4263-4f1d-9448-2cd05d40a371
