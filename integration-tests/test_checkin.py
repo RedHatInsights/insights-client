@@ -9,6 +9,8 @@
 import contextlib
 import json
 import pytest
+from pytest_client_tools.util import Version
+
 from constants import HOST_DETAILS
 import conftest
 
@@ -85,7 +87,12 @@ def test_client_checkin_unregistered(insights_client):
     assert conftest.loop_until(lambda: not insights_client.is_registered)
 
     checkin_result = insights_client.run("--checkin", check=False)
-    assert checkin_result.returncode == 1
-    assert (
-        "Error: failed to find host with matching machine-id" in checkin_result.stdout
-    )
+    if insights_client.core_version >= Version(3, 4, 25):
+        assert checkin_result.returncode > 0
+        assert "This host is not registered" in checkin_result.stdout
+    else:
+        assert checkin_result.returncode == 1
+        assert (
+            "Error: failed to find host with matching machine-id"
+            in checkin_result.stdout
+        )
