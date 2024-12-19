@@ -298,10 +298,9 @@ def test_branch_info(insights_client, test_config, subman, tmp_path):
         1. The branch_info file is generated
         2. The branch_info includes correct values
     """
-    insights_client.run("--output-dir", tmp_path.name)
-
-    branch_info_path: str = os.path.join(tmp_path.name, "branch_info")
-    with open(branch_info_path, "r") as file:
+    insights_client.run("--output-dir", tmp_path.absolute())
+    branch_info_path = tmp_path / "branch_info"
+    with branch_info_path.open("r") as file:
         data = json.load(file)
 
     if "satellite" in test_config.environment:
@@ -352,13 +351,11 @@ def test_archive_structure(insights_client, tmp_path):
         "usr",
     ]
 
-    insights_client.run("--output-dir", tmp_path.name)
-
-    extracted_dirs_files = os.listdir(tmp_path.name)  # type: list[str]
+    insights_client.run("--output-dir", tmp_path.absolute())
+    extracted_dirs_files = os.listdir(tmp_path)  # type: list[str]
     missing_dirs = [f for f in archive_content if f not in extracted_dirs_files]
     assert not missing_dirs, f"Missing directories {missing_dirs}"
 
-    data_dir_path = os.path.join(tmp_path.name, "data")
-    data_subdirs = os.listdir(data_dir_path)  # type: list[str]
+    data_subdirs = os.listdir(tmp_path / "data")  # type: list[str]
     missing_subdirs = [f for f in archive_data_content if f not in data_subdirs]
     assert not missing_subdirs, f"Missing subdirectory {missing_subdirs}"
