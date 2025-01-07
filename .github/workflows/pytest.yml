@@ -12,8 +12,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "CentOS Stream 9"
-            image: "quay.io/centos/centos:stream9"
           - name: "CentOS Stream 8"
             image: "quay.io/centos/centos:stream8"
 
@@ -26,7 +24,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "Use CentOS Vault"
-        if: matrix.name == 'CentOS Stream 8'
         run: |
           sed -i 's|#baseurl=http://mirror|baseurl=http://vault|' /etc/yum.repos.d/CentOS-Stream-*.repo
 
