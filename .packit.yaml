@@ -21,11 +21,7 @@ jobs:
   - job: copr_build
     trigger: pull_request
     targets:
-      - centos-stream-8
       - centos-stream-9
-      - centos-stream-10
-      - fedora-all
-      - rhel-8
       - rhel-9
 
   - job: copr_build
@@ -34,20 +30,14 @@ jobs:
     owner: "@yggdrasil"
     project: latest
     targets:
-      - centos-stream-8
       - centos-stream-9
-      - centos-stream-10
-      - fedora-all
-      - rhel-8
       - rhel-9
 
   - job: tests
     trigger: pull_request
     identifier: "unit/centos-stream"
     targets:
-      - centos-stream-8
       - centos-stream-9
-      - centos-stream-10
     labels:
       - unit
     tf_extra_params:
@@ -58,24 +48,8 @@ jobs:
 
   - job: tests
     trigger: pull_request
-    identifier: "unit/fedora"
-    targets:
-      - fedora-all
-    labels:
-      - unit
-    tf_extra_params:
-      environments:
-        - artifacts:
-            - type: repository-file
-              id: https://copr.fedorainfracloud.org/coprs/g/yggdrasil/latest/repo/fedora-$releasever/group_yggdrasil-latest-fedora-$releasever.repo
-
-  - job: tests
-    trigger: pull_request
     identifier: "unit/rhel"
     targets:
-      rhel-8-x86_64:
-        distros:
-          - RHEL-8-Released
       rhel-9-x86_64:
         distros:
           - RHEL-9.4.0-Nightly
