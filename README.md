@@ -128,7 +128,7 @@ Configuration variables available in the configuration file and their explanatio
 
 - `loglevel` - set the Python logger's default level (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). Default `DEBUG`
 - `auto_config` - attempt to auto-configure the network connection with Satellite or RHSM. Default `True`
-- `base_url` - base url for the Insights API. Default `cert-api.access.redhat.com:443/r/insights`
+- `base_url` - base url for the Insights API. Default `cert.cloud.redhat.com:443/api`
 - `cert_verify` - path to CA cert to verify SSL against. Default `/etc/insights-client/cert-api.access.redhat.com.pem`
 - `proxy` - proxy URL. Blank by default
 - `auto_update` - whether to update the rule spec file (uploader.json) and the insights-core egg. Default `True`
@@ -139,7 +139,7 @@ Configuration variables available in the configuration file and their explanatio
 - `core_collect` - if `True`, use insights-core to run collection instead of commands/files from uploader.json. Default `False`
 - `redaction_file` - location of the redaction file. Default `/etc/insights-client/file-redaction.yaml`
 - `content_redaction_file` - location of the content redaction file. Default `/etc/insights-client/file-content-redaction.yaml`
-- `legacy_upload` - Use legacy HTTP configuration to perform the upload. Default `True`
+- `legacy_upload` - Use legacy HTTP configuration to perform the upload. Default `False`
 
 ### Command Line Switches
 Command line switches available and their explanations.
