@@ -4,8 +4,9 @@
 <!--
 This pull request should be also backported to following maintenance branches:
 
-- `el8` (RHEL 8, RHEL 9)
-- `el7` (RHEL 7)
+- `el9` (all of RHEL 9)
+- `el8` (all of RHEL 8)
+- `el7` (all of RHEL 7)
 -->
 
 <!--
