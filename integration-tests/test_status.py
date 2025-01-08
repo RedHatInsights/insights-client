@@ -32,7 +32,7 @@ def test_status_registered(external_candlepin, insights_client):
         2. Wait time completes without issues
         3. If 'legacy_upload' is True, output contains "Insights API confirms
             registration." If 'legacy_upload' is False, output is "This host
-            is registered.\n"
+            is registered."
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
@@ -63,7 +63,7 @@ def test_status_unregistered(external_candlepin, insights_client):
         2. If 'legacy_upload' is True return code is 1 and output contains
             "Insights API says this machine is NOT registered."
             If 'legacy_upload' is False return code is 0 and output contains
-            "This host is unregistered.\n"
+            "This host is unregistered."
     """
     # running unregistration to ensure system is unregistered
     with contextlib.suppress(Exception):
