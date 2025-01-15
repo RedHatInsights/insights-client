@@ -17,6 +17,7 @@ PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
     [
         "insights_setup.yml",
         "compliance_openscap_setup.yml",
+        "bugs.yml",
     ],
 )
 def test_official_playbook(filename: str):
