@@ -28,7 +28,8 @@ config_data = configuration_data({
   'SBINDIR': get_option('prefix') / get_option('sbindir'),
   'SYSCONFDIR': '/' / get_option('sysconfdir'),
   'sysconfdir': '/' / get_option('sysconfdir'),
-  'top_srcdir': meson.source_root()
+  'top_srcdir': meson.source_root(),
+  'CORE_SELINUX_POLICY': get_option('core_selinux_policy'),
 })
 
 run_target('update-egg', command: 'scripts/01-upgrade-egg.sh')
@@ -48,5 +49,10 @@ if get_option('auto_registration').enabled()
   configuration += '\tauto_registration\t: ' + 'enabled' + '\n'
 else 
   configuration += '\tauto_registration\t: ' + 'disabled' + '\n'
+endif
+if get_option('core_selinux_policy') != ''
+  configuration += '\tSELinux policy for insights-core\t: ' + get_option('core_selinux_policy') + '\n'
+else
+  configuration += '\tSELinux policy for insights-core\t: ' + 'disabled' + '\n'
 endif
 message(configuration)
