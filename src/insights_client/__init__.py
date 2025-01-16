@@ -17,12 +17,25 @@ from distutils.version import LooseVersion
 
 try:
     from .constants import InsightsConstants
+    from .constants import CORE_SELINUX_POLICY
+
+    # if there is a policy for insights-core, unconditionally try to interface
+    # with SELinux: insights-client was built with a policy for insights-core,
+    # so not being able to apply that is an hard failure
+    if CORE_SELINUX_POLICY != "":
+        import selinux
+
+        SWITCH_CORE_SELINUX_POLICY = selinux.is_selinux_enabled()
+    else:
+        SWITCH_CORE_SELINUX_POLICY = False
 except ImportError:
     # The source file is build from 'constants.py.in' and is not
     # available during development
     class InsightsConstants(object):
         version = "development"
 
+    CORE_SELINUX_POLICY = ""
+    SWITCH_CORE_SELINUX_POLICY = False
 
 LOG_FORMAT = "%(asctime)s %(levelname)8s %(name)s:%(lineno)s %(message)s"
 NO_COLOR = os.environ.get("NO_COLOR") is not None
@@ -306,8 +319,25 @@ def run_phase(phase, client, validated_eggs):
         env = os.environ
         env.update(insights_env)
 
+        if SWITCH_CORE_SELINUX_POLICY:
+            # in case we can switch to a different SELinux policy for
+            # insights-core, get the current context and switch the type
+            context = selinux.context_new(selinux.getcon()[1])
+            # additional check: in case the current type is a certain one
+            # (e.g. unconfined_t when insights-client is run from a shell),
+            # then the switch will not work
+            if selinux.context_type_get(context) not in ["unconfined_t", "sysadm_t"]:
+                selinux.context_type_set(context, CORE_SELINUX_POLICY)
+                new_core_context = selinux.context_str(context)
+                selinux.setexeccon(new_core_context)
+            selinux.context_free(context)
         process = subprocess.Popen(insights_command, env=env)
         process.communicate()
+        if SWITCH_CORE_SELINUX_POLICY:
+            # setexeccon() in theory ought to reset the context for the next
+            # execv*() after that execution; it does not seem to happen though,
+            # so for now manually reset it
+            selinux.setexeccon(None)
         if process.returncode == 0:
             # phase successful, don't try another egg
             logger.debug("phase '%s' successful", phase["name"])
