@@ -3,15 +3,12 @@ import subprocess
 import sys
 
 import pytest
+from pytest_client_tools.util import Version
 
 
 PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
 
 
-@pytest.mark.xfail(
-    condition=sys.version_info >= (3, 12),
-    reason="Verification is known to be broken on Python 3.12+",
-)
 @pytest.mark.parametrize(
     "filename",
     [
@@ -20,7 +17,7 @@ PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
         "bugs.yml",
     ],
 )
-def test_official_playbook(filename: str):
+def test_official_playbook(insights_client, filename: str):
     """insights-client contains playbook verifier application.
 
     It is used by rhc-worker-playbook and rhc-worker-script to safely deliver
@@ -29,6 +26,16 @@ def test_official_playbook(filename: str):
     In this test, the official playbooks are verified against the GPG key
     the application ships.
     """
+    if (
+        sys.version_info >= (3, 12)
+        and insights_client.core_version < Version(3, 5, 2)
+        and filename == "bugs.yml"
+    ):
+        pytest.xfail(
+            f"Core {insights_client.core_version} suffers from "
+            "CCT-1065, CCT-1101, CCT-1102."
+        )
+
     playbook_content: str = (PLAYBOOK_DIRECTORY / filename).read_text()
 
     result = subprocess.run(
