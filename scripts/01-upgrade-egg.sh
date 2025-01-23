@@ -18,7 +18,5 @@ done
 
 TAG=$(cat EGG_VERSION)
 
-curl https://gitlab.cee.redhat.com/insights-release-eng/insights-core-assets/-/raw/$TAG/insights-core.egg --output data/rpm.egg
-curl https://gitlab.cee.redhat.com/insights-release-eng/insights-core-assets/-/raw/$TAG/insights-core.egg.asc --output data/rpm.egg.asc
-curl https://gitlab.cee.redhat.com/insights-release-eng/insights-core-assets/-/raw/$TAG/uploader.v2.json --output data/.fallback.json
-curl https://gitlab.cee.redhat.com/insights-release-eng/insights-core-assets/-/raw/$TAG/uploader.v2.json.asc --output data/.fallback.json.asc
+curl https://gitlab.cee.redhat.com/insights-release-eng/insights-core-assets/-/raw/$TAG/insights-core.el10.egg --output data/rpm.egg
+curl https://gitlab.cee.redhat.com/insights-release-eng/insights-core-assets/-/raw/$TAG/insights-core.el10.egg.asc --output data/rpm.egg.asc
