@@ -1,7 +1,5 @@
 sysconf_sources = [
   '.exp.sed',
-  '.fallback.json',
-  '.fallback.json.asc',
   'cert-api.access.redhat.com.pem',
   'insights-client.conf',
   'insights-client.motd',
