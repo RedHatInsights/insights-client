@@ -8,6 +8,7 @@
 
 import contextlib
 import pytest
+from pytest_client_tools.util import Version
 from time import sleep
 import conftest
 
@@ -58,9 +59,11 @@ def test_status_unregistered(external_candlepin, insights_client):
         2. Run `insights-client --status` command
     :expectedresults:
         1. The client unregisters successfully
-        2. If 'legacy_upload' is True return code is 1 and output contains
+        2. If 'legacy_upload' is True, return code is 1 and output contains
             "Insights API says this machine is NOT registered."
-            If 'legacy_upload' is False return code is 0 and output contains
+            If 'legacy_upload' is False, on systems with version 3.5.3 and
+            higher, return code is 1 and output contains "This host is
+            unregistered.". Otherwise return code is 0 and output contains
             "This host is unregistered."
     """
     # running unregistration to ensure system is unregistered
@@ -76,5 +79,8 @@ def test_status_unregistered(external_candlepin, insights_client):
             in registration_status.stdout
         )
     else:
-        assert registration_status.returncode == 0
+        if insights_client.core_version >= Version(3, 5, 3):
+            assert registration_status.returncode == 1
+        else:
+            assert registration_status.returncode == 0
         assert "This host is unregistered.\n" == registration_status.stdout
