@@ -23,7 +23,6 @@ def test_register(insights_client):
     :description:
         This test verifies that the --register command successfully registers
         an unregistered client
-    :reference:
     :tags: Tier 1
     :steps:
         1. Run insights-client with --register option
@@ -51,7 +50,6 @@ def test_register_auth_proxy(insights_client, test_config):
     :description:
         This test verifies that the --register command successfully registers the
         host when an authentication proxy is configured
-    :reference:
     :tags: Tier 1
     :steps:
         1. Set the proxy configuration in the insights-client.conf file
@@ -91,7 +89,6 @@ def test_register_noauth_proxy(insights_client, test_config):
     :description:
         This test verifies that the --register command successfully registers the
         host when a unauthenticated proxy is configured
-    :reference:
     :tags: Tier 1
     :steps:
         1. Set the proxy configuration in the insights-client.conf file
@@ -124,7 +121,6 @@ def test_machineid_exists_only_when_registered(insights_client):
     :description:
         This test verifies that the machine ID file is created only when the client
         is registered
-    :reference:
     :tags: Tier 1
     :steps:
         1. Verify the client is not registered and machine ID does not exist
@@ -163,7 +159,6 @@ def test_machineid_changes_on_new_registration(insights_client):
     :description:
         This test verifies that the machine ID file content changes when
         the client is unregistered and then registered again
-    :reference:
     :tags: Tier 1
     :steps:
         1. Register insights-client and store current machine ID
@@ -201,7 +196,6 @@ def test_double_registration(insights_client):
     :description:
         This test verifies that the --register flag can be passed multiple
         times on a system that is already registered without causing errors
-    :reference:
     :tags: Tier 1
     :steps:
         1. Register insights-client and store its machine ID
@@ -277,7 +271,6 @@ def test_registered_and_unregistered_files_are_created_and_deleted(insights_clie
         This test verifies that the .registered file is created when the client
         is registered and the .unregistered file is created when the client is
         unregistered
-    :reference:
     :tags: Tier 1
     :steps:
         1. Verify that the client is not registered and .registered file does not exist

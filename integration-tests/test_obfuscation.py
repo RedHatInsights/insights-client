@@ -23,7 +23,6 @@ def test_ip_obfuscation(insights_client, tmp_path):
         This test verifies that when IP obfuscation is enabled in the
         insights-client configuration, the system's IP address is not
         present in the collected archive
-    :reference:
     :tags: Tier 1
     :steps:
         1. Record the system's IP address
@@ -63,7 +62,6 @@ def test_hostname_obfuscation(insights_client, tmp_path):
         This test verifies that when hostname obfuscation is enabled in the
         insights-client configuration, the system's hostname is not present
         in the collected archive
-    :reference:
     :tags: Tier 1
     :steps:
         1. Record the system's hostname
@@ -103,7 +101,6 @@ def test_password_obfuscation(insights_client, tmp_path, password_file):
         This test ensures that sensitive information such as passwords is obfuscated
         in collected files, regardless of the obfuscation setting in the configuration
         file
-    :reference:
     :tags: Tier 1
     :steps:
         1. Backup the original content of the test file
@@ -200,7 +197,6 @@ def test_no_obfuscation_on_display_name(insights_client, tmp_path):
         This test ensures that display_name in package information files
         are not incorrectly obfuscated as IP addresses when obfuscation is
         enabled
-    :reference:
     :tags: Tier 1
     :steps:
         1. Enable obfuscation in the configuration file

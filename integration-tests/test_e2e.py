@@ -20,7 +20,6 @@ def test_insights_client_version_in_inventory(insights_client, external_inventor
     :description:
         Ensure that running insights-client creates a new host entry in the
         Inventory and includes both the insights-client and egg version information
-    :reference:
     :tags: Tier 1
     :steps:
         1. Register the system with insights-client

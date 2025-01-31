@@ -30,7 +30,6 @@ def test_redaction_not_on_cmd(insights_client, tmp_path, not_removed_command):
         This test verifies that when no commands are configured for redaction in
         `/etc/insights-client/file-redaction.yaml`, the outputs of the related
         commands are included in the collection archive
-    :reference:
     :tags: Tier 1
     :steps:
         1. Ensure no command redaction is configured
@@ -53,7 +52,6 @@ def test_redaction_on_cmd(insights_client, tmp_path, removed_command):
         This test verifies that when commands are configured for redaction in
         `/etc/insights-client/file-redaction.yaml`, the outputs of the related
         commands are excluded from the collection archive
-    :reference:
     :tags: Tier 1
     :steps:
         1. Configure command redaction for the specified command
@@ -82,7 +80,6 @@ def test_redaction_not_on_file(insights_client, tmp_path, not_removed_file):
         This test verifies that when no files are configured for redaction in
         `/etc/insights-client/file-redaction.yaml`, the related files are
         included in the collection archive
-    :reference:
     :tags: Tier 1
     :steps:
         1. Ensure no file redaction is configured
@@ -105,7 +102,6 @@ def test_redaction_on_file(insights_client, tmp_path, removed_file):
         This test verifies that when files are configured for redaction in
         `/etc/insights-client/file-redaction.yaml`, the related files are
         excluded from the collection archive
-    :reference:
     :tags: Tier 1
     :steps:
         1. Configure file redaction for the specified file

@@ -41,7 +41,6 @@ def test_display_name(insights_client):
     :description:
         This test verifies that a registered host's display name can be
         updated using the --display-name option.
-    :reference:
     :tags: Tier 1
     :steps:
         1. Generate a unique hostname and register the insights-client
@@ -78,7 +77,6 @@ def test_register_with_display_name(insights_client):
     :description:
         This test ensures that registering the insights-client with a custom
         display name sets the display name correctly in host details
-    :reference:
     :tags: Tier 1
     :steps:
         1. Generate a unique hostname
@@ -112,7 +110,6 @@ def test_register_twice_with_different_display_name(
     :description:
         This test checks that registering the insights-client twice with different
         display names does not change the insights_id and display_name is updated
-    :reference:
     :tags: Tier 1
     :steps:
         1. Generate a unique hostname
@@ -172,7 +169,6 @@ def test_invalid_display_name(invalid_display_name, insights_client):
     :description:
         This test verifies that attempting to set an invalid display_name is rejected
         and does not alter the current display_name value
-    :reference:
     :tags: Tier 1
     :steps:
         1. Register the insights-client
