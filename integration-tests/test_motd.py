@@ -54,7 +54,6 @@ def test_motd(insights_client):
         This test verifies that the MOTD file exists on an unregistered
         system and that it is appropriately removed or not recreated upon
         registration and unregistration
-    :reference:
     :tags: Tier 1
     :steps:
         1. Verify that MOTD file is present on an unregistered system
@@ -94,7 +93,6 @@ def test_motd_dev_null(insights_client):
         This tst ensures that of the MOTD file is a symbolic link to
         /dev/null, it is not modified or removed during the client's registration
         and unregistration processes
-    :reference:
     :tags: Tier 1
     :steps:
         1. Create a symlink from MOTD_PATH to /dev/null

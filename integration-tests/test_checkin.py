@@ -25,7 +25,6 @@ def test_ultralight_checkin(insights_client, test_config):
         This test verifies that performing an ultra-light check-in with the
         insights-client updates the host's 'stale_timestamps' and 'updated'
         fields on the server
-    :reference:
     :tags: Tier 2
     :steps:
         1. Register the insights-client
@@ -72,7 +71,6 @@ def test_client_checkin_unregistered(insights_client):
     :description:
         This test verifies that attempting to perform check-in while unregistered
         fails with appropriate error message
-    :reference:
     :tags: Tier 1
     :steps:
         1. Unregister the insights-client if registered

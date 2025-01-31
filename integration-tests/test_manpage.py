@@ -49,7 +49,6 @@ def test_manpage(option):
     :description:
         This test verifies that the insights-client manual page includes
         all the specified options.
-    :reference:
     :tags: Tier 1
     :steps:
         1. Open the manual page

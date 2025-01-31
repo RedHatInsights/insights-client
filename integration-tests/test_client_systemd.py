@@ -22,7 +22,6 @@ def test_data_upload_systemd_timer(insights_client, external_inventory):
     :description:
         Ensure that the insights-client data upload is triggered by the
         systemd timer and the last check-in time is updated accordingly
-    :reference:
     :tags: Tier 1
     :steps:
         1. Register the system

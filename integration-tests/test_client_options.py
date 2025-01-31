@@ -54,7 +54,6 @@ def test_no_upload(insights_client):
     :description:
         This test verifies that no traceback is returned when running --no-upload
         command and the archive is created and saved
-    :reference:
     :tags: Tier 1
     :steps:
         1. Register insights-client
@@ -91,7 +90,6 @@ def test_group(insights_client, tmp_path):
     :description:
         This test verifies that the --group option is functional, ensuring that the
         group specified is created and packed in the archive
-    :reference:
     :tags: Tier 1
     :steps:
         1. Run insights-client in offline mode to generate archive
@@ -137,7 +135,6 @@ def test_support(insights_client):
     :description:
         This test verifies that the --support option provides the expected
         information and generates a support log for Red Hat insights
-    :reference:
     :tags: Tier 1
     :steps:
         1. Run insights-client with --support option
@@ -213,7 +210,6 @@ def test_client_checkin_offline(insights_client):
     :description:
         This test verifies that running the --checkin command in offline
         mode logs an appropriate message and exits with a failure code
-    :reference:
     :tags: Tier 1
     :steps:
         1. Register insights-client
@@ -237,7 +233,6 @@ def test_client_diagnosis(insights_client):
     :description:
         This test verifies that on a registered system, the --diagnosis
         option retrieves the correct diagnostic information
-    :reference:
     :tags: Tier 1
     :steps:
         1. Run the --diagnosis option on unregistered system
@@ -274,7 +269,6 @@ def test_check_show_results(insights_client):
     :description:
         This test verifies that when checking results from the Advisor (--check-results)
         and displaying them (--show-results), a remediation is advised
-    :reference:
     :tags: Tier 1
     :steps:
         1. Register insights-client
