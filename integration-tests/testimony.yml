@@ -1,0 +1,49 @@
+---
+Id:
+  casesensitive: false
+  required: true
+  type: string
+Reference:
+  casesensitive: false
+  required: false
+  type: string
+CaseComponent:
+  casesensitive: false
+  required: true
+  type: string
+Requirement:
+  casesensitive: false
+  required: true
+  type: choice
+  choices:
+    - RHSS-291297
+SubSystemTeam:
+  casesensitive: false
+  required: true
+  type: choice
+  choices:
+    - sst_csi_client_tools
+CaseAutomation:
+  casesensitive: false
+  required: true
+  type: string
+Upstream:
+  casesensitive: false
+  type: string
+Title:
+  casesensitive: false
+  type: string
+Description:
+  casesensitive: false
+  required: true
+  type: string
+Tags:
+  casesensitive: true
+  required: true
+  type: choice
+  choices:
+    - Tier 1
+    - Tier 2
+    - Tier 3
+Steps: {}
+ExpectedResults: {}
