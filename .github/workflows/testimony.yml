@@ -1,0 +1,27 @@
+---
+name: Testimony Validation
+
+on:
+  pull_request:
+    paths:
+      - "integration-tests/**"
+
+jobs:
+  testimony:
+    name: testimony validate
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+      - name: Setup for Testimony
+        run: |
+          dnf --setopt install_weak_deps=False install -y \
+              python3-pip
+          python3 -m pip install testimony
+      - uses: actions/checkout@v4
+
+      - name: Run Testimony
+        run: |
+          testimony validate --config \
+            integration-tests/testimony.yml integration-tests/test*
