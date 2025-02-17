@@ -423,7 +423,16 @@ def _main():
         valid_env_egg = []
 
     if not validated_eggs and not valid_env_egg:
-        sys.exit("No GPG-verified initial eggs can be found")
+        try:
+            from insights_client.constants import InsightsConstants
+        except ImportError:
+            # The source file is build from 'constants.py.in'
+            # and is not available during development
+            class InsightsConstants(object):
+                version = "development"
+
+        print("Client: %s" % InsightsConstants.version)
+        sys.exit("No GPG-verified eggs can be found")
 
     # ENV egg comes first
     all_valid_eggs = valid_env_egg + validated_eggs
