@@ -22,6 +22,7 @@ jobs:
     trigger: pull_request
     targets:
       - centos-stream-10
+      - RHEL-10-Nightly
       - fedora-all
 
   - job: copr_build
@@ -31,6 +32,7 @@ jobs:
     project: latest
     targets:
       - centos-stream-10
+      - RHEL-10-Nightly
       - fedora-all
 
   - job: tests
