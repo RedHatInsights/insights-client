@@ -12,7 +12,7 @@ import pytest
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
-def test_connection(insights_client):
+def test_connection_ok(insights_client):
     """
     :id: ff674d37-0ccc-481c-9f04-91237b8c50d0
     :title: Test connection
