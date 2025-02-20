@@ -58,3 +58,23 @@ jobs:
         - artifacts:
             - type: repository-file
               id: https://copr.fedorainfracloud.org/coprs/g/yggdrasil/latest/repo/fedora-$releasever/group_yggdrasil-latest-fedora-$releasever.repo
+
+  - job: tests
+    trigger: pull_request
+    identifier: "unit/rhel"
+    targets:
+      centos-stream-10: # TODO: Change back to RHEL
+        distros:
+          - RHEL-10-Nightly
+    labels:
+      - unit
+    tf_extra_params:
+      environments:
+        - artifacts:
+            - type: repository-file
+              id: https://copr.fedorainfracloud.org/coprs/g/yggdrasil/latest/repo/rhel-$releasever/group_yggdrasil-latest-rhel-$releasever.repo
+          settings:
+            provisioning:
+              tags:
+                BusinessUnit: sst_csi_client_tools
+    use_internal_tf: true
