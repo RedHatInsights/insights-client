@@ -6,10 +6,41 @@
 :upstream: Yes
 """
 
+import configparser
+import contextlib
+import os
+import typing
+
 import pytest
+
+if typing.TYPE_CHECKING:
+    import pytest_client_tools.insights_client
 
 # the tests need a valid connection to insights so therefore the subman registration
 pytestmark = pytest.mark.usefixtures("register_subman")
+
+
+def _is_using_proxy(
+    insights_config: "pytest_client_tools.insights_client.InsightsClientConfig",
+) -> bool:
+    for key in os.environ.keys():
+        if key.lower() == "https_proxy":
+            return True
+
+    with contextlib.suppress(KeyError):
+        config_proxy = insights_config.proxy
+        if config_proxy != "":
+            return True
+
+    # sub-man fixture doesn't currently support reading the configuration file,
+    # let's parse it ourselves.
+    with contextlib.suppress(Exception):
+        rhsm_config = configparser.ConfigParser()
+        rhsm_config.read("/etc/rhsm/rhsm.conf")
+        if rhsm_config.get("server", "proxy_hostname", fallback=None) is not None:
+            return True
+
+    return False
 
 
 def test_connection_ok(insights_client):
@@ -61,7 +92,11 @@ def test_http_timeout(insights_client):
 
     output = insights_client.run("--test-connection", check=False)
     assert output.returncode == 1
-    assert "Read timed out. (read timeout=0.1)" in output.stdout
+
+    if _is_using_proxy(insights_client.config):
+        assert "timeout('timed out')" in output.stdout
+    else:
+        assert "Read timed out. (read timeout=0.1)"
     assert "Traceback" not in output.stdout
 
 
@@ -161,9 +196,6 @@ def test_wrong_url_connection(insights_client):
         4. The command failed with a return code of 1
         5. The message includes expected mentions of the failure
     """
-    end_upload_failure = "Failed to establish a new connection"
-    failed_connectivity_test = "Connectivity test failed!"
-
     insights_client.config.auto_config = False
     insights_client.config.auto_update = False
     insights_client.config.base_url = "no-such-insights-url.example.com/something"
@@ -172,5 +204,9 @@ def test_wrong_url_connection(insights_client):
 
     test_connection = insights_client.run("--test-connection", check=False)
     assert test_connection.returncode == 1
-    assert end_upload_failure in test_connection.stdout
-    assert failed_connectivity_test in test_connection.stdout
+
+    if _is_using_proxy(insights_client.config):
+        assert "Cannot connect to proxy." in test_connection.stdout
+    else:
+        assert "Failed to establish a new connection" in test_connection.stdout
+        assert "Connectivity test failed!" in test_connection.stdout
