@@ -21,7 +21,10 @@ jobs:
   - job: copr_build
     trigger: pull_request
     targets:
-      - centos-stream-10
+      - centos-stream-10-x86_64
+      - centos-stream-10-aarch64
+      - centos-stream-10-s390x
+      - centos-stream-10-ppc64le
       - fedora-all
 
   - job: copr_build
@@ -30,14 +33,17 @@ jobs:
     owner: "@yggdrasil"
     project: latest
     targets:
-      - centos-stream-10
+      - centos-stream-10-x86_64
+      - centos-stream-10-aarch64
+      - centos-stream-10-s390x
+      - centos-stream-10-ppc64le
       - fedora-all
 
   - job: tests
     trigger: pull_request
     identifier: "unit/centos-stream"
     targets:
-      - centos-stream-10
+      - centos-stream-10-x86_64
     labels:
       - unit
     tf_extra_params:
@@ -58,3 +64,23 @@ jobs:
         - artifacts:
             - type: repository-file
               id: https://copr.fedorainfracloud.org/coprs/g/yggdrasil/latest/repo/fedora-$releasever/group_yggdrasil-latest-fedora-$releasever.repo
+
+  - job: tests
+    trigger: pull_request
+    identifier: "unit/rhel"
+    targets:
+      centos-stream-10-x86_64: # TODO: Change back to RHEL
+        distros:
+          - RHEL-10-Nightly
+    labels:
+      - unit
+    tf_extra_params:
+      environments:
+        - artifacts:
+            - type: repository-file
+              id: https://copr.fedorainfracloud.org/coprs/g/yggdrasil/latest/repo/rhel-$releasever/group_yggdrasil-latest-rhel-$releasever.repo
+          settings:
+            provisioning:
+              tags:
+                BusinessUnit: sst_csi_client_tools
+    use_internal_tf: true
