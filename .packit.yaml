@@ -52,7 +52,7 @@ jobs:
     targets:
       rhel-9-x86_64:
         distros:
-          - RHEL-9.4.0-Nightly
+          - RHEL-9-Nightly
     labels:
       - unit
     tf_extra_params:
@@ -60,4 +60,8 @@ jobs:
         - artifacts:
             - type: repository-file
               id: https://copr.fedorainfracloud.org/coprs/g/yggdrasil/latest/repo/rhel-$releasever/group_yggdrasil-latest-rhel-$releasever.repo
+          settings:
+            provisioning:
+              tags:
+                BusinessUnit: sst_csi_client_tools
     use_internal_tf: true

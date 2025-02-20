@@ -22,6 +22,12 @@ fi
 # If this is an insightsCore PR build and sign the new egg.
 [ -z "${insightsCoreBranch+x}" ] || ./systemtest/insights-core-setup.sh
 
+# Override settings if provided and available.
+if [ -n "${SETTINGS_URL+x}" ] && curl -I "$SETTINGS_URL" > /dev/null 2>&1; then
+  [ -f ./settings.toml ] && mv ./settings.toml.bak
+  curl "$SETTINGS_URL" -o ./settings.toml
+fi
+
 python3 -m venv venv
 # shellcheck disable=SC1091
 . venv/bin/activate
