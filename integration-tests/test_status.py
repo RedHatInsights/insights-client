@@ -6,11 +6,13 @@
 :upstream: Yes
 """
 
+import conftest
+from constants import REGISTERED_FILE, UNREGISTERED_FILE, MACHINE_ID_FILE
 import contextlib
+import os
 import pytest
 from pytest_client_tools.util import Version
 from time import sleep
-import conftest
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -43,6 +45,31 @@ def test_status_registered(external_candlepin, insights_client):
         assert "Insights API confirms registration." in registration_status.stdout
     else:
         assert "This host is registered.\n" == registration_status.stdout
+
+
+def test_status_registered_only_locally(
+    external_candlepin, insights_client, external_inventory
+):
+    """
+    :title: Test insights-client --status when registered only locally
+    """
+    insights_client.config.legacy_upload = False
+    insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+    # Adding a small wait to ensure inventory is up-to-date
+    sleep(5)
+    external_inventory.delete(path=f"hosts/{external_inventory.this_system()['id']}")
+    response = external_inventory.get(path=f"hosts?insights_id={insights_client.uuid}")
+    assert response.json()["total"] == 0
+
+    registration_status = insights_client.run("--status", check=False)
+    if insights_client.core_version >= Version(3, 5, 6):
+        assert "This host is registered.\n" == registration_status.stdout
+        assert os.path.exists(REGISTERED_FILE)
+        assert not os.path.exists(UNREGISTERED_FILE)
+        assert os.path.exists(MACHINE_ID_FILE)
+    else:
+        assert "This host is unregistered.\n" == registration_status.stdout
 
 
 def test_status_unregistered(external_candlepin, insights_client):
