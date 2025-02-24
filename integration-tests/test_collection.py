@@ -299,8 +299,7 @@ def test_branch_info(insights_client, test_config, subman, tmp_path):
         2. The branch_info includes correct values
     """
     insights_client.run("--output-dir", tmp_path.absolute())
-    branch_info_path = tmp_path / "branch_info"
-    with branch_info_path.open("r") as file:
+    with (tmp_path / "data/branch_info").open("r") as file:
         data = json.load(file)
 
     if "satellite" in test_config.environment:
@@ -332,13 +331,8 @@ def test_archive_structure(insights_client, tmp_path):
         3. Expected subdirectories are present
     """
     archive_content = [
-        "blacklist_report",
-        "branch_info",
         "data",
-        "egg_release",
-        "insights_archive.txt",
         "meta_data",
-        "version_info",
     ]
 
     archive_data_content = [
