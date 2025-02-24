@@ -115,7 +115,7 @@ def test_group(insights_client, tmp_path):
     with tarfile.open(archive_location, "r") as tar:
         dir_name = tar.getnames()[0]
         for m in tar.getmembers():
-            if m.name == f"{dir_name}/tags.json":
+            if m.name == f"{dir_name}/data/tags.json":
                 tag_file = tar.extractfile(m)
                 tag_file_content = json.load(tag_file)
                 break
