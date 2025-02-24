@@ -8,7 +8,6 @@
 
 import json
 import os
-import tarfile
 import pytest
 import conftest
 import glob
@@ -106,21 +105,14 @@ def test_group(insights_client, tmp_path):
             and value
     """
     group_name = "testing-group"
-    archive_name = "archive.tar.gz"
-    archive_location = tmp_path / archive_name
 
     # Running insights-client in offline mode to generate archive
     insights_client.run(
-        "--offline", f"--group={group_name}", f"--output-file={archive_location}"
+        "--offline", f"--group={group_name}", f"--output-dir={tmp_path}"
     )
 
-    with tarfile.open(archive_location, "r") as tar:
-        dir_name = tar.getnames()[0]
-        for m in tar.getmembers():
-            if m.name == f"{dir_name}/data/tags.json":
-                tag_file = tar.extractfile(m)
-                tag_file_content = json.load(tag_file)
-                break
+    with (tmp_path / "data/tags.json").open("r") as f:
+        tag_file_content: dict = json.load(f)
 
     assert len(tag_file_content) == 1
 
