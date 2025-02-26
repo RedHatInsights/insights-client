@@ -8,6 +8,7 @@
 
 import configparser
 import contextlib
+import logging
 import os
 import typing
 
@@ -23,13 +24,15 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 def _is_using_proxy(
     insights_config: "pytest_client_tools.insights_client.InsightsClientConfig",
 ) -> bool:
-    for key in os.environ.keys():
+    for key, value in os.environ.items():
         if key.lower() == "https_proxy":
+            logging.debug(f"Proxy is set via environment variable: '{value}'.")
             return True
 
     with contextlib.suppress(KeyError):
-        config_proxy = insights_config.proxy
-        if config_proxy != "":
+        insights_proxy: str = insights_config.proxy
+        if insights_proxy != "":
+            logging.debug(f"Proxy is set via insights-client: '{insights_proxy}'.")
             return True
 
     # sub-man fixture doesn't currently support reading the configuration file,
@@ -37,9 +40,12 @@ def _is_using_proxy(
     with contextlib.suppress(Exception):
         rhsm_config = configparser.ConfigParser()
         rhsm_config.read("/etc/rhsm/rhsm.conf")
-        if rhsm_config.get("server", "proxy_hostname", fallback=None) is not None:
+        rhsm_proxy: str = rhsm_config.get("server", "proxy_hostname", fallback="")
+        if rhsm_proxy != "":
+            logging.debug(f"Proxy is set via subscription-manager: '{rhsm_proxy}'.")
             return True
 
+    logging.debug("Proxy is not set.")
     return False
 
 
