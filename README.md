@@ -174,7 +174,7 @@ These particular switches supersede normal client operation; they skip collectio
 - `--status` - Print the registration status.
 - `--payload=PAYLOAD` - Upload a specified file `PAYLOAD`. Requires `--content-type`
 - `--content-type=CONTENTTYPE` - Specify the console.redhat.com platform-specific content type for `--payload` option.
-- `--diagnosis=ID` - Retrieve remediations for this host, optionally providing a diagnosis ID.
+- `--diagnosis` - Retrieve a diagnosis for this host.
 - `--compliance` - Perform a compliance upload.
 - `--show-results` - Log the cached system profile to console. See also: `--check-results` under **Hidden switches**
 
