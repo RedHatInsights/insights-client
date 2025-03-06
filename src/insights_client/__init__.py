@@ -431,7 +431,9 @@ def _main():
         valid_env_egg = []
 
     if not validated_eggs and not valid_env_egg:
-        sys.exit("No GPG-verified initial eggs can be found")
+        print("Client: %s" % InsightsConstants.version)
+        print("Core: not found")
+        return
 
     # ENV egg comes first
     all_valid_eggs = valid_env_egg + validated_eggs
