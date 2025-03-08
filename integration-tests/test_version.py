@@ -1,6 +1,9 @@
 """
 :casecomponent: insights-client
 :requirement: RHSS-291297
+:polarion-project-id: RHELSS
+:polarion-include-skipped: false
+:polarion-lookup-method: id
 :subsystemteam: sst_csi_client_tools
 :caseautomation: Automated
 :upstream: Yes

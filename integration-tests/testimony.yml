@@ -3,6 +3,20 @@ Id:
   casesensitive: false
   required: true
   type: string
+Polarion-Project-Id:
+  casesensitive: false
+  required: true
+  type: choice
+  choices:
+    - RHELSS
+Polarion-Include-Skipped:
+  casesensitive: false
+  required: true
+  type: string
+Polarion-Lookup-Method:
+  casesensitive: false
+  required: true
+  type: string
 Reference:
   casesensitive: false
   required: false
