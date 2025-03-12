@@ -16,7 +16,8 @@ if ! command -v bootc >/dev/null || bootc status | grep -q 'type: null'; then
   rpm -q insights-client || ./systemtest/guest-setup.sh
 
   dnf --setopt install_weak_deps=False install -y \
-    podman git-core python3-pip python3-pytest logrotate bzip2 zip
+    podman git-core python3-pip python3-pytest logrotate bzip2 zip \
+    scap-security-guide openscap-scanner openscap
 fi
 
 # If this is an insightsCore PR build and sign the new egg.
