@@ -225,7 +225,7 @@ def test_client_checkin_offline(insights_client):
 def test_client_diagnosis(insights_client):
     """
     :id: 7659051f-0e87-4fd7-bc95-0152077fe67e
-    :title: test diagnosis option
+    :title: Test diagnosis option
     :description:
         This test verifies that on a registered system, the --diagnosis
         option retrieves the correct diagnostic information
