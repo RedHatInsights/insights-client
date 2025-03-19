@@ -1,16 +1,21 @@
 """
 :casecomponent: insights-client
 :requirement: RHSS-291297
+:polarion-project-id: RHELSS
+:polarion-include-skipped: false
+:polarion-lookup-method: id
 :subsystemteam: sst_csi_client_tools
 :caseautomation: Automated
 :upstream: Yes
 """
 
+import conftest
+from constants import REGISTERED_FILE, UNREGISTERED_FILE, MACHINE_ID_FILE
 import contextlib
+import os
 import pytest
 from pytest_client_tools.util import Version
 from time import sleep
-import conftest
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -44,6 +49,48 @@ def test_status_registered(external_candlepin, insights_client):
         assert "Insights API confirms registration." in registration_status.stdout
     else:
         assert "This host is registered.\n" == registration_status.stdout
+
+
+def test_status_registered_only_locally(
+    external_candlepin, insights_client, external_inventory
+):
+    """
+    :id: 2ca3be87-8322-47b8-b451-9ea7fa3dbeef
+    :title: Test insights-client --status when registered only locally
+    :description:
+        This test verifies that when the insights client is registered only
+        locally, the `insights-client --status` command outputs the correct
+        registration status
+    :tags: Tier 1
+    :steps:
+        1. Set the legacy_upload to False
+        2. Register the insights-client
+        3. Delete the host from the Inventory
+        4. Run `insights-client --status` command
+    :expectedresults:
+        1. The client registers successfully
+        2. Wait time completes without issues
+        3. The host is deleted from the Inventory
+        4. On systems with version 3.5.7 and higher, output is "This host is
+            registered.", the registered file exists, the unregistered file
+            does not exist, and the machine ID file exists. Otherwise, output
+            is "This host is unregistered."
+    """
+    insights_client.config.legacy_upload = False
+    insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+    external_inventory.delete(path=f"hosts/{external_inventory.this_system()['id']}")
+    response = external_inventory.get(path=f"hosts?insights_id={insights_client.uuid}")
+    assert response.json()["total"] == 0
+
+    registration_status = insights_client.run("--status", check=False)
+    if insights_client.core_version >= Version(3, 5, 7):
+        assert "This host is registered.\n" == registration_status.stdout
+        assert os.path.exists(REGISTERED_FILE)
+        assert not os.path.exists(UNREGISTERED_FILE)
+        assert os.path.exists(MACHINE_ID_FILE)
+    else:
+        assert "This host is unregistered.\n" == registration_status.stdout
 
 
 def test_status_unregistered(external_candlepin, insights_client):

@@ -1,6 +1,9 @@
 """
 :casecomponent: insights-client
 :requirement: RHSS-291297
+:polarion-project-id: RHELSS
+:polarion-include-skipped: false
+:polarion-lookup-method: id
 :subsystemteam: sst_csi_client_tools
 :caseautomation: Automated
 :upstream: Yes
@@ -9,6 +12,7 @@
 import json
 import os
 import pytest
+from pytest_client_tools.util import Version
 import conftest
 import glob
 
@@ -225,7 +229,7 @@ def test_client_checkin_offline(insights_client):
 def test_client_diagnosis(insights_client):
     """
     :id: 7659051f-0e87-4fd7-bc95-0152077fe67e
-    :title: test diagnosis option
+    :title: Test diagnosis option
     :description:
         This test verifies that on a registered system, the --diagnosis
         option retrieves the correct diagnostic information
@@ -238,8 +242,10 @@ def test_client_diagnosis(insights_client):
         4. Verify the machine id in the diagnostic data matches the
             system's machine id
     :expectedresults:
-        1. The command fails with an error message indicating that diagnosis
-            data cannot be retrieved (404)
+        1. The command fails with a return code of 1. On systems with
+            version 3.5.7 or higher, the output includes message
+            'Could not get diagnosis data.'. Otherwise, the output
+            includes message 'Unable to get diagnosis data: 404'
         2. The client is registered
         3. The command retrieves diagnostic data and the output contains
             machine id
@@ -247,7 +253,11 @@ def test_client_diagnosis(insights_client):
     """
     # Running diagnosis on unregistered system returns appropriate error message
     diagnosis_result = insights_client.run("--diagnosis", check=False)
-    assert "Unable to get diagnosis data: 404" in diagnosis_result.stdout
+    assert diagnosis_result.returncode == 1
+    if insights_client.core_version >= Version(3, 5, 7):
+        assert "Could not get diagnosis data." in diagnosis_result.stdout
+    else:
+        assert "Unable to get diagnosis data: 404" in diagnosis_result.stdout
     # Running diagnosis on registered system
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
