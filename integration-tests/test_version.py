@@ -9,7 +9,10 @@
 :upstream: Yes
 """
 
+import pytest
 
+
+@pytest.mark.tier1
 def test_version(insights_client):
     """
     :id: 7ec671cb-39ae-4cda-b279-f05d7c835d5d

@@ -19,6 +19,7 @@ from constants import MACHINE_ID_FILE
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier1
 def test_register(insights_client):
     """
     :id: 5371018d-7b4a-4535-9bf9-7a7e60a9ee4a
@@ -47,6 +48,7 @@ def test_register(insights_client):
     assert "View the Red Hat Insights console" in register_result.stdout
 
 
+@pytest.mark.tier1
 def test_register_auth_proxy(insights_client, test_config):
     """
     :id: 1387745b-59a1-4a90-8f6d-dee2afa4723c
@@ -87,6 +89,7 @@ def test_register_auth_proxy(insights_client, test_config):
     assert f"Proxy User: {proxy_user}" in register_result.stdout
 
 
+@pytest.mark.tier1
 def test_register_noauth_proxy(insights_client, test_config):
     """
     :id: cbde1ce7-97fc-48d4-85bb-955ca45c8862
@@ -120,6 +123,7 @@ def test_register_noauth_proxy(insights_client, test_config):
     assert f"CONF Proxy: {no_auth_proxy}" in register_result.stdout
 
 
+@pytest.mark.tier1
 def test_machineid_exists_only_when_registered(insights_client):
     """
     :id: 27440051-e0d3-452e-b052-070cddf65aa1
@@ -159,6 +163,7 @@ def test_machineid_exists_only_when_registered(insights_client):
     assert not os.path.exists(MACHINE_ID_FILE)
 
 
+@pytest.mark.tier1
 def test_machineid_changes_on_new_registration(insights_client):
     """
     :id: ada04c6f-c351-4018-92f0-f3f21b7d645a
@@ -197,6 +202,7 @@ def test_machineid_changes_on_new_registration(insights_client):
         assert machine_id_new != machine_id_old
 
 
+@pytest.mark.tier1
 def test_double_registration(insights_client):
     """
     :id: b1cf2516-aab9-438d-b4c0-42182c84fde9
@@ -239,6 +245,7 @@ def test_double_registration(insights_client):
         pytest.param(False),
     ],
 )
+@pytest.mark.tier1
 def test_register_group_option(insights_client, legacy_upload_value):
     """
     :id: 5213a950-e66f-4749-8a76-66b6d4ed9aa5
@@ -272,6 +279,7 @@ def test_register_group_option(insights_client, legacy_upload_value):
     assert register_group_option.returncode == 0
 
 
+@pytest.mark.tier1
 def test_registered_and_unregistered_files_are_created_and_deleted(insights_client):
     """
     :id: 6e692793-f9ae-4ccb-a9d6-813b6d9aa7c3

@@ -18,6 +18,7 @@ from pathlib import Path
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier1
 def test_data_upload_systemd_timer(insights_client, external_inventory):
     """
     :id: 6bbac679-cb37-47b1-9163-497f1a1758dd
