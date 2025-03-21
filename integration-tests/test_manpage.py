@@ -45,6 +45,7 @@ import pytest
         "--version",
     ],
 )
+@pytest.mark.tier1
 def test_manpage(option):
     """
     :id: bd8dbda3-930e-4081-b318-1e88b25e26ef

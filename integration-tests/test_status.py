@@ -20,6 +20,7 @@ from time import sleep
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier1
 def test_status_registered(external_candlepin, insights_client):
     """
     :id: 624b01fc-e841-4c26-afd8-bb28eaf7fe75
@@ -50,6 +51,7 @@ def test_status_registered(external_candlepin, insights_client):
         assert "This host is registered.\n" == registration_status.stdout
 
 
+@pytest.mark.tier1
 def test_status_registered_only_locally(
     external_candlepin, insights_client, external_inventory
 ):
@@ -93,6 +95,7 @@ def test_status_registered_only_locally(
         assert "This host is unregistered.\n" == registration_status.stdout
 
 
+@pytest.mark.tier1
 def test_status_unregistered(external_candlepin, insights_client):
     """
     :id: aa37831a-a581-44db-a7c9-de8161767c7e

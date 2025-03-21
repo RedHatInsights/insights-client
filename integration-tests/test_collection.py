@@ -18,6 +18,7 @@ import conftest
 import uuid
 
 
+@pytest.mark.tier1
 def test_output_file_valid_parameters(insights_client, tmp_path):
     """
     :id: 011e38c7-c6dc-4c17-add4-d67f0775f5cd
@@ -48,6 +49,7 @@ def test_output_file_valid_parameters(insights_client, tmp_path):
     assert f"Collected data copied to {archive_name}.tar.gz" in cmd_result.stdout
 
 
+@pytest.mark.tier1
 def test_output_file_non_existing_path(insights_client):
     """
     :id: 003faa12-8daa-417b-83bb-71aaa80209b6
@@ -81,6 +83,7 @@ def test_output_file_non_existing_path(insights_client):
     )
 
 
+@pytest.mark.tier1
 def test_output_dir_without_specifying_a_path(insights_client):
     """
     :id: 63eb1ba0-b9dd-4185-b422-18325c12b503
@@ -103,6 +106,7 @@ def test_output_dir_without_specifying_a_path(insights_client):
     assert "ERROR: --output-file cannot be empty" in cmd_result.stderr
 
 
+@pytest.mark.tier1
 def test_output_specifying_both_dir_and_file(insights_client, tmp_path):
     """
     :id: a572654d-904c-410e-ba00-f7b63f910e53
@@ -132,6 +136,7 @@ def test_output_specifying_both_dir_and_file(insights_client, tmp_path):
     assert "Specify only one: --output-dir or --output-file." in cmd_result.stderr
 
 
+@pytest.mark.tier1
 def test_output_file_with_relative_path(insights_client):
     """
     :id: e1236f11-46c3-452c-81b8-3c61506e1841
@@ -159,6 +164,7 @@ def test_output_file_with_relative_path(insights_client):
     assert f"{relative_path} is a directory." in cmd_result.stderr
 
 
+@pytest.mark.tier1
 def test_output_dir_with_not_empty_directory(insights_client):
     """
     :id: 30384d37-92b4-4196-8423-0355b0cbef30
@@ -187,6 +193,7 @@ def test_output_dir_with_not_empty_directory(insights_client):
     )
 
 
+@pytest.mark.tier1
 def test_output_dir_creates_archive_for_directory(insights_client, tmp_path):
     """
     :id: 6a966179-3b61-4a74-8af4-68fa0c2c237e
@@ -216,6 +223,7 @@ def test_output_dir_creates_archive_for_directory(insights_client, tmp_path):
         os.remove(os.path.abspath(directory[0:-1] + ".tar.gz"))
 
 
+@pytest.mark.tier1
 def test_output_file_already_exists(insights_client, tmp_path):
     """
     :id: 36456352-da31-4633-872a-061c2045176a
@@ -248,6 +256,7 @@ def test_output_file_already_exists(insights_client, tmp_path):
 
 
 @pytest.mark.usefixtures("register_subman")
+@pytest.mark.tier2
 def test_cmd_timeout(insights_client):
     """
     :id: 0a55318c-28e0-4ca7-bdbf-3eb8c0d689ea
@@ -283,6 +292,7 @@ def test_cmd_timeout(insights_client):
 
 
 @pytest.mark.usefixtures("register_subman")
+@pytest.mark.tier2
 def test_branch_info(insights_client, test_config, subman, tmp_path):
     """
     :id: 22c7063c-e09d-4fdf-80ea-864a7027d2ee
@@ -314,6 +324,7 @@ def test_branch_info(insights_client, test_config, subman, tmp_path):
         assert data["remote_leaf"] == -1, "Incorrect remote_leaf value"
 
 
+@pytest.mark.tier1
 def test_archive_structure(insights_client, tmp_path):
     """
     :id: 7a78cf8f-ed32-4011-8d15-787231f867c9

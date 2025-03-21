@@ -18,6 +18,7 @@ import socket
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier1
 def test_ip_obfuscation(insights_client, tmp_path):
     """
     :id: 59c073f7-d207-42ae-85ee-a7a5d6fc6f8d
@@ -57,6 +58,7 @@ def test_ip_obfuscation(insights_client, tmp_path):
     assert not check_obfuscated_info(insights_client, tmp_path, system_ip)
 
 
+@pytest.mark.tier1
 def test_hostname_obfuscation(insights_client, tmp_path):
     """
     :id: 68196220-f633-4a40-8040-6924d0e71b46
@@ -96,6 +98,7 @@ def test_hostname_obfuscation(insights_client, tmp_path):
 
 
 @pytest.mark.parametrize("password_file", ["/etc/redhat-release", "/etc/hosts"])
+@pytest.mark.tier1
 def test_password_obfuscation(insights_client, tmp_path, password_file):
     """
     :id: ad3f22b2-8792-45fb-abdd-d29d58db5c41
@@ -156,6 +159,7 @@ def test_password_obfuscation(insights_client, tmp_path, password_file):
         "data/etc/dnf/modules.d/",
     ],
 )
+@pytest.mark.tier1
 def test_no_obfuscation_on_package_version(
     insights_client, tmp_path, package_info_file
 ):
@@ -192,6 +196,7 @@ def test_no_obfuscation_on_package_version(
                 assert "10.230.230" not in file_content.decode()
 
 
+@pytest.mark.tier1
 def test_no_obfuscation_on_display_name(insights_client, tmp_path):
     """
     :id: a5b73cba-928d-4e78-9792-6a667e5c4c2b
