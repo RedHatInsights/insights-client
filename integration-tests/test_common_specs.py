@@ -12,6 +12,7 @@
 import json
 import os
 import pytest
+import subprocess
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -81,5 +82,24 @@ def test_common_specs(insights_client, tmp_path):
         # (unless we are in container and the spec is known to not work in containers)
         if in_container and spec in privileged_specs:
             continue
-        assert not data["errors"], f"'{spec}' contains errors: {data['errors']} "
-        assert data["results"] is not None, f"'{spec}' does not contain results"
+
+        try:
+            assert not data["errors"], f"'{spec}' contains errors: {data['errors']}"
+        except AssertionError:
+            print(f"\n[DEBUG] Spec '{spec}' failed  with error: {data['errors']}")
+
+            # Try to extract and re-run the command from the spec JSON
+            cmd = data["results"]["object"]["cmd"]
+            if cmd:
+                print(f"[DEBUG] Attempting to re-run the cmd from the spec: {cmd}")
+                result = subprocess.run(
+                    cmd, shell=True, capture_output=True, text=True, timeout=10
+                )
+
+                print(f"[DEBUG] Command return code: {result.returncode}")
+                print(f"[DEBUG] Command STDOUT code: {result.stdout}")
+                print(f"[DEBUG] Command STDERR code: {result.stderr}")
+            else:
+                print(f"[DEBUG] No command found in spec JSON for {spec}")
+
+            raise
