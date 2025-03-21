@@ -10,6 +10,7 @@
 """
 
 import pytest
+from pytest_client_tools.util import Version
 import conftest
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -29,18 +30,22 @@ def test_unregister(insights_client):
         3. Confirm the client is unregistered
     :expectedresults:
         1. The client registers successfully
-        2. Command outputs "Successfully unregistered from the
-            Red Hat Insights Service".
+        2. On systems with Insights Core version >= 3.5.11, the command outputs
+            "Successfully unregistered this host." Otherwise, the command
+            outputs "Successfully unregistered from the Red Hat Insights Service"
         3. Client unregistration is confirmed
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
 
     unregistration_status = insights_client.run("--unregister")
-    assert (
-        "Successfully unregistered from the Red Hat Insights Service"
-        in unregistration_status.stdout
-    )
+    if insights_client.core_version >= Version(3, 5, 11):
+        assert "Successfully unregistered this host." in unregistration_status.stdout
+    else:
+        assert (
+            "Successfully unregistered from the Red Hat Insights Service"
+            in unregistration_status.stdout
+        )
     assert conftest.loop_until(lambda: not insights_client.is_registered)
 
 
@@ -60,8 +65,9 @@ def test_unregister_twice(insights_client):
         3. Attempt to unregister the client a second time
     :expectedresults:
         1. The client registers successfully
-        2. Command outputs "Successfully unregistered from the
-            Red Hat Insights Service"
+        2. On systems with Insights Core version >= 3.5.11, the command outputs
+            "Successfully unregistered this host." Otherwise, the command
+            outputs "Successfully unregistered from the Red Hat Insights Service"
         3. Command returns exit code 1 and outputs "This host is not registered,
             unregistration is not applicable."
     """
@@ -71,10 +77,14 @@ def test_unregister_twice(insights_client):
     # unregister once
     unregistration_status = insights_client.run("--unregister")
     assert conftest.loop_until(lambda: not insights_client.is_registered)
-    assert (
-        "Successfully unregistered from the Red Hat Insights Service"
-        in unregistration_status.stdout
-    )
+    if insights_client.core_version >= Version(3, 5, 11):
+        assert "Successfully unregistered this host." in unregistration_status.stdout
+    else:
+        assert (
+            "Successfully unregistered from the Red Hat Insights Service"
+            in unregistration_status.stdout
+        )
+
     # unregister twice
     unregistration_status = insights_client.run("--unregister", check=False)
     assert conftest.loop_until(lambda: not insights_client.is_registered)
