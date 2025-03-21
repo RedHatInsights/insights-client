@@ -15,6 +15,7 @@ import conftest
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier1
 def test_unregister(insights_client):
     """
     :id: ecaeeddc-4c8b-4f17-8d69-1c81d2c7c744
@@ -44,6 +45,7 @@ def test_unregister(insights_client):
     assert conftest.loop_until(lambda: not insights_client.is_registered)
 
 
+@pytest.mark.tier1
 def test_unregister_twice(insights_client):
     """
     :id: bfff1b33-5f19-42d2-a6ff-4598975873e5
