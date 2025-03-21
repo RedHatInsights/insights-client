@@ -16,6 +16,7 @@ import pytest
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier1
 def test_common_specs(insights_client, tmp_path):
     """
     :id: 9010f731-ca05-4abb-b119-de9730b055c1
