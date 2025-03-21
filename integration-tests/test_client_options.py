@@ -21,6 +21,7 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 ARCHIVE_CACHE_DIRECTORY = "/var/cache/insights-client"
 
 
+@pytest.mark.tier1
 def test_set_ansible_host_info(insights_client):
     """
     :id: 18fc9438-8f2e-40f7-88b8-b51f36c9c396
@@ -50,6 +51,7 @@ def test_set_ansible_host_info(insights_client):
     assert ret.returncode == 0
 
 
+@pytest.mark.tier1
 def test_no_upload(insights_client):
     """
     :id: e55b7148-8d71-406d-a0d0-c1157a455cd5
@@ -86,6 +88,7 @@ def test_no_upload(insights_client):
     assert len(archive_file_after) > len(archive_file_before)
 
 
+@pytest.mark.tier1
 def test_group(insights_client, tmp_path):
     """
     :id: 29215bcc-1276-43cc-b87b-48d75f458426
@@ -124,6 +127,7 @@ def test_group(insights_client, tmp_path):
     assert tag["value"] == group_name
 
 
+@pytest.mark.tier1
 def test_support(insights_client):
     """
     :id: 43dbe53c-c8ec-41f2-8f1f-2396f07272cb
@@ -151,6 +155,7 @@ def test_support(insights_client):
     assert "Support information collected in" in support_result.stdout
 
 
+@pytest.mark.tier1
 def test_client_validate_no_network_call(insights_client):
     """
     :id: 2ca44ace-efe6-471c-8a4d-f24c9a913233
@@ -199,6 +204,7 @@ def test_client_validate_no_network_call(insights_client):
         os.remove(tags_filename)
 
 
+@pytest.mark.tier1
 def test_client_checkin_offline(insights_client):
     """
     :id: 05803f81-ebd6-4d58-9061-4d0403d8d9fc
@@ -222,6 +228,7 @@ def test_client_checkin_offline(insights_client):
     assert "ERROR: Cannot check-in in offline mode." in checkin_result.stderr
 
 
+@pytest.mark.tier1
 def test_client_diagnosis(insights_client):
     """
     :id: 7659051f-0e87-4fd7-bc95-0152077fe67e
@@ -264,6 +271,7 @@ def test_client_diagnosis(insights_client):
     assert diagnosis_data["insights_id"] == machine_id
 
 
+@pytest.mark.tier1
 def test_check_show_results(insights_client):
     """
     :id: 82571026-af14-464c-b9ff-5c03ecfe77c9

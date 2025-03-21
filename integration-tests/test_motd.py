@@ -49,6 +49,7 @@ def delete_special_files():
 
 @pytest.mark.usefixtures("register_subman")
 @pytest.mark.usefixtures("delete_special_files")
+@pytest.mark.tier1
 def test_motd(insights_client):
     """
     :id: a66a93bb-bbd2-4db0-a2aa-2bb184b11187
@@ -88,6 +89,7 @@ def test_motd(insights_client):
 
 @pytest.mark.usefixtures("register_subman")
 @pytest.mark.usefixtures("delete_special_files")
+@pytest.mark.tier1
 def test_motd_dev_null(insights_client):
     """
     :id: 7d48df16-e1af-4158-8a33-1d2cbb9ed22d
@@ -124,6 +126,7 @@ def test_motd_dev_null(insights_client):
 
 
 @pytest.mark.usefixtures("delete_special_files")
+@pytest.mark.tier1
 def test_motd_message():
     """
     :id: 56d12383-f7bb-4dbe-899c-a1cbd2172a30
