@@ -96,7 +96,7 @@ def test_http_timeout(insights_client):
         3. The command fails with a return code of 1
         4. The output mentions timeout value
     """
-    insights_client.config.http_timeout = 0.1
+    insights_client.config.http_timeout = 0.001
     insights_client.config.save()
 
     output = insights_client.run("--test-connection", check=False)
