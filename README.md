@@ -166,7 +166,7 @@ Command line switches available and their explanations.
 These particular switches supersede normal client operation; they skip collection and exit after printing their necessary output.
 
 - `--version` - Print the versions of both the wrapper and egg, then exit.
-- `--unregister` - Unregister this system from the Insights API.
+- `--unregister` - Unregister this system.
 - `--display-name=DISPLAYNAME` - When used without `--register`, change the display name and exit.
 - `--validate` - Validate the format of the remove.conf file.
 - `--enable-schedule` - Enable the Insights systemd job.
