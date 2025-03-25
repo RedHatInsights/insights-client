@@ -52,6 +52,7 @@ def _is_using_proxy(
     return False
 
 
+@pytest.mark.tier1
 def test_connection_ok(insights_client):
     """
     :id: ff674d37-0ccc-481c-9f04-91237b8c50d0
@@ -77,6 +78,7 @@ def test_connection_ok(insights_client):
     assert api_test in test_connection.stdout
 
 
+@pytest.mark.tier1
 def test_http_timeout(insights_client):
     """
     :id: 46c5fe2a-1553-4f2e-802d-fa10080c72df
@@ -109,6 +111,7 @@ def test_http_timeout(insights_client):
     assert "Traceback" not in output.stdout
 
 
+@pytest.mark.tier1
 def test_noauth_proxy_connection(insights_client, test_config):
     """
     :id: a4bcb7e6-c04f-49d2-8362-525124dc61d9
@@ -145,6 +148,7 @@ def test_noauth_proxy_connection(insights_client, test_config):
     assert api_test in test_connection.stdout
 
 
+@pytest.mark.tier1
 def test_auth_proxy_connection(insights_client, test_config):
     """
     :id: 0b3e91d6-3b8b-42c7-8f3b-f7ee1728c311
@@ -184,6 +188,7 @@ def test_auth_proxy_connection(insights_client, test_config):
     assert api_test in test_connection.stdout
 
 
+@pytest.mark.tier1
 def test_wrong_url_connection(insights_client):
     """
     :id: aa411b34-9af2-4759-ae05-756e9019c85e
