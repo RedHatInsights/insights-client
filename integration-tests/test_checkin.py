@@ -20,6 +20,7 @@ import conftest
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier2
 def test_ultralight_checkin(insights_client, test_config):
     """
     :id: c662fd5e-0751-45e4-8477-6b0d27f735ac
@@ -68,6 +69,7 @@ def test_ultralight_checkin(insights_client, test_config):
     assert updated_ts_after_checkin > updated_ts_before_checkin
 
 
+@pytest.mark.tier1
 def test_client_checkin_unregistered(insights_client):
     """
     :id: 91331995-20c2-4d44-8abe-74a3e7d28309

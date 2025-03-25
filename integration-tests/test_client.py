@@ -18,6 +18,7 @@ import conftest
 
 
 @pytest.mark.usefixtures("register_subman")
+@pytest.mark.tier1
 def test_client_files_permission(insights_client):
     """
     :id: e793cf5e-1c25-4e31-93c9-6f0465f50cae
@@ -68,6 +69,7 @@ def rpm_ql_insights_client():
         "/etc/logrotate.d/insights-client",
     ],
 )
+@pytest.mark.tier1
 def test_client_rpm_mandatory_files(filename, rpm_ql_insights_client):
     """
     :id: c7d2edbe-ae78-47e0-9b3d-ae1634c0ac79
@@ -87,6 +89,7 @@ def test_client_rpm_mandatory_files(filename, rpm_ql_insights_client):
 
 
 @pytest.mark.usefixtures("register_subman")
+@pytest.mark.tier1
 def test_client_logfiles_mask(insights_client):
     """
     :id: 8f24500c-d0ff-4ab1-a2ae-3b99cbf68e36
@@ -111,6 +114,7 @@ def test_client_logfiles_mask(insights_client):
         assert oct(os.stat(logfile).st_mode & 0o777) == "0o600"
 
 
+@pytest.mark.tier1
 def test_client_logdir_permissions():
     """
     :id: 204b1d54-6d8f-4d87-9227-cf3924cc5bb8
@@ -127,6 +131,7 @@ def test_client_logdir_permissions():
 
 
 @pytest.mark.usefixtures("register_subman")
+@pytest.mark.tier1
 def test_verify_logrotate_feature(insights_client):
     """
     :id: 5442729f-c6bc-4322-aa17-facd538e9fc3
@@ -190,6 +195,7 @@ def test_verify_logrotate_feature(insights_client):
 
 
 @pytest.mark.usefixtures("register_subman")
+@pytest.mark.tier1
 def test_insights_details_file_exists(insights_client):
     """
     :id: 2ccc8e00-0e76-47fd-bdb2-27998c0094ab
@@ -220,6 +226,7 @@ def test_insights_details_file_exists(insights_client):
 
 
 @pytest.mark.usefixtures("register_subman")
+@pytest.mark.tier1
 def test_insights_directory_files(insights_client):
     """
     :id: 02072b65-9905-4426-96dc-76af6a73e14f

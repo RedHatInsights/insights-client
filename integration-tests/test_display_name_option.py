@@ -37,6 +37,7 @@ def create_random_string(n: int):
     return "".join(random.choices(string.ascii_letters, k=n))
 
 
+@pytest.mark.tier1
 def test_display_name(insights_client):
     """
     :id: 4758cb21-03b4-4334-852c-791b7c82b50a
@@ -74,6 +75,7 @@ def test_display_name(insights_client):
     assert conftest.loop_until(display_name_changed)
 
 
+@pytest.mark.tier1
 def test_register_with_display_name(insights_client):
     """
     :id: d127b2bf-2f6d-4b02-bb8e-99036bfc4291
@@ -106,6 +108,7 @@ def test_register_with_display_name(insights_client):
     assert unique_hostname == record["display_name"]
 
 
+@pytest.mark.tier1
 def test_register_twice_with_different_display_name(
     insights_client, test_config, subtests
 ):
@@ -168,6 +171,7 @@ def test_register_twice_with_different_display_name(
 
 
 @pytest.mark.parametrize("invalid_display_name", [create_random_string(201), ""])
+@pytest.mark.tier1
 def test_invalid_display_name(invalid_display_name, insights_client):
     """
     :id: 9cbdd1a6-9ee3-4799-baaf-15c3894ca55b
@@ -210,6 +214,7 @@ def test_invalid_display_name(invalid_display_name, insights_client):
     ), "display-name should remain unchanged when new display-name is rejected"
 
 
+@pytest.mark.tier2
 def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_config):
     """
     :id: 8cdbc0ff-42ba-41e8-bd3f-31550ccac081
