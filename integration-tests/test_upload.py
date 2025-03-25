@@ -16,6 +16,7 @@ import conftest
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier1
 def test_upload_pre_collected_archive(insights_client, tmp_path):
     """
     :id: 9eba5a67-d013-4d43-98c7-c41ed38bcede
@@ -55,6 +56,7 @@ def test_upload_pre_collected_archive(insights_client, tmp_path):
     assert "Successfully uploaded report" in upload_result.stdout
 
 
+@pytest.mark.tier1
 def test_upload_wrong_content_type(insights_client, tmp_path):
     """
     :id: bb9ee84a-d262-4c42-ae16-9b45bf5a385c
@@ -100,6 +102,7 @@ def test_upload_wrong_content_type(insights_client, tmp_path):
     assert "Content type different from compression" in upload_result.stdout
 
 
+@pytest.mark.tier1
 def test_upload_too_large_archive(insights_client, tmp_path):
     """
     :id: bb9ee84a-d262-4c42-ae16-9b45bf5a385c
@@ -143,6 +146,7 @@ def test_upload_too_large_archive(insights_client, tmp_path):
         ("xz", ".xz"),
     ],
 )
+@pytest.mark.tier1
 def test_upload_compressor_options(
     insights_client,
     compressor,
@@ -185,6 +189,7 @@ def test_upload_compressor_options(
     assert "Successfully uploaded report" in upload_result.stdout
 
 
+@pytest.mark.tier1
 def test_retries(insights_client):
     """
     :id: dafeb86e-463e-42fd-88e5-4551f1ba8f66
@@ -232,6 +237,7 @@ def test_retries(insights_client):
     assert "All attempts to upload have failed!" in upload_result.stdout
 
 
+@pytest.mark.tier1
 def test_retries_not_happening_on_unrecoverable_errors(insights_client):
     """
     :id: 1d740d1c-e98b-4571-86ac-10a233ff65ce
