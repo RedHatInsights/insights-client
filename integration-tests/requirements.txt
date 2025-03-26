@@ -1,4 +1,4 @@
-git+https://github.com/ptoscano/pytest-client-tools@main
+git+https://github.com/RedHatInsights/pytest-client-tools@main
 pyyaml
 pytest-subtests
 distro
