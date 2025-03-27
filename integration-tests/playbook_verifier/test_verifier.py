@@ -19,6 +19,7 @@ PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
         "compliance_openscap_setup.yml",
     ],
 )
+@pytest.mark.tier1
 def test_official_playbook(filename: str):
     """insights-client contains playbook verifier application.
 
