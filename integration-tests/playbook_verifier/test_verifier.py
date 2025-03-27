@@ -1,7 +1,17 @@
+"""
+:casecomponent: insights-client
+:requirement: RHSS-291297
+:polarion-project-id: RHELSS
+:polarion-include-skipped: false
+:polarion-lookup-method: id
+:subsystemteam: sst_csi_client_tools
+:caseautomation: Automated
+:upstream: Yes
+"""
+
 import pathlib
 import subprocess
 import sys
-
 import pytest
 from pytest_client_tools.util import Version
 
@@ -18,13 +28,21 @@ PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
     ],
 )
 def test_official_playbook(insights_client, filename: str):
-    """insights-client contains playbook verifier application.
-
-    It is used by rhc-worker-playbook and rhc-worker-script to safely deliver
-    and run Red Hat signed playbooks.
-
-    In this test, the official playbooks are verified against the GPG key
-    the application ships.
+    """
+    :id: 3659e27f-3621-4591-b1c4-b5f0a277bb72
+    :title: Test playbook verifier
+    :description:
+        This test verifies the official playbooks against the GPG key
+        the application ships.
+    :tags: Tier 1
+    :steps:
+        1. Read playbook file content
+        2. Run insights-client verifier with playbook
+        3. Compare output to input
+    :expectedresults:
+        1. File content is correctly read and loaded into memory
+        2. Subprocess executes successfully without errors
+        3. Verifier's output matches original playbook content
     """
     if (
         sys.version_info >= (3, 12)
