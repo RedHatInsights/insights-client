@@ -27,6 +27,7 @@ PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
         "bugs.yml",
     ],
 )
+@pytest.mark.tier1
 def test_official_playbook(insights_client, filename: str):
     """
     :id: 3659e27f-3621-4591-b1c4-b5f0a277bb72
