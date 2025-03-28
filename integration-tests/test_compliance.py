@@ -23,6 +23,7 @@ pytestmark = [
 ]
 
 
+@pytest.mark.tier1
 def test_compliance_option(insights_client):
     """
     :id: caa8b3e1-9347-494c-a1f5-1fa670136834
@@ -61,6 +62,7 @@ def test_compliance_option(insights_client):
         assert "Successfully uploaded report" in compliance_after_registration.stdout
 
 
+@pytest.mark.tier1
 def test_compliance_policies_option(insights_client):
     """
     :id: ad3a2073-3a2e-485e-bc7b-fede2111a06a

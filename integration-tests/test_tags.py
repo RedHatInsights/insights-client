@@ -19,6 +19,7 @@ from constants import TAGS_FILE
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.tier1
 def test_tags(insights_client, external_inventory, test_config):
     """
     :id: 3e9d5b76-7065-4ade-8397-5854a8fef83b
