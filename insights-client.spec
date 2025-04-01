@@ -22,7 +22,6 @@ Requires: python3-requests >= 2.6
 Requires: python3-PyYAML
 Requires: python3-magic
 Requires: python3-six
-Requires: python3dist(setuptools)
 Requires: coreutils
 Requires: ((selinux-policy >= 38.1.68-1) if selinux-policy)
 Requires: (python3-libselinux if selinux-policy)
