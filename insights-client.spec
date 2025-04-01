@@ -25,7 +25,6 @@ Requires: pciutils
 Requires: python3-requests >= 2.6
 Requires: python3-PyYAML
 Requires: python3-six
-Requires: python3dist(setuptools)
 Requires: coreutils
 Requires: insights-core >= 3.6.7
 
