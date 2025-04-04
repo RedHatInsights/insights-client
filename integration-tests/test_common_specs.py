@@ -12,6 +12,8 @@
 import json
 import os
 import pytest
+import subprocess
+import logging
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -81,5 +83,30 @@ def test_common_specs(insights_client, tmp_path):
         # (unless we are in container and the spec is known to not work in containers)
         if in_container and spec in privileged_specs:
             continue
-        assert not data["errors"], f"'{spec}' contains errors: {data['errors']} "
-        assert data["results"] is not None, f"'{spec}' does not contain results"
+
+        try:
+            assert not data["errors"], f"'{spec}' contains errors: {data['errors']} "
+            assert data["results"] is not None, f"'{spec}' does not contain results"
+        except AssertionError as e:
+            logging.error(f"Spec '{spec}' failed with an error '{str(e)}'")
+
+            # Try to extract and re-run the command from the spec JSON
+            cmd = data["results"]["object"]["cmd"]
+            if cmd:
+                logging.debug(f"Attempting to re-run the cmd from the spec: '{cmd}'")
+                result = subprocess.run(
+                    cmd, shell=True, capture_output=True, text=True, timeout=10
+                )
+
+                logging.debug(f"Command return code: {result.returncode}")
+                logging.debug(f"Command STDOUT code: {result.stdout.strip()}")
+                logging.debug(f"Command STDERR code: {result.stderr.strip()}")
+
+                if result.returncode != 0:
+                    raise AssertionError(
+                        f"Command '{cmd}' failed with a return code \
+                                         of {result.returncode}"
+                    )
+            else:
+                logging.debug(f"No command found in spec JSON for {spec}")
+            raise
