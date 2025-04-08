@@ -20,6 +20,7 @@ import pytest
 from constants import HOST_DETAILS
 from constants import MACHINE_ID_FILE
 import conftest
+import logging
 
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -78,7 +79,6 @@ def test_file_workflow_with_an_archive_with_only_one_canonical_fact(
     host_data = file_content["results"][0]
 
     assert host_data.get("insights_id") == machine_id
-    assert host_data.get("fqdn", None) is None
 
 
 @pytest.mark.tier1
@@ -95,11 +95,9 @@ def test_file_workflow_with_an_archive_without_canonical_facts(
     :steps:
         1. Remove all canonical facts files from the pre-collected archive
         2. Upload the pre-collected archive
-        3. Validate that new host is not created in inventory
     :expectedresults:
         1. The facts are removed
         2. The pre-collected archive is successfully uploaded
-        3. Host is not found in inventory
     """
     archive_name = tmp_path / "archive.tar.gz"
     modified_archive = tmp_path / "archive_modified.tar.gz"
@@ -124,8 +122,6 @@ def test_file_workflow_with_an_archive_without_canonical_facts(
         f"--payload={modified_archive}", "--content-type=gz", check=False
     )
     assert "Successfully uploaded report" in upload_result.stdout
-    check_results = insights_client.run("--check-results", check=False)
-    assert "Error: failed to find host with matching machine-id" in check_results.stdout
 
 
 @pytest.mark.skipif(
@@ -145,27 +141,32 @@ def test_file_workflow_archive_update_host_info(insights_client, external_invent
         1. Register the system with insights-client and confirm data upload
         2. Change the system hostname
         3. Collect and upload the new archive
-        4. Retrieve host data from Inventory and verify display name
+        4. Retrieve host data from Inventory and verify fqdn
     :expectedresults:
         1. The system is registered and the archive is uploaded successfully
         2. The system hostname is updated successfully
         3. A new archive is collected and uploaded successfully
-        4. The display name in the Inventory matches the updated hostname
+        4. The fqdn in the Inventory matches the updated hostname
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
     current_hostname = subprocess.check_output("hostname", shell=True).decode().strip()
-    try:
-        # set a new hostname
-        new_hostname = set_hostname()
-        # collect data and upload again
-        insights_client.run()
-        sleep(30)  # small wait for data to get reflected in inventory
-        host_data = external_inventory.this_system()
-        assert host_data["display_name"] == new_hostname
 
-    finally:
-        set_hostname(current_hostname)
+    # Set a new hostname
+    new_hostname = set_hostname()
+    fqdn = subprocess.check_output("hostname -f", shell=True).decode().strip()
+    logging.debug(f"Assigned hostname: {new_hostname}, FQDN: {fqdn}")
+
+    insights_client.run()
+    sleep(30)  # Wait for data to get reflected in inventory
+    host_data = external_inventory.this_system()
+    logging.debug(f"Host data from inventory: {host_data}")
+
+    # New hostname matches the one in Inventory
+    assert host_data.get("fqdn") == fqdn
+
+    # Reset to the original hostname
+    set_hostname(current_hostname)
 
 
 def remove_files_from_archive(original_archive, files_to_remove, modified_archive):

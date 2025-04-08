@@ -13,9 +13,10 @@ cd ../../../
 # This is for ad-hoc and compose testing.
 rpm -q insights-client || ./systemtest/guest-setup.sh
 
-dnf --setopt install_weak_deps=False install -y \
-  podman git-core python3-pip python3-pytest logrotate bzip2 zip \
-  scap-security-guide openscap-scanner openscap
+  dnf --setopt install_weak_deps=False install -y \
+    podman git-core python3-pip python3-pytest logrotate bzip2 zip \
+    scap-security-guide openscap-scanner openscap bzip2-devel
+fi
 
 # If this is an insightsCore PR build and sign the new egg.
 [ -z "${insightsCoreBranch+x}" ] || ./systemtest/insights-core-setup.sh
