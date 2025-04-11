@@ -15,6 +15,7 @@ import contextlib
 import os
 import yaml
 from constants import TAGS_FILE
+from time import sleep
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -68,6 +69,7 @@ def test_tags(insights_client, external_inventory, test_config):
             assert data_loaded["group"] == "first_tag"
 
         # Check new tag from inventory
+        sleep(30)
         system_tags = external_inventory.this_system_tags()
         assert {
             "namespace": "insights-client",
@@ -82,6 +84,7 @@ def test_tags(insights_client, external_inventory, test_config):
         with TAGS_FILE.open("w") as tags_yaml:
             yaml.dump(data_loaded, tags_yaml, default_flow_style=False)
         insights_client.run()
+        sleep(60)
         system_tags = external_inventory.this_system_tags()
         assert {
             "namespace": "insights-client",
