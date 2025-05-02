@@ -81,7 +81,8 @@ def test_status_registered_only_locally(
     insights_client.config.legacy_upload = False
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
-    external_inventory.delete(path=f"hosts/{external_inventory.this_system()['id']}")
+    system_id = external_inventory.this_system()["id"]
+    external_inventory.delete(path=f"hosts/{system_id}")
     response = external_inventory.get(path=f"hosts?insights_id={insights_client.uuid}")
     assert response.json()["total"] == 0
 
