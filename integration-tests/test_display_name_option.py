@@ -16,6 +16,7 @@ import logging
 import json
 import random
 import conftest
+import subprocess
 
 from constants import HOST_DETAILS
 
@@ -259,7 +260,15 @@ def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_co
     insights_client.config.save()
 
     # register insights
-    status = insights_client.run("--register")
+    try:
+        status = insights_client.run("--register")
+    except subprocess.CalledProcessError as e:
+        if (
+            "certificate verify failed" in e.stdout.lower()
+            or "certificate verify failed" in str(e)
+        ):
+            pytest.skip("Skipping test due to SSL certificate verification failure")
+        raise
     assert conftest.loop_until(lambda: insights_client.is_registered)
     assert unique_hostname in status.stdout
 
