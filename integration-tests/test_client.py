@@ -4,7 +4,7 @@
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:subsystemteam: sst_csi_client_tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
@@ -74,6 +74,7 @@ def test_client_rpm_mandatory_files(filename, rpm_ql_insights_client):
     """
     :id: c7d2edbe-ae78-47e0-9b3d-ae1634c0ac79
     :title: Verify mandatory files for RPM
+    :parametrized: yes
     :description: Verify the existence of mandatory files for the insights-client RPM
     :tags: Tier 1
     :steps:
