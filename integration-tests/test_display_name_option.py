@@ -4,7 +4,7 @@
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:subsystemteam: sst_csi_client_tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
@@ -177,6 +177,7 @@ def test_invalid_display_name(invalid_display_name, insights_client):
     """
     :id: 9cbdd1a6-9ee3-4799-baaf-15c3894ca55b
     :title: Test handling of invalid display names
+    :parametrized: yes
     :description:
         This test verifies that attempting to set an invalid display_name is rejected
         and does not alter the current display_name value

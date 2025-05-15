@@ -4,7 +4,7 @@
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:subsystemteam: sst_csi_client_tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
@@ -52,6 +52,7 @@ def test_manpage(option):
     """
     :id: bd8dbda3-930e-4081-b318-1e88b25e26ef
     :title: Test manual page entries for insights-client
+    :parametrized: yes
     :description:
         This test verifies that the insights-client manual page includes
         all the specified options.

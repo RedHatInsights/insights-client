@@ -4,7 +4,7 @@
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:subsystemteam: sst_csi_client_tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
@@ -34,6 +34,7 @@ def test_official_playbook(filename: str):
     """
     :id: 3659e27f-3621-4591-b1c4-b5f0a277bb72
     :title: Test playbook verifier
+    :parametrized: yes
     :description:
         This test verifies the official playbooks against the GPG key
         the application ships.

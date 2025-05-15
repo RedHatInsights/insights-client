@@ -4,7 +4,7 @@
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:subsystemteam: sst_csi_client_tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
@@ -29,6 +29,7 @@ def test_redaction_not_on_cmd(insights_client, tmp_path, not_removed_command):
     """
     :id: 264d1d8f-47a5-49ce-800c-d349aaacdb01
     :title: Test commands are collected when redaction not configured
+    :parametrized: yes
     :description:
         This test verifies that when no commands are configured for redaction in
         `/etc/insights-client/file-redaction.yaml`, the outputs of the related
@@ -52,6 +53,7 @@ def test_redaction_on_cmd(insights_client, tmp_path, removed_command):
     """
     :id: a2d7b71c-205d-4545-8a6b-b0be9ff57611
     :title: Test commands are redacted when configured
+    :parametrized: yes
     :description:
         This test verifies that when commands are configured for redaction in
         `/etc/insights-client/file-redaction.yaml`, the outputs of the related
@@ -81,6 +83,7 @@ def test_redaction_not_on_file(insights_client, tmp_path, not_removed_file):
     """
     :id: cb2ee8b8-fd82-48ad-bebc-3e044f277c55
     :title: Test files are collected when redaction not configured
+    :parametrized: yes
     :description:
         This test verifies that when no files are configured for redaction in
         `/etc/insights-client/file-redaction.yaml`, the related files are
@@ -105,6 +108,7 @@ def test_redaction_on_file(insights_client, tmp_path, removed_file):
     """
     :id: 849cc4ac-d45e-44b8-b307-797935085eda
     :title: Test files are redacted when configured
+    :parametrized: yes
     :description:
         This test verifies that when files are configured for redaction in
         `/etc/insights-client/file-redaction.yaml`, the related files are
