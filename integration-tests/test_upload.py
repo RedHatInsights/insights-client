@@ -4,7 +4,7 @@
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:subsystemteam: sst_csi_client_tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
@@ -155,6 +155,7 @@ def test_upload_compressor_options(
     """
     :id: 69a06826-6093-46de-a7a6-9726ae141820
     :title: Test upload with Different Compressor Options
+    :parametrized: yes
     :description:
         This test verifies that valid compression types can be used
         with --compressor to create archives and upload data using --payload
