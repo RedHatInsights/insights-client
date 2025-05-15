@@ -194,7 +194,7 @@ def test_no_obfuscation_on_package_version(
     insights_client.run("--register", "--output-file=%s" % archive_location)
     with tarfile.open(archive_location, "r") as tar:
         for w_file in tar.getmembers():
-            if w_file.name.find(package_info_file) != -1:
+            if package_info_file in w_file.name and w_file.isfile():
                 file_content = tar.extractfile(w_file).read()
                 assert "10.230.230" not in file_content.decode()
 
