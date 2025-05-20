@@ -18,5 +18,5 @@ done
 
 TAG=$(cat EGG_VERSION)
 
-curl -L https://console.redhat.com/api/v1/static/release/insights-core.el10.egg --output data/rpm.egg
-curl -L https://console.redhat.com/api/v1/static/release/insights-core.el10.egg.asc --output data/rpm.egg.asc
+curl --fail -L https://console.redhat.com/api/v1/static/release/insights-core.el10.egg --output data/rpm.egg
+curl --fail -L https://console.redhat.com/api/v1/static/release/insights-core.el10.egg.asc --output data/rpm.egg.asc
