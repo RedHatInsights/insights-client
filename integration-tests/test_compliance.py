@@ -45,7 +45,9 @@ def test_compliance_option(insights_client):
     compliance_before_registration = insights_client.run("--compliance", check=False)
     assert compliance_before_registration.returncode == 1
     assert (
-        "This host has not been registered. Use --register to register this host"
+        "This host is unregistered. Use --register to register this host"
+        in compliance_before_registration.stdout
+        or "This host has not been registered. Use --register to register this host"
         in compliance_before_registration.stdout
     )
 
