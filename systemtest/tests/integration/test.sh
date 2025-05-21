@@ -20,6 +20,13 @@ if ! command -v bootc >/dev/null || bootc status | grep -q 'type: null'; then
     scap-security-guide openscap-scanner openscap bzip2-devel
 fi
 
+# TEST_RPMS is set in jenkins jobs after parsing CI Messages in gating Jobs.
+# If TEST_RPMS is set then install the RPM builds for gating.
+if [[ -v TEST_RPMS ]]; then
+	echo "Installing RPMs: ${TEST_RPMS}"
+	dnf -y install --allowerasing ${TEST_RPMS}
+fi
+
 # If this is an insightsCore PR build and sign the new egg.
 [ -z "${insightsCoreBranch+x}" ] || ./systemtest/insights-core-setup.sh
 
