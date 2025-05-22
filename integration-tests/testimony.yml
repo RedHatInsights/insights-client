@@ -21,7 +21,7 @@ Reference:
   casesensitive: false
   required: false
   type: string
-CaseComponent:
+Component:
   casesensitive: false
   required: true
   type: string
@@ -31,7 +31,7 @@ Requirement:
   type: choice
   choices:
     - RHSS-291297
-SubSystemTeam:
+PoolTeam:
   casesensitive: false
   required: true
   type: choice
