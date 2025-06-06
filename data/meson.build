@@ -1,5 +1,4 @@
 sysconf_sources = [
-  '.exp.sed',
   'cert-api.access.redhat.com.pem',
   'insights-client.conf',
   'insights-client.motd',
