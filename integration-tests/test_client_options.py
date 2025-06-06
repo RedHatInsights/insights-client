@@ -292,14 +292,12 @@ def test_check_show_results(insights_client):
             retrieving the results
         4. The output includes a remediation for the OpenSSH config permission issue
     """
+    os.chmod("/etc/ssh/sshd_config", 0o777)
+
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
 
     try:
-        os.chmod("/etc/ssh/sshd_config", 0o777)
-
-        insights_client.run()
-
         insights_client.run("--check-results")
         show_results = insights_client.run("--show-results")
 
