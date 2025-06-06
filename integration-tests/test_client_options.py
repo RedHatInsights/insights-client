@@ -304,8 +304,6 @@ def test_check_show_results(insights_client):
     assert conftest.loop_until(lambda: insights_client.is_registered)
 
     try:
-        insights_client.run()
-
         insights_client.run("--check-results")
         show_results = insights_client.run("--show-results")
 
