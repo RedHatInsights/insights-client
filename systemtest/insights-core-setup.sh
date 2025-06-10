@@ -1,10 +1,28 @@
-#!/usr/bin/bash -ux
+#!/usr/bin/bash -x
 
-# Stolen from
-# https://github.com/RedHatInsights/insights-core/blob/master/insights/tests/client/test_crypto.py
-# https://gitlab.cee.redhat.com/mhorky/tasks/-/blob/main/CCT-131/steps.md#prepare-the-vm
+currDir=$PWD
+cd ~/
+REPO="${insightsCoreRepo:-https://github.com/RedHatInsights/insights-core.git}"
+git clone $REPO
+cd $(basename $_ .git)
+git switch "$insightsCoreBranch"
 
-cat >public.armor.key << EOF
+mv /etc/insights-client/rpm.egg{,.original}
+mv /etc/insights-client/rpm.egg.asc{,.original}
+
+sed -ie 's/#auto_update=True/auto_update=False/g' \
+  /etc/insights-client/insights-client.conf
+
+if [ -f "$insightsCoreEgg" ]; then
+  echo 'Using prebuilt insights-core egg...'
+  cp "$insightsCoreEgg" /var/lib/insights/last_stable.egg
+  cp "$insightsCoreEgg".asc /var/lib/insights/last_stable.egg.asc
+else
+  # Stolen from
+  # https://github.com/RedHatInsights/insights-core/blob/master/insights/tests/client/test_crypto.py
+  # https://gitlab.cee.redhat.com/mhorky/tasks/-/blob/main/CCT-131/steps.md#prepare-the-vm
+
+  cat >public.armor.key << EOF
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mDMEZpbJQRYJKwYBBAHaRw8BAQdA3HBHO0ADUcKgqaTbj6BUU82ZbJ5ojhTdju7b
@@ -20,7 +38,7 @@ VshPu+vWAQCW0w/EIsPMPnlecizvNf3pXydze5XotIr4XFrJaB465AD8CVn5JDN2
 -----END PGP PUBLIC KEY BLOCK-----
 EOF
 
-cat >private.armor.key << EOF
+  cat >private.armor.key << EOF
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lFgEZpbJQRYJKwYBBAHaRw8BAQdA3HBHO0ADUcKgqaTbj6BUU82ZbJ5ojhTdju7b
@@ -38,38 +56,27 @@ QGwr6faNl2EprUMHgpkQSnGFFD385KBDXgfgHoTsYjJdAwEIBwAA/0lTtr1yPIFe
 -----END PGP PRIVATE KEY BLOCK-----
 EOF
 
-gpg --import public.armor.key
-gpg --import private.armor.key
-KEYID=$(gpg --list-secret-keys --keyid-format long cct-qe \
-  | grep sec | awk '{ split($2, a, "/"); print a[2] }')
-gpg --output public.gpg --export $KEYID
+  gpg --import public.armor.key
+  gpg --import private.armor.key
+  KEYID=$(gpg --list-secret-keys --keyid-format long cct-qe \
+    | grep sec | awk '{ split($2, a, "/"); print a[2] }')
+  gpg --output public.gpg --export $KEYID
 
-mv /etc/insights-client/redhattools.pub.gpg{,.original}
-mv ./public.gpg /etc/insights-client/redhattools.pub.gpg.dev
-mkdir temp && chmod 700 temp
-gpg --homedir temp --import /etc/insights-client/redhattools.pub.gpg.*
-gpg --homedir temp --export > /etc/insights-client/redhattools.pub.gpg
-rm -rf temp/
+  mv /etc/insights-client/redhattools.pub.gpg{,.original}
+  mv ./public.gpg /etc/insights-client/redhattools.pub.gpg.dev
+  mkdir temp && chmod 700 temp
+  gpg --homedir temp --import /etc/insights-client/redhattools.pub.gpg.*
+  gpg --homedir temp --export > /etc/insights-client/redhattools.pub.gpg
+  rm -rf temp/
 
-mv /etc/insights-client/rpm.egg{,.original}
-mv /etc/insights-client/rpm.egg.asc{,.original}
+  # Overwrite version and release of Core, to ensure we're always newer than released versions
+  sed -i "s/3.0.8/9.99.999/" insights/VERSION
+  sed -i "s/dev/0/" insights/RELEASE
 
-currDir=$PWD
-cd ~/
-git clone https://github.com/RedHatInsights/insights-core.git
-cd insights-core
-git switch $insightsCoreBranch
-
-# Overwrite version and release of Core, to ensure we're always newer than released versions
-sed -i "s/3.0.8/9.99.999/" insights/VERSION
-sed -i "s/dev/0/" insights/RELEASE
-
-./build_client_egg.sh
-cp insights.zip last_stable.egg
-gpg --detach-sign -u $KEYID --armor last_stable.egg
-cp last_stable.egg last_stable.egg.asc /var/lib/insights/
-
-sed -ie 's/#auto_update=True/auto_update=False/g' \
-  /etc/insights-client/insights-client.conf
+  ./build_client_egg.sh
+  cp insights.zip last_stable.egg
+  gpg --detach-sign -u $KEYID --armor last_stable.egg
+  cp last_stable.egg last_stable.egg.asc /var/lib/insights/
+fi
 
 cd $currDir
