@@ -24,7 +24,10 @@ Reference:
 Component:
   casesensitive: false
   required: true
-  type: string
+  type: choice
+  choices:
+    - insights-client
+    - insights-client-ros
 Requirement:
   casesensitive: false
   required: true
