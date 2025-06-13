@@ -287,25 +287,23 @@ def test_check_show_results(insights_client):
     :reference:
     :tags: Tier 1
     :steps:
-        1. Register insights-client
-        2. Change permissions of /etc/ssh/sshd_config file to introduce a vulnerability
+        1. Change permissions of /etc/ssh/sshd_config file to introduce a vulnerability
+        2. Register insights-client
         3. Run insights-client with --check-results option
         4. Run the insights-client with --show-results option
     :expectedresults:
-        1. The client is registered
-        2. The permissions of the file are set to 0o777
+        1. The permissions of the file are set to 0o777
+        2. The client is registered
         3. The command runs successfully and checks for vulnerabilities
             retrieving the results
         4. The output includes a remediation for the OpenSSH config permission issue
     """
+    os.chmod("/etc/ssh/sshd_config", 0o777)
+
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
 
     try:
-        os.chmod("/etc/ssh/sshd_config", 0o777)
-
-        insights_client.run()
-
         insights_client.run("--check-results")
         show_results = insights_client.run("--show-results")
 
