@@ -18,6 +18,10 @@ import logging
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+@pytest.mark.skipif(
+    os.uname().machine != "x86_64",
+    reason="Test only runs on x86_64 architecture for now",
+)
 @pytest.mark.tier1
 def test_common_specs(insights_client, tmp_path):
     """
