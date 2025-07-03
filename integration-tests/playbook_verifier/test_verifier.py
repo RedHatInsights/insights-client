@@ -34,6 +34,7 @@ def test_official_playbook(filename: str):
     """
     :id: 3659e27f-3621-4591-b1c4-b5f0a277bb72
     :title: Test playbook verifier
+    :parametrized: yes
     :description:
         This test verifies the official playbooks against the GPG key
         the application ships.
