@@ -22,7 +22,7 @@ ARCHIVE_CACHE_DIRECTORY = "/var/cache/insights-client"
 
 
 @pytest.mark.tier1
-def test_set_ansible_host_info(insights_client):
+def test_set_ansible_host_info(insights_client, test_config):
     """
     :id: 18fc9438-8f2e-40f7-88b8-b51f36c9c396
     :title: Test set ansible host info
@@ -41,6 +41,8 @@ def test_set_ansible_host_info(insights_client):
         2. The command completes successfully
         3. The return code is 0
     """
+    if "satellite615" in test_config.environment:
+        pytest.skip(reason="Issue was fixed in Satellite 6.16 and upwards")
     # Register system against Satellite, and register insights through satellite
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
