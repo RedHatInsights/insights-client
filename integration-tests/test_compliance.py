@@ -87,6 +87,11 @@ def test_compliance_policies_option(insights_client):
     assert conftest.loop_until(lambda: insights_client.is_registered)
 
     compliance_policies = insights_client.run("--compliance-policies", check=False)
+    if (
+        "An error has occurred while communicating with the API"
+        in compliance_policies.stdout
+    ):
+        pytest.skip(reason="Error communicating with API")
     if compliance_policies.returncode == 1:
         assert "System is not assignable to any policy." in compliance_policies.stdout
         assert (
