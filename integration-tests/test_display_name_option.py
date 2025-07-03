@@ -39,7 +39,7 @@ def create_random_string(n: int):
 
 
 @pytest.mark.tier1
-def test_display_name(insights_client):
+def test_display_name(insights_client, test_config):
     """
     :id: 4758cb21-03b4-4334-852c-791b7c82b50a
     :title: Test updating display name via '--display-name'
@@ -57,6 +57,8 @@ def test_display_name(insights_client):
         2. The command outputs 'Display name updated to <NEW_HOSTNAME>'
         3. The display_name in host detailes matches the new hostname
     """
+    if "satellite" in test_config.environment:
+        pytest.skip(reason="Test is not applicable to Satellite")
     new_hostname = generate_unique_hostname()
     insights_client.run("--register")
     assert conftest.loop_until(lambda: insights_client.is_registered)
