@@ -252,6 +252,7 @@ def test_register_group_option(insights_client, legacy_upload_value):
     """
     :id: 5213a950-e66f-4749-8a76-66b6d4ed9aa5
     :title: Test register with --group option
+    :parametrized: yes
     :description:
         This test verifies that the --register command works as expected when
         --group option is used
