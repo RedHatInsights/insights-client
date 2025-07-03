@@ -36,7 +36,11 @@ PoolTeam:
   required: true
   type: choice
   choices:
-    - sst_csi_client_tools
+    - rhel-sst-csi-client-tools
+Parametrized:
+  casesensitive: false
+  required: false
+  type: string
 CaseAutomation:
   casesensitive: false
   required: true
