@@ -105,6 +105,7 @@ def test_password_obfuscation(insights_client, tmp_path, password_file):
     """
     :id: ad3f22b2-8792-45fb-abdd-d29d58db5c41
     :title: Test password obfuscation in collected files
+    :parametrized: yes
     :description:
         This test ensures that sensitive information such as passwords is obfuscated
         in collected files, regardless of the obfuscation setting in the configuration
@@ -169,6 +170,7 @@ def test_no_obfuscation_on_package_version(
     """
     :id: aa2eb4cf-9fed-4fe9-8423-87bbf2f2dd95
     :title: Test package versions are not obfuscated when obfuscation is enabled
+    :parametrized: yes
     :description:
         This test ensures that version strings in package information files
         are not incorrectly obfuscated as IP addresses when obfuscation is
