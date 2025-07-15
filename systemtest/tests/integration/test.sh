@@ -9,9 +9,16 @@ cd ../../../
 # This is for the downstream PR jobs.
 [ -z "${ghprbPullId+x}" ] || ./systemtest/copr-setup.sh
 
-# Simulate the packit setup on downstream builds.
-# This is for ad-hoc and compose testing.
-rpm -q insights-client || ./systemtest/guest-setup.sh
+  # TEST_RPMS is set in jenkins jobs after parsing CI Messages in gating Jobs.
+  # If TEST_RPMS is set then install the RPM builds for gating.
+  if [[ -v TEST_RPMS ]]; then
+    echo "Installing RPMs: ${TEST_RPMS}"
+    dnf -y install --allowerasing ${TEST_RPMS}
+  fi
+
+  # Simulate the packit setup on downstream builds.
+  # This is for ad-hoc and compose testing.
+  rpm -q insights-client || ./systemtest/guest-setup.sh
 
 dnf --setopt install_weak_deps=False install -y \
   podman git-core python3-pip python3-pytest logrotate bzip2 zip \
