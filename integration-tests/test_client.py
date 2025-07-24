@@ -15,6 +15,7 @@ import os
 import subprocess
 import pytest
 import conftest
+from pytest_client_tools.util import Version
 
 
 @pytest.mark.usefixtures("register_subman")
@@ -201,18 +202,21 @@ def test_insights_details_file_exists(insights_client):
     """
     :id: 2ccc8e00-0e76-47fd-bdb2-27998c0094ab
     :title: Verify insights-client details file exists
-    :description: Verify that the file /var/lib/insights/insights-client.json exists
+    :description:
+        Verify that the file /var/lib/insights/insights-client.json
+        will not get recreated
+    :reference: https://issues.redhat.com/browse/CCT-1082
     :tags: Tier 1
     :steps:
         1. Register insights-client
         2. Delete /var/lib/insights/insights-client.json if it exists
         3. Run the --check-results command
-        4. Verify the existence of /var/lib/insights/insights-client.json
+        4. Verify /var/lib/insights/insights-client.json is still not present
     :expectedresults:
         1. Insights-client is registered
         2. The file /var/lib/insights/insights-client.json does not exist
         3. The --check-results command is executed successfully
-        4. The file /var/lib/insights/insights-client.json exists
+        4. The file /var/lib/insights/insights-client.json does not exists
     """
     output_file = "/var/lib/insights/insights-details.json"
     insights_client.register()
@@ -222,8 +226,11 @@ def test_insights_details_file_exists(insights_client):
     with contextlib.suppress(FileNotFoundError):
         os.remove(output_file)
     insights_client.run("--check-results")
-    # Verify that insights-details.json gets re generated
-    assert os.path.isfile(output_file)
+    # Verify that insights-details.json is not remade on egg >= 3.6.2
+    if insights_client.core_version < Version(3, 6, 2):
+        assert os.path.isfile(output_file)
+    else:
+        assert not os.path.isfile(output_file)
 
 
 @pytest.mark.usefixtures("register_subman")
