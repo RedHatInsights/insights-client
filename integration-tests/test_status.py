@@ -42,7 +42,7 @@ def test_status_registered(external_candlepin, insights_client):
     assert conftest.loop_until(lambda: insights_client.is_registered)
     # Adding a small wait to ensure inventory is up-to-date
     sleep(5)
-    registration_status = insights_client.run("--status")
+    registration_status = insights_client.run("--status", selinux_context=None)
     if insights_client.config.legacy_upload:
         assert "Insights API confirms registration." in registration_status.stdout
     else:
@@ -83,7 +83,9 @@ def test_status_registered_only_locally(
     response = external_inventory.get(path=f"hosts?insights_id={insights_client.uuid}")
     assert response.json()["total"] == 0
 
-    registration_status = insights_client.run("--status", check=False)
+    registration_status = insights_client.run(
+        "--status", check=False, selinux_context=None
+    )
     if insights_client.core_version >= Version(3, 5, 7):
         assert "This host is registered.\n" == registration_status.stdout
         assert os.path.exists(REGISTERED_FILE)
@@ -121,7 +123,9 @@ def test_status_unregistered(external_candlepin, insights_client):
         insights_client.unregister()
     assert conftest.loop_until(lambda: not insights_client.is_registered)
 
-    registration_status = insights_client.run("--status", check=False)
+    registration_status = insights_client.run(
+        "--status", check=False, selinux_context=None
+    )
     if insights_client.config.legacy_upload:
         assert registration_status.returncode == 1
         assert (
