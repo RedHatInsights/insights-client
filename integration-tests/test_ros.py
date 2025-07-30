@@ -1,10 +1,10 @@
 """
-:component: insights-client-ros
+:casecomponent: insights-client
 :requirement: RHSS-291297
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:poolteam: rhel-sst-csi-client-tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
