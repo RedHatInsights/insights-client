@@ -284,7 +284,7 @@ def test_cmd_timeout(insights_client):
     insights_client.config.cmd_timeout = 10
     insights_client.config.save()
 
-    timeout_output = insights_client.run("--verbose", check=False)
+    timeout_output = insights_client.run("--verbose", check=False, selinux_context=None)
     assert cmd_output_message in timeout_output.stdout
 
 
