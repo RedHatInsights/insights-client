@@ -15,7 +15,7 @@ import contextlib
 import os
 import pytest
 from pytest_client_tools.util import Version
-from time import sleep
+import logging
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -42,13 +42,47 @@ def test_status_registered(external_candlepin, insights_client):
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
-    # Adding a small wait to ensure inventory is up-to-date
-    sleep(5)
-    registration_status = insights_client.run("--status")
-    if insights_client.config.legacy_upload:
-        assert "Insights API confirms registration." in registration_status.stdout
-    else:
-        assert "This host is registered.\n" == registration_status.stdout
+
+    logging.info("Waiting for registration status to be properly reflected...")
+
+    def check_status_command():
+        """Check if --status command returns the expected registration message"""
+        try:
+            registration_status = insights_client.run("--status")
+            if insights_client.config.legacy_upload:
+                expected_msg = "Insights API confirms registration."
+                status_correct = expected_msg in registration_status.stdout
+                if status_correct:
+                    logging.info("Legacy upload status confirmed")
+                else:
+                    logging.debug(
+                        f"Status not yet correct. Current output: "
+                        f"{registration_status.stdout}"
+                    )
+            else:
+                expected_msg = "This host is registered.\n"
+                status_correct = registration_status.stdout == expected_msg
+                if status_correct:
+                    logging.info("Registration status confirmed")
+                else:
+                    logging.debug(
+                        f"Status not yet correct. Expected: {repr(expected_msg)}, "
+                        f"Got: {repr(registration_status.stdout)}"
+                    )
+            return status_correct
+        except Exception as e:
+            logging.debug(f"Error checking status command: {e}")
+            return False
+
+    # Wait for status to be correct (poll every 5 seconds, timeout after 2 minutes)
+    status_ready = conftest.loop_until(
+        check_status_command, poll_sec=5, timeout_sec=2 * 60
+    )
+
+    assert status_ready, (
+        "Registration status did not become available within 2 minutes. "
+        "Check insights-client registration and backend synchronization."
+    )
 
 
 @pytest.mark.tier1

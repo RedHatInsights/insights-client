@@ -10,9 +10,9 @@
 """
 
 import conftest
-from time import sleep
 import pytest
 import subprocess
+import logging
 from pathlib import Path
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -67,16 +67,44 @@ def test_data_upload_systemd_timer(insights_client, external_inventory):
 
         subprocess.run(["systemctl", "daemon-reload"])
 
-        sleep(60 * 5)  # sleep for the period when timer is triggered and upload happens
+        # Start the timer to ensure it's active
+        subprocess.run(["systemctl", "start", "insights-client.timer"])
+
+        logging.info(f"Initial last_check_in time: {last_checkin_time}")
+        logging.info("Waiting for systemd timer to trigger upload...")
+
+        def check_upload_completed():
+            """Check if the upload completed by comparing last_check_in times"""
+            try:
+                response = external_inventory.this_system()
+                current_checkin_time = response["per_reporter_staleness"]["puptoo"][
+                    "last_check_in"
+                ]
+                logging.debug(f"Current last_check_in time: {current_checkin_time}")
+                return current_checkin_time > last_checkin_time
+            except Exception as e:
+                logging.debug(f"Error checking upload status: {e}")
+                return False
+
+        # Wait for upload to complete via timer (poll every 30s, timeout 10min)
+        upload_completed = conftest.loop_until(
+            check_upload_completed, poll_sec=30, timeout_sec=10 * 60
+        )
 
         # remove the override.conf for insights-client.timer to avoid multiple uploads
         subprocess.run(["systemctl", "revert", "insights-client.timer"])
 
-        # fetch the last_check_in time
+        assert upload_completed, (
+            "Timer-triggered upload did not complete within 10 minutes. "
+            "Check systemd timer status and insights-client logs."
+        )
+
+        # Verify the final state
         response = external_inventory.this_system()
         latest_checkin_time = response["per_reporter_staleness"]["puptoo"][
             "last_check_in"
         ]
+        logging.info(f"Final last_check_in time: {latest_checkin_time}")
         assert last_checkin_time < latest_checkin_time
 
     finally:

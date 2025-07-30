@@ -15,7 +15,6 @@ import random
 import string
 import subprocess
 import tarfile
-from time import sleep
 import pytest
 from constants import HOST_DETAILS
 from constants import MACHINE_ID_FILE
@@ -158,12 +157,39 @@ def test_file_workflow_archive_update_host_info(insights_client, external_invent
     logging.debug(f"Assigned hostname: {new_hostname}, FQDN: {fqdn}")
 
     insights_client.run()
-    sleep(30)  # Wait for data to get reflected in inventory
-    host_data = external_inventory.this_system()
-    logging.debug(f"Host data from inventory: {host_data}")
 
-    # New hostname matches the one in Inventory
-    assert host_data.get("fqdn") == fqdn
+    logging.info(
+        f"Waiting for hostname change to reflect in inventory. Expected FQDN: {fqdn}"
+    )
+
+    def check_hostname_updated():
+        """Check if the hostname change has been reflected in inventory"""
+        try:
+            host_data = external_inventory.this_system()
+            current_fqdn = host_data.get("fqdn")
+            logging.debug(
+                f"Current FQDN in inventory: {current_fqdn}, Expected: {fqdn}"
+            )
+
+            hostname_updated = current_fqdn == fqdn
+            if hostname_updated:
+                logging.info(
+                    f"Hostname successfully updated in inventory: {current_fqdn}"
+                )
+            return hostname_updated
+        except Exception as e:
+            logging.debug(f"Error checking hostname in inventory: {e}")
+            return False
+
+    # Wait for hostname to be updated (poll every 15 seconds, timeout after 5 minutes)
+    hostname_updated = conftest.loop_until(
+        check_hostname_updated, poll_sec=15, timeout_sec=5 * 60
+    )
+
+    assert hostname_updated, (
+        f"Hostname change did not reflect in inventory within 5 minutes. "
+        f"Expected FQDN: {fqdn}. Check insights-client upload and inventory sync."
+    )
 
     # Reset to the original hostname
     set_hostname(current_hostname)

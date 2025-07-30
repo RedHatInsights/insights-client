@@ -14,8 +14,8 @@ import conftest
 import contextlib
 import os
 import yaml
+import logging
 from constants import TAGS_FILE
-from time import sleep
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -72,14 +72,39 @@ def test_tags(insights_client, external_inventory, test_config):
             data_loaded = yaml.safe_load(tags_yaml)
             assert data_loaded["group"] == "first_tag"
 
-        # Check new tag from inventory
-        sleep(30)
-        system_tags = external_inventory.this_system_tags()
-        assert {
-            "namespace": "insights-client",
-            "key": "group",
-            "value": "first_tag",
-        } in system_tags
+        # Check new tag from inventory - wait for it to appear
+        logging.info("Waiting for 'first_tag' to appear in inventory...")
+
+        def check_first_tag_exists():
+            """Check if the first_tag appears in inventory"""
+            try:
+                system_tags = external_inventory.this_system_tags()
+                target_tag = {
+                    "namespace": "insights-client",
+                    "key": "group",
+                    "value": "first_tag",
+                }
+                tag_exists = target_tag in system_tags
+                if tag_exists:
+                    logging.info("first_tag found in inventory")
+                else:
+                    logging.debug(
+                        f"first_tag not yet found. Current tags: {system_tags}"
+                    )
+                return tag_exists
+            except Exception as e:
+                logging.debug(f"Error checking first_tag in inventory: {e}")
+                return False
+
+        # Wait for tag to appear (poll every 15 seconds, timeout after 5 minutes)
+        first_tag_appeared = conftest.loop_until(
+            check_first_tag_exists, poll_sec=15, timeout_sec=5 * 60
+        )
+
+        assert first_tag_appeared, (
+            "first_tag did not appear in inventory within 5 minutes. "
+            "Check insights-client upload and inventory sync."
+        )
 
         # Add new tag in tags.yaml file and check on inventory
         with TAGS_FILE.open("r") as tags_yaml:
@@ -88,10 +113,36 @@ def test_tags(insights_client, external_inventory, test_config):
         with TAGS_FILE.open("w") as tags_yaml:
             yaml.dump(data_loaded, tags_yaml, default_flow_style=False)
         insights_client.run()
-        sleep(60)
-        system_tags = external_inventory.this_system_tags()
-        assert {
-            "namespace": "insights-client",
-            "key": "add_by_file",
-            "value": "second_tag",
-        } in system_tags
+
+        logging.info("Waiting for 'second_tag' to appear in inventory...")
+
+        def check_second_tag_exists():
+            """Check if the second_tag appears in inventory"""
+            try:
+                system_tags = external_inventory.this_system_tags()
+                target_tag = {
+                    "namespace": "insights-client",
+                    "key": "add_by_file",
+                    "value": "second_tag",
+                }
+                tag_exists = target_tag in system_tags
+                if tag_exists:
+                    logging.info("second_tag found in inventory")
+                else:
+                    logging.debug(
+                        f"second_tag not yet found. Current tags: {system_tags}"
+                    )
+                return tag_exists
+            except Exception as e:
+                logging.debug(f"Error checking second_tag in inventory: {e}")
+                return False
+
+        # Wait for tag to appear (poll every 15 seconds, timeout after 5 minutes)
+        second_tag_appeared = conftest.loop_until(
+            check_second_tag_exists, poll_sec=15, timeout_sec=5 * 60
+        )
+
+        assert second_tag_appeared, (
+            "second_tag did not appear in inventory within 5 minutes. "
+            "Check insights-client upload and inventory sync."
+        )
