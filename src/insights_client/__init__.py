@@ -320,24 +320,36 @@ def run_phase(phase, client, validated_eggs):
         env.update(insights_env)
 
         if SWITCH_CORE_SELINUX_POLICY:
-            # in case we can switch to a different SELinux policy for
-            # insights-core, get the current context and switch the type
+            # SELinux context switch into insights-core is allowed and preferred
             context = selinux.context_new(selinux.getcon()[1])
-            # additional check: in case the current type is a certain one
-            # (e.g. unconfined_t when insights-client is run from a shell),
-            # then the switch will not work
-            if selinux.context_type_get(context) not in ["unconfined_t", "sysadm_t"]:
+            source_type = selinux.context_type_get(context)
+
+            if source_type in ("unconfined_t", "sysadm_t"):
+                # Do not transition into insights-core context if we're running
+                # in privileged context already.
+                logger.debug(f"Staying in SELinux context {source_type}")
+            else:
+                # Do transition insights-core context if we're running in
+                # other (unknown), confined context.
+                logger.debug(
+                    "Switching SELinux context from "
+                    f"{source_type} to {CORE_SELINUX_POLICY}"
+                )
                 selinux.context_type_set(context, CORE_SELINUX_POLICY)
                 new_core_context = selinux.context_str(context)
                 selinux.setexeccon(new_core_context)
             selinux.context_free(context)
+
         process = subprocess.Popen(insights_command, env=env)
         process.communicate()
+
         if SWITCH_CORE_SELINUX_POLICY:
             # setexeccon() in theory ought to reset the context for the next
             # execv*() after that execution; it does not seem to happen though,
             # so for now manually reset it
             selinux.setexeccon(None)
+            logger.debug("Switched to the original SELinux context")
+
         if process.returncode == 0:
             # phase successful, don't try another egg
             logger.debug("phase '%s' successful", phase["name"])
@@ -449,6 +461,11 @@ def _main():
     """
     logging_config = get_logging_config()
     set_up_logging(logging_config)
+
+    if SWITCH_CORE_SELINUX_POLICY:
+        logger.debug("Running with SELinux")
+    else:
+        logger.debug("Running without SELinux")
 
     # sort rpm and stable eggs after verification
     validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
