@@ -70,7 +70,7 @@ def test_connection_ok(insights_client):
     url_test = "End Upload URL Connection Test: SUCCESS"
     api_test = "End API URL Connection Test: SUCCESS"
 
-    test_connection = insights_client.run("--test-connection")
+    test_connection = insights_client.run("--test-connection", selinux_context=None)
     assert url_test in test_connection.stdout
     assert api_test in test_connection.stdout
 
@@ -98,7 +98,7 @@ def test_http_timeout(insights_client):
     insights_client.config.http_timeout = 0.001
     insights_client.config.save()
 
-    output = insights_client.run("--test-connection", check=False)
+    output = insights_client.run("--test-connection", check=False, selinux_context=None)
     assert output.returncode == 1
 
     if _is_using_proxy(insights_client.config):
@@ -140,7 +140,7 @@ def test_noauth_proxy_connection(insights_client, test_config):
     insights_client.config.proxy = no_auth_proxy
     insights_client.config.save()
 
-    test_connection = insights_client.run("--test-connection")
+    test_connection = insights_client.run("--test-connection", selinux_context=None)
     assert url_test in test_connection.stdout
     assert api_test in test_connection.stdout
 
@@ -180,7 +180,7 @@ def test_auth_proxy_connection(insights_client, test_config):
     )
     insights_client.config.proxy = auth_proxy
     insights_client.config.save()
-    test_connection = insights_client.run("--test-connection")
+    test_connection = insights_client.run("--test-connection", selinux_context=None)
     assert url_test in test_connection.stdout
     assert api_test in test_connection.stdout
 
@@ -213,7 +213,9 @@ def test_wrong_url_connection(insights_client):
     insights_client.config.authmethod = "CERT"
     insights_client.config.save()
 
-    test_connection = insights_client.run("--test-connection", check=False)
+    test_connection = insights_client.run(
+        "--test-connection", check=False, selinux_context=None
+    )
     assert test_connection.returncode == 1
 
     if _is_using_proxy(insights_client.config):

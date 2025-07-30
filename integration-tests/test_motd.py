@@ -71,7 +71,7 @@ def test_motd(insights_client):
         5. The MOTD file is still not present
     """
     # If the system is not registered, the file should be present.
-    insights_client.run("--status", check=False)
+    insights_client.run("--status", check=False, selinux_context=None)
     assert os.path.exists(MOTD_PATH)
 
     # After registration, the file should not exist.
@@ -113,7 +113,7 @@ def test_motd_dev_null(insights_client):
         os.symlink(os.devnull, MOTD_PATH)
         stack.callback(os.unlink, MOTD_PATH)
 
-        insights_client.run("--status", check=False)
+        insights_client.run("--status", check=False, selinux_context=None)
         assert os.path.samefile(os.devnull, MOTD_PATH)
 
         insights_client.register()

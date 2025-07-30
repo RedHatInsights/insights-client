@@ -149,7 +149,7 @@ def test_support(insights_client):
             'last successful upload', 'connectivity tests', 'running command',
             'process output' and 'support information collected'
     """
-    support_result = insights_client.run("--support")
+    support_result = insights_client.run("--support", selinux_context=None)
 
     assert "Insights version:" in support_result.stdout
     assert "Registration check:" in support_result.stdout
@@ -196,7 +196,7 @@ def test_client_validate_no_network_call(insights_client):
         insights_client.config.auto_config = False
         insights_client.config.auto_update = False
 
-        validate_result = insights_client.run("--validate")
+        validate_result = insights_client.run("--validate", selinux_context=None)
 
         # validating tags.yaml is loaded and no metric data in output
         assert (
@@ -261,7 +261,9 @@ def test_client_diagnosis(insights_client):
         4. The machine ID in the diagnostic data matches the system's machine id
     """
     # Running diagnosis on unregistered system returns appropriate error message
-    diagnosis_result = insights_client.run("--diagnosis", check=False)
+    diagnosis_result = insights_client.run(
+        "--diagnosis", check=False, selinux_context=None
+    )
     assert diagnosis_result.returncode == 1
     if insights_client.core_version >= Version(3, 5, 7):
         assert "Could not get diagnosis data." in diagnosis_result.stdout
