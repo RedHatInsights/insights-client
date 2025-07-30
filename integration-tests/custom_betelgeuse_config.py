@@ -1,8 +1,8 @@
 from betelgeuse import default_config
 
 TESTCASE_CUSTOM_FIELDS = default_config.TESTCASE_CUSTOM_FIELDS + (
-    "component",
-    "poolteam",
+    "casecomponent",
+    "subsystemteam",
     "reference",
     "polarionincludeskipped",
     "polarionlookupmethod",

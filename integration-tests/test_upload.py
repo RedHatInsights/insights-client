@@ -1,10 +1,10 @@
 """
-:component: insights-client
+:casecomponent: insights-client
 :requirement: RHSS-291297
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:poolteam: rhel-sst-csi-client-tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
@@ -105,7 +105,7 @@ def test_upload_wrong_content_type(insights_client, tmp_path):
 @pytest.mark.tier1
 def test_upload_too_large_archive(insights_client, tmp_path):
     """
-    :id: bb9ee84a-d262-4c42-ae16-9b45bf5a385c
+    :id: a71c2b00-a472-4070-8dc8-f66dc9467c10
     :title: Test Upload of Too Large Archive
     :description:
         This test verifies that an attempt to upload too large archive
