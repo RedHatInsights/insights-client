@@ -264,6 +264,9 @@ def _main():
         client.set_up_logging()
 
         for p in get_phases():
+            if p.get("name", None) == "update":
+                logger.debug("Core is managed by DNF. Skipping 'update' phase.")
+                continue
             run_phase(p, client)
     except KeyboardInterrupt:
         sys.exit("Aborting.")
