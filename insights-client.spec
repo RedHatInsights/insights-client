@@ -27,7 +27,7 @@ Requires: python3-PyYAML
 Requires: python3-six
 Requires: python3dist(setuptools)
 Requires: coreutils
-
+Requires: insights-core
 Requires: subscription-manager
 
 BuildRequires: wget
@@ -136,7 +136,6 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %files
 %config(noreplace) %{_sysconfdir}/insights-client/*.conf
 %{_sysconfdir}/insights-client/insights-client.motd
-%{_sysconfdir}/insights-client/rpm.egg*
 %{_bindir}/*
 %{_unitdir}/*
 %attr(444,root,root) %{_sysconfdir}/insights-client/*.pem
