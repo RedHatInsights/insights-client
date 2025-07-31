@@ -1,13 +1,14 @@
 """
 Gather and upload Insights data for Red Hat Insights
 """
+
 import logging
 import os
 import subprocess
 import sys
 
 from insights.client import InsightsClient
-from insights.client.phase.v1 import get_phases
+from insights.client.phase.v2 import get_phases
 from insights.client.config import InsightsConfig
 
 try:
@@ -264,6 +265,9 @@ def _main():
         client.set_up_logging()
 
         for p in get_phases():
+            if p.get("name", None) == "update":
+                logger.debug("Core is managed by DNF. Skipping 'update' phase.")
+                continue
             run_phase(p, client)
     except KeyboardInterrupt:
         sys.exit("Aborting.")
