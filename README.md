@@ -42,19 +42,7 @@ Follow these instructions to prepare your system for development.
 5. Run the client.
 
    ```shell
-   $ sudo PYTHONPATH=./src BYPASS_GPG=True EGG=../insights-core python src/insights_client/__init__.py --no-gpg --help
-   ```
-
-   *Note: `BYPASS_GPG` skips the verification on Client side, `--no-gpg` disables it on Core side.*
-
-6. To build an insights-core egg from source, run `build_client_egg.sh` from the insights-core repo.
-
-   ```shell
-   $ cd ../insights-core
-   $ bash build_client_egg.sh
-   $ # File `insights.zip` gets created in the current directory
-   $ cd ../insights-client
-   $ # To use the zip file as an egg, pass `EGG=../insights-core/insights.zip`
+   $ sudo PYTHONPATH=./src:../insights-core python src/insights_client/__init__.py --help
    ```
 
 
@@ -66,7 +54,7 @@ Follow these instructions to prepare your system for development.
 - Read [TESTING.md](TESTING.md) for more information.
 
 
-## Architecture Summary
+## Legacy Architecture Summary
 
 The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (the `insights-client` repository, from here on referred to as **wrapper**), and the updatable core module (the `insights-core` repository, from here on referred to as **egg**).
 
