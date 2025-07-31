@@ -83,14 +83,24 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/insights-client/
 %post
 %systemd_post %{name}.timer
 %systemd_post %{name}-boot.service
-if [ -d %{_sysconfdir}/motd.d ]; then
-    if [ ! -e %{_sysconfdir}/motd.d/insights-client -a ! -L %{_sysconfdir}/motd.d/insights-client ]; then
-        if [ -e %{_localstatedir}/lib/insights/newest.egg ]; then
-            ln -sn /dev/null %{_sysconfdir}/motd.d/insights-client
-        else
-            ln -sn %{_sysconfdir}/insights-client/insights-client.motd %{_sysconfdir}/motd.d/insights-client
-        fi
-    fi
+
+# Remove legacy egg files from previous installations
+rm -f %{_sysconfdir}/insights-client/rpm.egg
+rm -f %{_sysconfdir}/insights-client/rpm.egg.asc
+rm -f %{_localstatedir}/lib/insights/*.egg
+rm -f %{_localstatedir}/lib/insights/*.egg.asc
+
+# Symlink the message of the day if the system has not been registered with Insights
+_SHOULD_WRITE_MOTD=1
+# MOTD directory doesn't exist for some reason; don't even try
+if [ ! -d %{_sysconfdir}/motd.d ]; then _SHOULD_WRITE_MOTD=0; fi
+# Message shouldn't be displayed if the system has ever been registered
+if [ -e %{_sysconfdir}/insights-client/.registered ]; then _SHOULD_WRITE_MOTD=0; fi
+if [ -e %{_sysconfdir}/insights-client/.unregistered ]; then _SHOULD_WRITE_MOTD=0; fi
+# Message file is already in place (as a file, or as a symlink)
+if [ -e %{_sysconfdir}/motd.d/insights-client -o -L %{_sysconfdir}/motd.d/insights-client ]; then _SHOULD_WRITE_MOTD=0; fi
+if [ "$_SHOULD_WRITE_MOTD" -eq 1 ]; then
+    ln -sn %{_sysconfdir}/insights-client/insights-client.motd %{_sysconfdir}/motd.d/insights-client
 fi
 
 %if %{with ros}
