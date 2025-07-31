@@ -27,7 +27,7 @@ Requires: python3-PyYAML
 Requires: python3-six
 Requires: python3dist(setuptools)
 Requires: coreutils
-
+Requires: insights-core
 Requires: subscription-manager
 
 BuildRequires: wget

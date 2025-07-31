@@ -1,6 +1,7 @@
 """
 Gather and upload Insights data for Red Hat Insights
 """
+
 import logging
 import os
 import subprocess
@@ -8,7 +9,7 @@ import sys
 
 import insights
 from insights.client import InsightsClient
-from insights.client.phase.v1 import get_phases
+from insights.client.phase.v2 import get_phases
 from insights.client.config import InsightsConfig
 
 try:
