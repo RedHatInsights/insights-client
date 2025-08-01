@@ -11,6 +11,7 @@ import pytest
 import subprocess
 from pathlib import Path
 import logging
+from constants import INSIGHTS_CLIENT_LOG_FILE
 
 logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -29,12 +30,11 @@ def _run_systemctl_command(cmd, description="systemctl operation"):
 
 def _wait_for_timer_execution_by_logfile(interval_minutes=3, additional_wait_sec=30):
     """Wait for the systemd timer to execute by monitoring log file creation."""
-    log_file = Path("/var/log/insights-client/insights-client.log")
+    log_file = Path(INSIGHTS_CLIENT_LOG_FILE)
 
     # Remove existing log file to ensure we detect new execution
-    if log_file.exists():
-        log_file.unlink()
-        logger.debug("Removed existing insights-client log file")
+    log_file.unlink(missing_ok=True)
+    logger.debug("Removed existing insights-client log file")
 
     # Wait for timer interval plus additional buffer time
     wait_time = (interval_minutes * 60) + additional_wait_sec
@@ -56,6 +56,7 @@ def test_data_upload_systemd_timer(insights_client):
     :description:
         Ensure that the insights-client data upload is triggered by the
         systemd timer by verifying log file creation
+    :reference: https://issues.redhat.com/browse/CCT-1557
     :tags: Tier 1
     :steps:
         1. Register the system
@@ -83,16 +84,12 @@ def test_data_upload_systemd_timer(insights_client):
         RandomizedDelaySec=5
         """
 
-    timer_was_active = False
     try:
         # Check if timer was initially active
-        result = subprocess.run(
-            ["systemctl", "is-active", "insights-client.timer"],
-            capture_output=True,
-            text=True,
+        _run_systemctl_command(
+            ["systemctl", "is-active", "insights-client.timer"], "check timer status"
         )
-        timer_was_active = result.returncode == 0 and result.stdout.strip() == "active"
-        logger.debug(f"Timer was initially active: {timer_was_active}")
+        logger.debug("Timer was initially active")
 
         # Create override directory and configuration
         override_path.parent.mkdir(parents=True, exist_ok=True)
@@ -102,29 +99,19 @@ def test_data_upload_systemd_timer(insights_client):
         # Reload systemd configuration
         _run_systemctl_command(["systemctl", "daemon-reload"], "daemon reload")
 
-        # Enable and start/restart the timer to apply new configuration
+        # Enable and restart the timer to apply new configuration
         _run_systemctl_command(
             ["systemctl", "enable", "insights-client.timer"], "timer enable"
         )
-
-        if timer_was_active:
-            _run_systemctl_command(
-                ["systemctl", "restart", "insights-client.timer"], "timer restart"
-            )
-        else:
-            _run_systemctl_command(
-                ["systemctl", "start", "insights-client.timer"], "timer start"
-            )
+        _run_systemctl_command(
+            ["systemctl", "restart", "insights-client.timer"], "timer restart"
+        )
 
         # Verify timer is now active
-        result = subprocess.run(
+        _run_systemctl_command(
             ["systemctl", "is-active", "insights-client.timer"],
-            capture_output=True,
-            text=True,
+            "verify timer is active",
         )
-        assert (
-            result.returncode == 0 and result.stdout.strip() == "active"
-        ), f"insights-client.timer failed to start: {result.stderr}"
 
         logger.debug("Timer is now active with override configuration")
 
@@ -148,31 +135,24 @@ def test_data_upload_systemd_timer(insights_client):
                 ["systemctl", "daemon-reload"], "daemon reload after revert"
             )
 
-            # Restore original timer state
-            if timer_was_active:
-                _run_systemctl_command(
-                    ["systemctl", "start", "insights-client.timer"], "timer restore"
-                )
-            else:
-                _run_systemctl_command(
-                    ["systemctl", "stop", "insights-client.timer"], "timer stop"
-                )
+            # Ensure timer is stopped after revert
+            _run_systemctl_command(
+                ["systemctl", "stop", "insights-client.timer"], "timer stop"
+            )
         except Exception as e:
             logger.error(f"Error during cleanup: {e}")
 
         # Ensure override file is removed
         try:
-            if override_path.exists():
-                override_path.unlink()
-                logger.debug("Removed override configuration file")
+            override_path.unlink(missing_ok=True)
+            logger.debug("Removed override configuration file")
         except Exception as e:
             logger.error(f"Error removing override file: {e}")
 
         # Clean up log file if it exists
         try:
-            log_file = Path("/var/log/insights-client/insights-client.log")
-            if log_file.exists():
-                log_file.unlink()
-                logger.debug("Cleaned up insights-client log file")
+            log_file = Path(INSIGHTS_CLIENT_LOG_FILE)
+            log_file.unlink(missing_ok=True)
+            logger.debug("Cleaned up insights-client log file")
         except Exception as e:
             logger.error(f"Error removing log file: {e}")
