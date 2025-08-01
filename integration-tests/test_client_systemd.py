@@ -84,37 +84,37 @@ def test_data_upload_systemd_timer(insights_client):
         RandomizedDelaySec=5
         """
 
+    # Check if timer was initially active
+    _run_systemctl_command(
+        ["systemctl", "is-active", "insights-client.timer"], "check timer status"
+    )
+    logger.debug("Timer was initially active")
+
+    # Create override directory and configuration
+    override_path.parent.mkdir(parents=True, exist_ok=True)
+    override_path.write_text(override_content)
+    logger.debug(f"Created timer override at {override_path}")
+
+    # Reload systemd configuration
+    _run_systemctl_command(["systemctl", "daemon-reload"], "daemon reload")
+
+    # Enable and restart the timer to apply new configuration
+    _run_systemctl_command(
+        ["systemctl", "enable", "insights-client.timer"], "timer enable"
+    )
+    _run_systemctl_command(
+        ["systemctl", "restart", "insights-client.timer"], "timer restart"
+    )
+
+    # Verify timer is now active
+    _run_systemctl_command(
+        ["systemctl", "is-active", "insights-client.timer"],
+        "verify timer is active",
+    )
+
+    logger.debug("Timer is now active with override configuration")
+
     try:
-        # Check if timer was initially active
-        _run_systemctl_command(
-            ["systemctl", "is-active", "insights-client.timer"], "check timer status"
-        )
-        logger.debug("Timer was initially active")
-
-        # Create override directory and configuration
-        override_path.parent.mkdir(parents=True, exist_ok=True)
-        override_path.write_text(override_content)
-        logger.debug(f"Created timer override at {override_path}")
-
-        # Reload systemd configuration
-        _run_systemctl_command(["systemctl", "daemon-reload"], "daemon reload")
-
-        # Enable and restart the timer to apply new configuration
-        _run_systemctl_command(
-            ["systemctl", "enable", "insights-client.timer"], "timer enable"
-        )
-        _run_systemctl_command(
-            ["systemctl", "restart", "insights-client.timer"], "timer restart"
-        )
-
-        # Verify timer is now active
-        _run_systemctl_command(
-            ["systemctl", "is-active", "insights-client.timer"],
-            "verify timer is active",
-        )
-
-        logger.debug("Timer is now active with override configuration")
-
         # Wait for the timer to execute by monitoring log file creation
         timer_executed = _wait_for_timer_execution_by_logfile(interval_minutes=3)
 
@@ -127,32 +127,23 @@ def test_data_upload_systemd_timer(insights_client):
 
     finally:
         # Clean up: revert timer configuration and restore original state
-        try:
-            _run_systemctl_command(
-                ["systemctl", "revert", "insights-client.timer"], "timer revert"
-            )
-            _run_systemctl_command(
-                ["systemctl", "daemon-reload"], "daemon reload after revert"
-            )
+        _run_systemctl_command(
+            ["systemctl", "revert", "insights-client.timer"], "timer revert"
+        )
+        _run_systemctl_command(
+            ["systemctl", "daemon-reload"], "daemon reload after revert"
+        )
 
-            # Ensure timer is stopped after revert
-            _run_systemctl_command(
-                ["systemctl", "stop", "insights-client.timer"], "timer stop"
-            )
-        except Exception as e:
-            logger.error(f"Error during cleanup: {e}")
+        # Ensure timer is stopped after revert
+        _run_systemctl_command(
+            ["systemctl", "stop", "insights-client.timer"], "timer stop"
+        )
 
         # Ensure override file is removed
-        try:
-            override_path.unlink(missing_ok=True)
-            logger.debug("Removed override configuration file")
-        except Exception as e:
-            logger.error(f"Error removing override file: {e}")
+        override_path.unlink(missing_ok=True)
+        logger.debug("Removed override configuration file")
 
         # Clean up log file if it exists
-        try:
-            log_file = Path(INSIGHTS_CLIENT_LOG_FILE)
-            log_file.unlink(missing_ok=True)
-            logger.debug("Cleaned up insights-client log file")
-        except Exception as e:
-            logger.error(f"Error removing log file: {e}")
+        log_file = Path(INSIGHTS_CLIENT_LOG_FILE)
+        log_file.unlink(missing_ok=True)
+        logger.debug("Cleaned up insights-client log file")
