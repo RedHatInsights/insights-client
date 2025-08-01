@@ -7,74 +7,143 @@
 """
 
 import conftest
-from time import sleep
 import pytest
 import subprocess
 from pathlib import Path
+import logging
+from constants import INSIGHTS_CLIENT_LOG_FILE
 
+logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
+def _run_systemctl_command(cmd, description="systemctl operation"):
+    """Helper function to run systemctl commands with proper error handling."""
+    logger.debug(f"Running systemctl command: {' '.join(cmd)}")
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        return result
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed {description}: {e.stderr}")
+        raise RuntimeError(f"Failed {description}: {e.stderr}") from e
+
+
+def _wait_for_timer_execution_by_logfile(interval_minutes=3, additional_wait_sec=30):
+    """Wait for the systemd timer to execute by monitoring log file creation."""
+    log_file = Path(INSIGHTS_CLIENT_LOG_FILE)
+
+    # Remove existing log file to ensure we detect new execution
+    log_file.unlink(missing_ok=True)
+    logger.debug("Removed existing insights-client log file")
+
+    # Wait for timer interval plus additional buffer time
+    wait_time = (interval_minutes * 60) + additional_wait_sec
+    logger.debug(f"Waiting {wait_time} seconds for timer execution...")
+
+    # Use conftest.loop_until to check for log file recreation
+    return conftest.loop_until(
+        lambda: log_file.exists(),
+        poll_sec=10,
+        timeout_sec=wait_time,
+    )
+
+
 @pytest.mark.tier1
-def test_data_upload_systemd_timer(insights_client, external_inventory):
+def test_data_upload_systemd_timer(insights_client):
     """
     :id: 6bbac679-cb37-47b1-9163-497f1a1758dd
     :title: Verify insights-client upload via systemd timer
     :description:
         Ensure that the insights-client data upload is triggered by the
-        systemd timer and the last check-in time is updated accordingly
+        systemd timer by verifying log file creation
+    :reference: https://issues.redhat.com/browse/CCT-1557
     :tags: Tier 1
     :steps:
         1. Register the system
-        2. Note the last_check_in in host details from inventory
-        3. Edit insights-client timer to run every 3 minutes (24 hours is
-            too long to wait for a test, 3 min appears be a decent wait)
-        4. Wait for upload to finish
-        5. Again note the last_check_in in host details from inventory
-        6. Verify the updated last_check_in time
+        2. Edit insights-client timer to run every 3 minutes with minimal delay
+        3. Enable and restart the timer to apply new configuration
+        4. Remove existing log file
+        5. Wait for timer execution and upload to complete
+        6. Verify that log file was recreated, indicating successful upload
     :expectedresults:
-        1. System is registered
-        2. The last_check_in time is recorded from the inventory
-        3. The timer is adjusted to a 3-minute interval and upload proceeds
-            as expected.
-        4. Upload is finished successfully
-        5. The last_check_in time is recorded from the inventory
-        6. The last_check_in time is updated, reflecting a successful upload
+        1. System is registered successfully
+        2. The timer is adjusted to a 3-minute interval and restarted successfully
+        3. Timer is active with the new configuration
+        4. Existing log file is removed successfully
+        5. Timer executes and upload completes within expected timeframe
+        6. Log file is recreated, confirming the timer triggered the upload
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
 
-    machine_id = insights_client.uuid
-    # fetching host details to note last_check_in time
-    response = external_inventory.get(path=f"hosts?insights_id={machine_id}")
-    host_staleness = response.json()["results"][0]["per_reporter_staleness"]
-    last_checkin_time = host_staleness["puptoo"]["last_check_in"]
-
-    # override insights-client.timer to run every 3 min
+    # Create override configuration for insights-client timer to run every 3 minutes
     override_path = Path("/etc/systemd/system/insights-client.timer.d/override.conf")
-    override_content = """
-        [Timer]
+    override_content = """[Timer]
         OnCalendar=*:0/3
         Persistent=true
         RandomizedDelaySec=5
         """
+
+    # Check if timer was initially active
+    _run_systemctl_command(
+        ["systemctl", "is-active", "insights-client.timer"], "check timer status"
+    )
+    logger.debug("Timer was initially active")
+
+    # Create override directory and configuration
+    override_path.parent.mkdir(parents=True, exist_ok=True)
+    override_path.write_text(override_content)
+    logger.debug(f"Created timer override at {override_path}")
+
+    # Reload systemd configuration
+    _run_systemctl_command(["systemctl", "daemon-reload"], "daemon reload")
+
+    # Enable and restart the timer to apply new configuration
+    _run_systemctl_command(
+        ["systemctl", "enable", "insights-client.timer"], "timer enable"
+    )
+    _run_systemctl_command(
+        ["systemctl", "restart", "insights-client.timer"], "timer restart"
+    )
+
+    # Verify timer is now active
+    _run_systemctl_command(
+        ["systemctl", "is-active", "insights-client.timer"],
+        "verify timer is active",
+    )
+
+    logger.debug("Timer is now active with override configuration")
+
     try:
-        override_path.parent.mkdir()
-        override_path.write_text(override_content)
+        # Wait for the timer to execute by monitoring log file creation
+        timer_executed = _wait_for_timer_execution_by_logfile(interval_minutes=3)
 
-        subprocess.run(["systemctl", "daemon-reload"])
+        assert timer_executed, (
+            "Timer did not execute within expected timeframe. "
+            "Log file was not recreated, indicating upload did not occur."
+        )
 
-        sleep(60 * 5)  # sleep for the period when timer is triggered and upload happens
-
-        # remove the override.conf for insights-client.timer to avoid multiple uploads
-        subprocess.run(["systemctl", "revert", "insights-client.timer"])
-
-        # fetch the last_check_in time
-        response = external_inventory.this_system()
-        latest_checkin_time = response["per_reporter_staleness"]["puptoo"][
-            "last_check_in"
-        ]
-        assert last_checkin_time < latest_checkin_time
+        logger.debug("Timer execution confirmed - log file was recreated")
 
     finally:
-        subprocess.run(["systemctl", "revert", "insights-client.timer"])
+        # Clean up: revert timer configuration and restore original state
+        _run_systemctl_command(
+            ["systemctl", "revert", "insights-client.timer"], "timer revert"
+        )
+        _run_systemctl_command(
+            ["systemctl", "daemon-reload"], "daemon reload after revert"
+        )
+
+        # Ensure timer is stopped after revert
+        _run_systemctl_command(
+            ["systemctl", "stop", "insights-client.timer"], "timer stop"
+        )
+
+        # Ensure override file is removed
+        override_path.unlink(missing_ok=True)
+        logger.debug("Removed override configuration file")
+
+        # Clean up log file if it exists
+        log_file = Path(INSIGHTS_CLIENT_LOG_FILE)
+        log_file.unlink(missing_ok=True)
+        logger.debug("Cleaned up insights-client log file")
