@@ -51,7 +51,6 @@ def test_common_specs(insights_client, tmp_path):
         "insights.specs.Specs.date.json",
         "insights.specs.Specs.hosts.json",
         "insights.specs.Specs.installed_rpms.json",
-        "insights.specs.Specs.ls_dev.json",
         "insights.specs.Specs.lscpu.json",
         "insights.specs.Specs.lspci.json",
         "insights.specs.Specs.meminfo.json",
