@@ -326,10 +326,19 @@ def run_phase(phase, client, validated_eggs):
             # additional check: in case the current type is a certain one
             # (e.g. unconfined_t when insights-client is run from a shell),
             # then the switch will not work
-            if selinux.context_type_get(context) not in ["unconfined_t", "sysadm_t"]:
+            source_type = selinux.context_type_get(context)
+            if source_type not in ["unconfined_t", "sysadm_t"]:
                 selinux.context_type_set(context, CORE_SELINUX_POLICY)
                 new_core_context = selinux.context_str(context)
                 selinux.setexeccon(new_core_context)
+                logger.debug("Switched to SELinux context from {src} to {tgt}".format(
+                    src=source_type,
+                    tgt=CORE_SELINUX_POLICY,
+                ))
+            else:
+                logger.debug("Staying in current SELinux context {src}".format(
+                    src=source_type,
+                ))
             selinux.context_free(context)
         process = subprocess.Popen(insights_command, env=env)
         process.communicate()
@@ -338,6 +347,7 @@ def run_phase(phase, client, validated_eggs):
             # execv*() after that execution; it does not seem to happen though,
             # so for now manually reset it
             selinux.setexeccon(None)
+            logger.debug(f"Switched out to original SELinux context")
         if process.returncode == 0:
             # phase successful, don't try another egg
             logger.debug("phase '%s' successful", phase["name"])
@@ -449,6 +459,11 @@ def _main():
     """
     logging_config = get_logging_config()
     set_up_logging(logging_config)
+
+    if SWITCH_CORE_SELINUX_POLICY:
+        logger.debug("Running with SELinux")
+    else:
+        logger.debug("Running without SELinux")
 
     # sort rpm and stable eggs after verification
     validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
