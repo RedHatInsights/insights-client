@@ -37,7 +37,7 @@ def test_pcp_zeroconf_install():
         universal_newlines=True,
     )
     service_not_found = f"{SERVICE}: command not found"
-    assert not service_not_found in pmlogger_status.stderr, service_not_found
+    assert service_not_found not in pmlogger_status.stderr, service_not_found
 
     grep_result = subprocess.run(
         ["pcp", "|", "grep", SERVICE],
