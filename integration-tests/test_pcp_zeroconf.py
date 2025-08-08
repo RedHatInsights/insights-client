@@ -1,10 +1,10 @@
 """
-:component: insights-client
+:casecomponent: insights-client
 :requirement: RHSS-291297
 :polarion-project-id: RHELSS
 :polarion-include-skipped: false
 :polarion-lookup-method: id
-:poolteam: rhel-sst-csi-client-tools
+:subsystemteam: rhel-sst-csi-client-tools
 :caseautomation: Automated
 :upstream: Yes
 """
@@ -14,11 +14,10 @@ import subprocess
 import conftest
 from constants import CONFIG_FILE
 
-PACKAGE = "pcp-zeroconf"
-SERVICE = "pmlogger"
-
 pytestmark = pytest.mark.usefixtures("register_subman")
 
+PACKAGE = "pcp-zeroconf"
+SERVICE = "pmlogger"
 
 @pytest.mark.tier1
 def test_pcp_zeroconf_install():
