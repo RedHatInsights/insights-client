@@ -1,4 +1,6 @@
 name: stylish
+permissions:
+  contents: read
 
 on:
   pull_request:

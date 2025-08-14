@@ -1,5 +1,7 @@
 ---
 name: Test Docstrings Validation
+permissions:
+  contents: read
 
 on:
   pull_request:
