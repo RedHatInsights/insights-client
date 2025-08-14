@@ -6,7 +6,7 @@
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
-Version:                {{{ git_dir_version lead=3.2 }}}
+Version:                3.9.0
 Release:                0%{?dist}
 Source:                 {{{ git_dir_pack }}}
 License:                GPL-2.0-or-later
