@@ -1,0 +1,74 @@
+---
+name: Test Docstrings Validation
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    paths:
+      - "integration-tests/**"
+  schedule:
+    # Run weekly on Mondays at 2 AM UTC
+    - cron: '0 2 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  betelgeuse-dry-run:
+    name: "betelgeuse dry-run"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    container:
+      image: fedora:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Base setup for Betelgeuse
+        run: |
+          dnf --setopt install_weak_deps=False install -y \
+              python3-pip
+          python3 -m pip install betelgeuse
+
+      - name: Run Betelgeuse
+        run: |
+          PYTHONPATH=integration-tests/ betelgeuse --config-module \
+            custom_betelgeuse_config test-case --dry-run \
+            integration-tests/ dryrun_project ./test_case.xml
+
+  betelgeuse-upload:
+    name: "betelgeuse upload to Polarion"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    container:
+      image: fedora:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Base setup for Betelgeuse
+        run: |
+          dnf --setopt install_weak_deps=False install -y \
+              python3-pip
+          python3 -m pip install betelgeuse
+
+      - name: Generate test cases XML
+        env:
+          POLARION_PROJECT: ${{ secrets.POLARION_PROJECT }}
+        run: |
+          PYTHONPATH=integration-tests/ betelgeuse --config-module \
+            custom_betelgeuse_config test-case \
+            integration-tests/ ${{ secrets.POLARION_PROJECT }} ./test_case.xml
+
+      - name: Modify XML for Polarion upload
+        run: |
+          sed -i -e 's/linked-work-item lookup-method="name" role-id="verifies"/linked-work-item lookup-method="id" role-id="verifies"/g' test_case.xml
+
+      - name: Upload to Polarion
+        env:
+          POLARION_URL: ${{ secrets.POLARION_URL }}
+          POLARION_USERNAME: ${{ secrets.POLARION_USERNAME }}
+          POLARION_PASSWORD: ${{ secrets.POLARION_PASSWORD }}
+        run: |
+          curl -k -u ${{ secrets.POLARION_USERNAME }}:${{ secrets.POLARION_PASSWORD }} \
+            -X POST -F file=@test_case.xml \
+            ${{ secrets.POLARION_URL }}/polarion/import/testcase
