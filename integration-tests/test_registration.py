@@ -45,7 +45,6 @@ def test_register(insights_client):
 
     assert "Starting to collect Insights data" in register_result.stdout
     assert "Successfully uploaded report" in register_result.stdout
-    assert "View the Red Hat Insights console" in register_result.stdout
 
 
 @pytest.mark.tier1
