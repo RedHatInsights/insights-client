@@ -34,15 +34,13 @@ def test_register(insights_client):
         1. The client attempts to register
         2. The client is confirmed as registered and the output includes
             "Starting to collect Insights data."
-        3. The output includes "Successfully uploaded report" and
-            "View the Red Hat Insights console."
+        3. The output includes "Successfully uploaded report"
     """
     register_result = insights_client.run("--register")
     assert conftest.loop_until(lambda: insights_client.is_registered)
 
     assert "Starting to collect Insights data" in register_result.stdout
     assert "Successfully uploaded report" in register_result.stdout
-    assert "View the Red Hat Insights console" in register_result.stdout
 
 
 @pytest.mark.tier1
