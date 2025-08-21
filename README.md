@@ -122,15 +122,11 @@ The configuration uses the values in the following hierarchy:
 ### Directories
 The client utilizes several directories on the system for its operation:
 
-`/etc/insights-client/` - The primary directory for configuration. It contains `insights-client.conf`, redaction files (`file-redaction.yaml`, `file-content-redaction.yaml`), and security certificates.
-
-`/var/log/insights-client/` - The default directory for log files.
-
-`/var/lib/insights/` - Stores information about the core module (egg), including last_stable.egg.
-
-`/var/cache/insights-client/` - The default location where the archive is stored when the `--keep-archive`, `--no-upload` and `--offline` flag is used.
-
-`/var/tmp/` - Used as a temporary location for building the archive before upload.
+- `/etc/insights-client/` - The primary directory for configuration. It contains `insights-client.conf`, redaction files (`file-redaction.yaml`, `file-content-redaction.yaml`), and security certificates.
+- `/var/log/insights-client/` - The default directory for log files.
+- `/var/lib/insights/` - Stores information about the core module (egg), including last_stable.egg.
+- `/var/cache/insights-client/` - The default location where the archive is stored when the `--keep-archive`, `--no-upload` and `--offline` flag is used.
+- `/var/tmp/` - Used as a temporary location for building the archive before upload.
 
 ### Environment Variables
 
@@ -232,7 +228,9 @@ To send data to the Red Hat Insights API, the insights-client first needs to kno
 That means, that it **doesn't** connect to RHSM or Satellite over the network.
 
 examples what you could see in logs if `auto_config=True`:
+
 `DEBUG insights.client.auto_config:159 Connected to staging RHSM, using cert.cloud.stage.redhat.com`
+
 `DEBUG insights.client.auto_config:81 Not connected to Satellite, skipping branch_info`
 
 ## Recommended Developer Config
