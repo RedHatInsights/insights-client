@@ -119,6 +119,15 @@ The configuration uses the values in the following hierarchy:
 2. `/etc/insights-client/insights-client.conf`
 3. environment variables.
 
+### Directories
+The client utilizes several directories on the system for its operation:
+
+- `/etc/insights-client/` - The primary directory for configuration. It contains `insights-client.conf`, redaction files (`file-redaction.yaml`, `file-content-redaction.yaml`), and security certificates.
+- `/var/log/insights-client/` - The default directory for log files.
+- `/var/lib/insights/` - Stores information about the core module (egg), including `last_stable.egg`.
+- `/var/cache/insights-client/` - The default location where the archive is stored when the `--keep-archive`, `--no-upload` and `--offline` flag is used.
+- `/var/tmp/` - Used as a temporary location for building the archive before upload.
+
 ### Environment Variables
 
 Environment configuration can be used by setting environment variables with names in the format INSIGHTS_xxxxxx, where xxxxxx is the configuration variable name, in all caps.
@@ -188,6 +197,43 @@ These switches are undocumented and for developer use only.
 - `--to-json` - Print the collection results to the console as JSON. Deprecated as rule results are no longer returned by the upload service.
 - `--check-results` - Fetch the system profile and cache it. Produces no output to console. Not meant to be run as a standalone option but rather as part of a regular systemd job that refreshes the cached data.
 
+## Log Management
+The developer logs its activity to provide a record of its operations, which is essential for troubleshooting. 
+All of the following switches were already explained in the **Configuration** section.
+
+### Log File
+By default, all log output is sent to `/var/log/insights-client/insights-client.log`.
+
+### Log Verbosity
+The level of detail in the logs can be controlled.
+
+1. The `--verbose` flag increases the verbosity to `DEBUG` level for a single run. (More logs)
+2. The `--quiet` flag decreases verbosity to only show `ERROR` messages.
+
+## External Services
+When you run `insights-client`, it connects to several Red Hat services. Connectivity to these services is required for a standard, non-offline execution.
+
+### Red Hat Insights API
+This are the primary services the client communicates with.
+
+Purpose: To upload the collected system data archive, download updated insights-core, and retrieve analysis results. It can also optionally connect to services for Compliance and Malware detection.
+
+Hostnames: The default hostname is `cert-api.access.redhat.com`. For newer infrastructure, `cert.cloud.redhat.com` is also used.
+
+### Automatic Configuration via RHSM
+If the system is registered to RHSM, the insights-client may reconfigure itself to use Satellite hostname.
+
+If registered to a Red Hat Satellite server:
+The client will automatically reconfigure itself. It uses the Satellite's hostname as the destination for data uploads.
+
+If not registered to a Satellite server:
+The client operates in its default mode. It connects directly to the primary Red Hat Insights API, which is the standard behavior for systems registered with Red Hat.
+
+This entire auto-detection process is based on reading **local** config files only (managed by RHSM).
+
+examples what you could see in logs if `auto_config=True`:  
+`DEBUG insights.client.auto_config:159 Connected to staging RHSM, using cert.cloud.stage.redhat.com`  
+`DEBUG insights.client.auto_config:81 Not connected to Satellite, skipping branch_info`
 
 ## Recommended Developer Config
 For convenience, some sample configs are provided here for developers for connecting to the different environments the client can interface with. These configurations can be defined via config file or via environment variables using the naming described under **Environment Variables**. The following are in config file notation and can be used as drop-in configuration.
