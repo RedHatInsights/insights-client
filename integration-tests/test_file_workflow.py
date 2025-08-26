@@ -12,7 +12,6 @@ import random
 import string
 import subprocess
 import tarfile
-from time import sleep
 import pytest
 from constants import HOST_DETAILS
 from constants import MACHINE_ID_FILE
@@ -155,7 +154,6 @@ def test_file_workflow_archive_update_host_info(insights_client, external_invent
     logging.debug(f"Assigned hostname: {new_hostname}, FQDN: {fqdn}")
 
     insights_client.run()
-    sleep(30)  # Wait for data to get reflected in inventory
     host_data = external_inventory.this_system()
     logging.debug(f"Host data from inventory: {host_data}")
 
