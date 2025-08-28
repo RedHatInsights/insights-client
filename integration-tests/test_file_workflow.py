@@ -12,7 +12,6 @@ import random
 import string
 import subprocess
 import tarfile
-from time import sleep
 import pytest
 from constants import HOST_DETAILS
 from constants import MACHINE_ID_FILE
@@ -155,7 +154,6 @@ def test_file_workflow_archive_update_host_info(insights_client, external_invent
     logging.debug(f"Assigned hostname: {new_hostname}, FQDN: {fqdn}")
 
     insights_client.run()
-    sleep(30)  # Wait for data to get reflected in inventory
     host_data = external_inventory.this_system()
     logging.debug(f"Host data from inventory: {host_data}")
 
@@ -164,6 +162,68 @@ def test_file_workflow_archive_update_host_info(insights_client, external_invent
 
     # Reset to the original hostname
     set_hostname(current_hostname)
+
+
+@pytest.mark.tier1
+def test_file_workflow_archive_modification_and_upload(insights_client, tmp_path):
+    """
+    :id: 00eb48cd-29a5-4325-bca1-1db846cbbf2b
+    :title: Verify Archive File Modification and Upload Workflow
+    :reference: https://issues.redhat.com/browse/CCT-994
+    :description:
+        Verify that modifying files within a collected Insights Archive
+        and uploading the modified archive works as expected
+    :tags: Tier 1
+    :steps:
+        1. Register the system with insights-client and confirm data upload
+        2. Collect insights data into a directory structure
+        3. Modify hostname files within the collected data
+        4. Package the modified data into a new archive
+        5. Upload the modified archive using --payload option
+    :expectedresults:
+        1. The system is registered and initial data collection succeeds
+        2. Data collection to directory succeeds
+        3. Hostname files are successfully modified with test data
+        4. Modified data is packaged into a valid archive
+        5. The upload process starts and the output message is as expected
+        6. Modified archive uploads successfully with the message as expected
+    """
+    insights_client.register()
+    assert conftest.loop_until(lambda: insights_client.is_registered)
+
+    # Collect data into a directory
+    new_hostname = generate_random_hostname()
+    archive_name = tmp_path / "archive.tar.gz"
+    insights_client.run(f"--output-file={archive_name}")
+
+    # Extract the archive to modify files
+    extract_dir = tmp_path / "extracted"
+    extract_dir.mkdir()
+
+    insights_client.run(f"--output-dir={extract_dir}")
+    dir_name = os.listdir(extract_dir)[0]
+
+    # Overwrite hostname file content in the archive
+    insights_commands_dir = extract_dir / dir_name / "data" / "insights_commands"
+    hostname_file = insights_commands_dir / "hostname"
+    hostname_f_file = insights_commands_dir / "hostname_-f"
+
+    # Update hostname files with new hostname
+    insights_commands_dir.mkdir(parents=True, exist_ok=True)
+    hostname_file.write_text(new_hostname + "\n")
+    hostname_f_file.write_text(new_hostname + "\n")
+
+    # Recreate the modified archive
+    modified_archive = tmp_path / "modified_archive.tar.gz"
+    with tarfile.open(modified_archive, "w:gz") as tar:
+        tar.add(extract_dir / dir_name, arcname=dir_name)
+
+    # Upload using --payload and --content-type
+    upload_result = insights_client.run(
+        f"--payload={modified_archive}", "--content-type=gz", check=False
+    )
+    assert "Uploading Insights data" in upload_result.stdout
+    assert "Successfully uploaded report" in upload_result.stdout
 
 
 def remove_files_from_archive(original_archive, files_to_remove, modified_archive):
@@ -183,10 +243,13 @@ def remove_files_from_archive(original_archive, files_to_remove, modified_archiv
 
 def set_hostname(hostname=None):
     if hostname is None:
-        hostname = (
-            "".join(random.choices(string.ascii_lowercase + string.digits, k=10))
-            + "-new-hostname.example.com"
-        )
-
+        hostname = generate_random_hostname()
     subprocess.run(["hostnamectl", "set-hostname", hostname], check=True)
     return hostname
+
+
+def generate_random_hostname():
+    return (
+        "".join(random.choices(string.ascii_lowercase + string.digits, k=10))
+        + "-new-hostname.example.com"
+    )
