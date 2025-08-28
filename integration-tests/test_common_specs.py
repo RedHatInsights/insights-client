@@ -15,10 +15,6 @@ import logging
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
-@pytest.mark.skipif(
-    os.uname().machine != "x86_64",
-    reason="Test only runs on x86_64 architecture for now",
-)
 @pytest.mark.tier1
 def test_common_specs(insights_client, tmp_path):
     """
@@ -65,11 +61,22 @@ def test_common_specs(insights_client, tmp_path):
         "insights.specs.Specs.hostname.json",
         "insights.specs.Specs.ip_addresses.json",
     ]
+    # The following specs don't work on IBM architectures
+    ibm_incompatible_specs = [
+        "insights.specs.Specs.lspci.json",  # Empty output on IBM Power/Z
+        "insights.specs.Specs.dmidecode.json",  # Command not found on IBM architectures
+    ]
 
     # Running insights-client to collect data in tmp path
     insights_client.run(f"--output-dir={tmp_path}")
 
     in_container: bool = "container" in os.environ.keys()
+    is_ibm_architecture: bool = os.uname().machine in [
+        "ppc64le",
+        "ppc64",
+        "s390x",
+        "s390",
+    ]
     for spec in common_specs + privileged_specs:
         spec_filepath = tmp_path / "meta_data" / spec
 
@@ -82,6 +89,10 @@ def test_common_specs(insights_client, tmp_path):
         # assert that a spec doesn't contain errors
         # (unless we are in container and the spec is known to not work in containers)
         if in_container and spec in privileged_specs:
+            continue
+
+        # Skip specs that don't work on IBM architectures
+        if is_ibm_architecture and spec in ibm_incompatible_specs:
             continue
 
         try:
