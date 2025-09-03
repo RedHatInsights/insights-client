@@ -35,7 +35,9 @@ def test_ros_install():
         2. Field ros_collect is set to true in insights-client.conf
     """
     install = subprocess.run(
-        ["dnf", "install", "-y", PACKAGE], capture_output=True, text=True
+        ["dnf", "install", "-y", "--disablerepo", "beaker-tasks", PACKAGE],
+        capture_output=True,
+        text=True,
     )
     assert install.returncode == 0, f"{PACKAGE} was not installed"
 
