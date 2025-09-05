@@ -57,7 +57,7 @@ def test_file_workflow_with_an_archive_with_only_one_canonical_fact(
         "/data/insights_commands/subscription-manager_identity",
     ]
     machine_id = open(MACHINE_ID_FILE, "r").read()
-    remove_files_from_archive(archive_name, files_to_remove, modified_archive)
+    modify_archive(archive_name, modified_archive, files_to_remove)
     upload_result = insights_client.run(
         f"--payload={modified_archive}", "--content-type=gz", check=False
     )
@@ -114,7 +114,7 @@ def test_file_workflow_with_an_archive_without_canonical_facts(
         "/data/sys/class/net/lo/address",
     ]
 
-    remove_files_from_archive(archive_name, files_to_remove, modified_archive)
+    modify_archive(archive_name, modified_archive, files_to_remove)
     upload_result = insights_client.run(
         f"--payload={modified_archive}", "--content-type=gz", check=False
     )
@@ -166,11 +166,15 @@ def test_file_workflow_archive_update_host_info(insights_client, external_invent
     set_hostname(current_hostname)
 
 
-def remove_files_from_archive(original_archive, files_to_remove, modified_archive):
+def modify_archive(
+    original_archive, modified_archive, files_to_remove=None, files_to_add=None
+):
+    files_to_add = files_to_add or []
+    files_to_remove = files_to_remove or []
     with tarfile.open(original_archive, "r:gz") as tar:
         file_list = tar.getnames()
         dir_name = tar.getnames()[0]
-        # append dirname to create absolute path names
+        # Append dirname to create absolute path names
         files_to_remove = [dir_name + item for item in files_to_remove]
         # Remove the specified files from the list
         files_to_keep = [f for f in file_list if f not in files_to_remove]
@@ -179,6 +183,9 @@ def remove_files_from_archive(original_archive, files_to_remove, modified_archiv
             for member in tar.getmembers():
                 if member.name in files_to_keep:
                     new_tar.addfile(member, tar.extractfile(member))
+            # Add new files
+            for file_path, arcname in files_to_add:
+                new_tar.add(file_path, arcname=f"{dir_name}/{arcname}")
 
 
 def set_hostname(hostname=None):
