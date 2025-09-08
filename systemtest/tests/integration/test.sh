@@ -45,9 +45,9 @@ pip install -r integration-tests/requirements.txt
 pytest --log-level debug --junit-xml=./junit.xml -v integration-tests
 retval=$?
 
-if [ -d "$TMT_PLAN_DATA" ]; then
-  cp ./junit.xml "$TMT_PLAN_DATA/junit.xml"
-  cp -r ./artifacts "$TMT_PLAN_DATA/"
+if [ -d "$TMT_TEST_DATA" ]; then
+  cp ./junit.xml "$TMT_TEST_DATA/junit.xml"
+  cp -r ./artifacts "$TMT_TEST_DATA/"
 fi
 
 exit $retval
