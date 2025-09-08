@@ -50,4 +50,12 @@ if [ -d "$TMT_TEST_DATA" ]; then
   cp -r ./artifacts "$TMT_TEST_DATA/"
 fi
 
+
+if [ -n "${reportportal_api_key+x}" ] && [ -n "${reportportal_baseurl+x}" ]; then
+    pushd "$TMT_TEST_DATA/"
+    zip -r "$(dirs -l +1)/insights-client.zip" .
+    popd
+    curl -X POST --header 'Content-Type: multipart/form-data' --header 'Accept: application/json' --header "Authorization: bearer ${reportportal_api_key}" -F file=@insights-client.zip "${reportportal_baseurl}/api/v1/insights-client/launch/import"
+fi
+
 exit $retval
