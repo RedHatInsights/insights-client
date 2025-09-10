@@ -25,6 +25,6 @@ def test_version(insights_client):
         1. Command executes without errors
         2. Both "Client: " and "Core: " are present in the output
     """
-    proc = insights_client.run("--version")
+    proc = insights_client.run("--version", selinux_context=None)
     assert "Client: " in proc.stdout
     assert "Core: " in proc.stdout
