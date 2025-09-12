@@ -42,19 +42,7 @@ Follow these instructions to prepare your system for development.
 5. Run the client.
 
    ```shell
-   $ sudo PYTHONPATH=./src BYPASS_GPG=True EGG=../insights-core python src/insights_client/__init__.py --no-gpg --help
-   ```
-
-   *Note: `BYPASS_GPG` skips the verification on Client side, `--no-gpg` disables it on Core side.*
-
-6. To build an insights-core egg from source, run `build_client_egg.sh` from the insights-core repo.
-
-   ```shell
-   $ cd ../insights-core
-   $ bash build_client_egg.sh
-   $ # File `insights.zip` gets created in the current directory
-   $ cd ../insights-client
-   $ # To use the zip file as an egg, pass `EGG=../insights-core/insights.zip`
+   $ sudo PYTHONPATH=./src:../insights-core python3 src/insights_client/__init__.py --help
    ```
 
 
@@ -66,57 +54,30 @@ Follow these instructions to prepare your system for development.
 - Read [TESTING.md](TESTING.md) for more information.
 
 
-## Architecture Summary
+## Legacy Architecture Summary
 
-The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (the `insights-client` repository, from here on referred to as **wrapper**), and the updatable core module (the `insights-core` repository, from here on referred to as **egg**).
+insights-client product consists of two parts: insights-client (wrapper) and insights-core. Historically, the Core (also named the Egg) has been distributed through CDN, with an older, frozen version packaged within insights-client itself. Later, the Core delivery model was changed to be RPM as well.
 
-### Wrapper
+Wrapper is the entry point providing CLI on $PATH, and ensures [**phases**](#phases) are run.
 
-The wrapper is the main entry point for the Insights Client, and its job is to initiate the [**phases**](#phases). For each phase, the wrapper iterates over the available eggs, and tries each in succession to perform a collection & upload. If an egg fails, the client will try the next available egg. If all eggs fail, execution will halt. All possible eggs are described as follows, in the order in which they are tried:
+Egg is a bundle that contains the `insights` package with all the main functionality. All flags and configurations are passed to the egg by the wrapper.
 
- 1. `ENV_EGG` - an egg specified by the environment variable `EGG`,
- 2. `NEW_EGG` - newest available egg, if an update has been performed,
- 3. `STABLE_EGG` - the last egg that performed a successful collection & upload,
- 4. `RPM_EGG` - the default egg that ships with the RPM.
+### Phases
 
-### Egg
+insights-client runs in four phases.
 
-The egg is a bundle that contains the Insights Core module with all the main functionality. All flags and configurations are passed to the egg by the wrapper.
-
-
-## Phases
-
-The Insights Client runs in four phases.
-They are modularized, so if one of them crashes due to a bad egg, the process can be resumed at that phase using the egg that's next in the priority list.
-
-   1. **Pre-Update**  
-   Execute any flags that exit immediately (except `--status` and `--unregister`).
-   If necessary, exit.
-
-   2. **Update**  
-   Establish a connection to Insights and update the local egg if the upstream contains a newer version (using etags).
-   During legacy collection, download the newest version of `uploader.json`.
-
-   3. **Post-Update**  
-   Process registration options.
-   Check registration.
-   If the system is not registered and the operation requires the registration, exit.
-
-   4. **Collect and output**  
-   [Run the collection](#collection).
-   Output it in desired format; the default is to upload the archive to Insights.
-
+1. **pre-update**: Execute flags that exit immediately (`--version`, `--test-connection`, `--checkin`).
+2. **update**: Download new Core from CDN. This phase is not used anymore.
+3. **post-update**: Process flags (like registration options), and exit if the operation requires registration and the system is not registered.
+4. **collect & upload**: Run data collection, compress the results and upload them to ConsoleDot.
 
 ## Configuration
-
-The configuration file uses INI format (see [configparser](https://docs.python.org/3/library/configparser.html)).
-The main section for configuration variables is `[insights-client]`.
 
 The configuration uses the values in the following hierarchy:
 
 1. CLI flags
 2. `/etc/insights-client/insights-client.conf`
-3. environment variables.
+3. environment variables (in a form of `INSIGHTS_xxxxxx`, where `xxxxxx` is the configuration variable name, in all caps)
 
 ### Directories
 The client utilizes several directories on the system for its operation:
@@ -148,6 +109,7 @@ Configuration variables available in the configuration file and their explanatio
 - `redaction_file` - location of the redaction file. Default `/etc/insights-client/file-redaction.yaml`
 - `content_redaction_file` - location of the content redaction file. Default `/etc/insights-client/file-content-redaction.yaml`
 - `legacy_upload` - Use legacy HTTP configuration to perform the upload. Default `True`
+
 
 ### Command Line Switches
 Command line switches available and their explanations.
