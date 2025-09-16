@@ -26,7 +26,7 @@ jobs:
 
   - job: copr_build
     trigger: commit
-    branch: master
+    branch: rhel-9-main
     owner: "@yggdrasil"
     project: latest
     targets:
