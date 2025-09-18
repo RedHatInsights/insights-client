@@ -60,20 +60,6 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 %prep
 {{{ git_dir_setup_macro }}}
 
-
-%build
-%{meson} \
-    -Dpython=%{__python3} \
-%if (0%{?rhel} && 0%{?rhel} < 10)
-    -Dredhat_access_insights=true \
-%endif
-    %{nil}
-%{meson_build}
-
-
-%install
-%{meson_install}
-
 # Create different insights directories in /var
 mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
 mkdir -p %{buildroot}%{_localstatedir}/lib/insights/
