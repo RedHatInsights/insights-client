@@ -2,9 +2,7 @@ sysconf_sources = [
   'cert-api.access.redhat.com.pem',
   'insights-client.conf',
   'insights-client.motd',
-  'redhattools.pub.gpg',
-  'rpm.egg',
-  'rpm.egg.asc'
+  'redhattools.pub.gpg'
 ]
 
 install_data(
