@@ -42,12 +42,20 @@ python3 -m venv venv
 
 pip install -r integration-tests/requirements.txt
 
-pytest --log-level debug --junit-xml=./junit.xml -v integration-tests
+pytest --log-level debug --junit-xml=./junit.xml -o junit_suite_name=insights-client -v integration-tests
 retval=$?
 
-if [ -d "$TMT_PLAN_DATA" ]; then
-  cp ./junit.xml "$TMT_PLAN_DATA/junit.xml"
-  cp -r ./artifacts "$TMT_PLAN_DATA/"
+if [ -d "$TMT_TEST_DATA" ]; then
+  cp ./junit.xml "$TMT_TEST_DATA/junit.xml"
+  cp -r ./artifacts "$TMT_TEST_DATA/"
+fi
+
+
+if [ -n "${reportportal_api_key+x}" ] && [ -n "${reportportal_baseurl+x}" ]; then
+    pushd "$TMT_TEST_DATA/"
+    zip -r "$(dirs -l +1)/insights-client.zip" .
+    popd
+    curl -X POST --header 'Content-Type: multipart/form-data' --header 'Accept: application/json' --header "Authorization: bearer ${reportportal_api_key}" -F file=@insights-client.zip "${reportportal_baseurl}/api/v1/insights-client/launch/import"
 fi
 
 exit $retval
