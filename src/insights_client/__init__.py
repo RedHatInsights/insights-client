@@ -5,15 +5,15 @@
 
 from __future__ import print_function
 
+import contextlib
 import logging
 import os
+import re
 import shutil
 import subprocess
 from subprocess import Popen, PIPE
 import sys
 import tempfile
-
-from distutils.version import LooseVersion
 
 try:
     from .constants import InsightsConstants
@@ -147,6 +147,24 @@ def egg_path(insights_module):
     return os.path.dirname(module_path)
 
 
+def _maybe_int(maybe_number):
+    with contextlib.suppress(ValueError):
+        maybe_number = int(maybe_number)
+    return maybe_number
+
+
+def _version_tuple(version_str):
+    """
+    distutils.LooseVersion compatible tuple
+    """
+    version_str = version_str or "0"
+    return tuple(
+        _maybe_int(c)
+        for c in re.split(r"(\d+|[a-z]+|\.)", version_str)
+        if c and c != "."
+    )
+
+
 def sorted_eggs(eggs):
     """
     Sort eggs to go into sys.path by highest version
@@ -154,11 +172,10 @@ def sorted_eggs(eggs):
     if len(eggs) < 2:
         # nothing to sort
         return eggs
-    # default versions to 0 so LooseVersion doesn't throw a fit
-    egg0_version = egg_version(eggs[0]) or "0"
-    egg1_version = egg_version(eggs[1]) or "0"
+    egg0_version = egg_version(eggs[0])
+    egg1_version = egg_version(eggs[1])
 
-    if LooseVersion(egg0_version) > LooseVersion(egg1_version):
+    if _version_tuple(egg0_version) > _version_tuple(egg1_version):
         return eggs
     else:
         return [eggs[1], eggs[0]]
