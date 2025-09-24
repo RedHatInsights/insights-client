@@ -12,7 +12,6 @@ import contextlib
 import os
 import pytest
 from pytest_client_tools.util import Version
-from time import sleep
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -28,8 +27,7 @@ def test_status_registered(external_candlepin, insights_client):
     :tags: Tier 1
     :steps:
         1. Register the insights-client
-        2. Wait briefly to ensure inventory is up-to-date
-        3. Run `insights-client --status` command
+        2. Run `insights-client --status` command
     :expectedresults:
         1. The client registers successfully
         2. Wait time completes without issues
@@ -39,8 +37,7 @@ def test_status_registered(external_candlepin, insights_client):
     """
     insights_client.register()
     assert conftest.loop_until(lambda: insights_client.is_registered)
-    # Adding a small wait to ensure inventory is up-to-date
-    sleep(5)
+
     registration_status = insights_client.run("--status", selinux_context=None)
     if insights_client.config.legacy_upload:
         assert "Insights API confirms registration." in registration_status.stdout
