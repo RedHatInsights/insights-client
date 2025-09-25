@@ -235,7 +235,7 @@ def update_motd_message():
             )
 
 
-def _main():
+def _main(): # rewrite to main()?
     """
     Initialize and run insights client
     """
