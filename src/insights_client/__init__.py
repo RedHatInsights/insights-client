@@ -140,13 +140,67 @@ def run_phase(phase, client):
         logger.debug("phase '%s' successful", phase["name"])
         update_motd_message()
         return
+    for egg in all_eggs:
+        if config["gpg"]:
+            if not os.path.isfile(egg):
+                logger.debug("%s is not a file, can't GPG verify. Skipping.", egg)
+                continue
+            if not client.verify(egg)["gpg"]:
+                logger.debug("Not using egg: %s", egg)
+                continue
+        else:
+            logger.debug("GPG disabled by --no-gpg, not verifying %s.", egg)
 
-    if process.returncode not in [0, 100]:
-        logger.debug(
-            "phase '%s' failed with return code %d",
-            phase["name"],
-            process.returncode,
-        )
+        logger.debug("phase '%s'; egg '%s'", phase["name"], egg)
+
+        # prepare the environment
+        pythonpath = str(egg)
+        env_pythonpath = os.environ.get("PYTHONPATH", "")  # type: str
+        if env_pythonpath:
+            pythonpath = join_path([pythonpath, env_pythonpath])
+        insights_env = {
+            "INSIGHTS_PHASE": str(phase["name"]),
+            "PYTHONPATH": pythonpath,
+        }
+        env = os.environ
+        env.update(insights_env)
+
+        if SWITCH_CORE_SELINUX_POLICY:
+            # SELinux context switch into insights-core is allowed and preferred
+            context = selinux.context_new(selinux.getcon()[1])
+            source_type = selinux.context_type_get(context)
+
+            if source_type in ("unconfined_t", "sysadm_t", "unconfined_service_t"):
+                # Do not transition into insights-core context if we're running
+                # in privileged context already.
+                logger.debug(f"Staying in SELinux context {source_type}")
+            else:
+                # Do transition insights-core context if we're running in
+                # other (unknown), confined context.
+                logger.debug(
+                    "Switching SELinux context from "
+                    f"{source_type} to {CORE_SELINUX_POLICY}"
+                )
+                selinux.context_type_set(context, CORE_SELINUX_POLICY)
+                new_core_context = selinux.context_str(context)
+                selinux.setexeccon(new_core_context)
+            selinux.context_free(context)
+
+        process = subprocess.Popen(insights_command, env=env)
+        process.communicate()
+
+        if SWITCH_CORE_SELINUX_POLICY:
+            # setexeccon() in theory ought to reset the context for the next
+            # execv*() after that execution; it does not seem to happen though,
+            # so for now manually reset it
+            selinux.setexeccon(None)
+            logger.debug("Switched to the original SELinux context")
+
+        if process.returncode == 0:
+            # phase successful, don't try another egg
+            logger.debug("phase '%s' successful", phase["name"])
+            update_motd_message()
+            return
 
     if process.returncode >= 100:
         # 100 and 101 are unrecoverable, like post-unregistration, or
@@ -241,6 +295,31 @@ def _main(): # rewrite to main()?
     """
     logging_config = get_logging_config()
     set_up_logging(logging_config)
+
+    if SWITCH_CORE_SELINUX_POLICY:
+        logger.debug("Running with SELinux")
+    else:
+        logger.debug("Running without SELinux")
+
+    # sort rpm and stable eggs after verification
+    validated_eggs = sorted_eggs(list(filter(gpg_validate, [STABLE_EGG, RPM_EGG])))
+    # if ENV_EGG was specified and it's valid, add that to front of sys.path
+    #  so it can be loaded initially. keep it in its own var so we don't
+    #  pass it to run_phase where we load it again
+    if gpg_validate(ENV_EGG):
+        valid_env_egg = [ENV_EGG]
+    else:
+        valid_env_egg = []
+
+    if not validated_eggs and not valid_env_egg:
+        print("Client: %s" % InsightsConstants.version)
+        print("Core: not found")
+        return
+
+    # ENV egg comes first
+    all_valid_eggs = valid_env_egg + validated_eggs
+    logger.debug("Using eggs: %s", join_path(all_valid_eggs))
+    sys.path = all_valid_eggs + sys.path
 
     try:
         try:
