@@ -1,4 +1,4 @@
-# NOT important fot the build, only for tests. So far I ignore this file
+# NOT important for the build, only for tests. So far I ignore this file
 pytest = find_program('pytest', 'pytest-3')
 
 env = environment()
