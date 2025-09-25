@@ -1,2 +1,15 @@
 [tool.black]
 include = '(\.py(\.in)?|src/insights-client.in)$'
+
+#try to delete after
+[project]
+name = "insights-client"
+version = "3.10.2"
+description = "Uploads Insights information to Red Hat on a periodic basis"
+readme = "README.md"
+requires-python = ">=3.6"
+license = { text = "Apache-2.0" }
+
+#try to delete after
+[project.scripts]
+insights-client = "insights_client:_main"
