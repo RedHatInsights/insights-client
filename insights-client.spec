@@ -115,6 +115,7 @@ sed -e "s|@PACKAGE@|%{name}|g" \
     -e "s|@CORE_SELINUX_POLICY@||g" \
     src/insights_client/constants.py.in > src/insights_client/constants.py
 
+python3 -m build
 
 
 %install
@@ -183,13 +184,10 @@ install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 
-# ./src/ -------------------------------------------------------------------------------
-install -d -m 755 %{buildroot}%{_bindir}/
-
-# Install the processed scripts and set execute permissions rwxr-xr-x
-install -m 755 insights-client %{buildroot}%{_bindir}/
+pip install dist/*.whl --root=%{buildroot} --no-deps
 
 %if (0%{?rhel} && 0%{?rhel} < 10)
+install -d -m 755 %{buildroot}%{_bindir}/
 install -m 755 redhat-access-insights %{buildroot}%{_bindir}/
 %endif
 
