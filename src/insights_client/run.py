@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 try:
     try:
-        from insights.client.phase import v1 as client
+        from insights.client.phase import v2 as client
     except ImportError as e:
         sys.exit(
             "Error importing insights.client for %s as %s: %s"

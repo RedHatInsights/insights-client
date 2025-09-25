@@ -7,10 +7,10 @@ $ python3 -m pip install -r src/insights_client/tests/requirements.txt
 $ python3 -m pytest src/insights_client/tests
 ```
 
-## Specifying the egg
+## Specifying insights-core
 
-By default, we are using the `rpm.egg` to run insights-client test suite.
-By pointing the `EGG` environment variable to a different path, you can test custom eggs (the upstream HEAD, for example).
+By default, the installed insights-core package is used to run the insights-client test suite.
+By adding a custom path to a local repository of insights-core in the `PYTHONPATH` environment variable, you can test with custom insights-core versions (such as upstream HEAD, for example).
 
 
 ## CI

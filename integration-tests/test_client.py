@@ -228,37 +228,3 @@ def test_insights_details_file_exists(insights_client):
         assert os.path.isfile(output_file)
     else:
         assert not os.path.isfile(output_file)
-
-
-@pytest.mark.usefixtures("register_subman")
-@pytest.mark.tier1
-def test_insights_directory_files(insights_client):
-    """
-    :id: 02072b65-9905-4426-96dc-76af6a73e14f
-    :title: Verify insights directory files
-    :description: Verify that the /var/lib/insights directory has the expected content
-    :tags: Tier 1
-    :steps:
-        1. Register insights-client
-        2. Check the content of /var/lib/insights directory
-        3. Verify specific files exists
-    :expectedresults:
-        1. Insights-client is registered
-        2. The list of contents of /var/lib/insights directory is created
-        3. All specified files are present
-    """
-    directory = "/var/lib/insights"
-    registered_contents = [
-        "last_stable.egg",
-        "last_stable.egg.asc",
-    ]
-
-    insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
-
-    dir_content_registered = [
-        entry.name for entry in os.scandir(directory) if entry.is_file()
-    ]
-
-    for item in registered_contents:
-        assert item in dir_content_registered, f"File '{item}' not found in directory."
