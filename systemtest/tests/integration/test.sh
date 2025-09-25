@@ -27,9 +27,6 @@ if ! command -v bootc >/dev/null || bootc status | grep -q 'type: null'; then
     scap-security-guide openscap-scanner openscap bzip2-devel
 fi
 
-# If this is an insightsCore PR build and sign the new egg.
-[ -z "${insightsCoreBranch+x}" ] || ./systemtest/insights-core-setup.sh
-
 # Override settings if provided and available.
 if [ -n "${SETTINGS_URL+x}" ] && curl -I "$SETTINGS_URL" > /dev/null 2>&1; then
   [ -f ./settings.toml ] && mv ./settings.toml.bak
