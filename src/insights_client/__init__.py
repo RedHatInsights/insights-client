@@ -324,7 +324,7 @@ def run_phase(phase, client, validated_eggs):
             context = selinux.context_new(selinux.getcon()[1])
             source_type = selinux.context_type_get(context)
 
-            if source_type in ("unconfined_t", "sysadm_t"):
+            if source_type in ("unconfined_t", "sysadm_t", "unconfined_service_t"):
                 # Do not transition into insights-core context if we're running
                 # in privileged context already.
                 logger.debug(f"Staying in SELinux context {source_type}")
