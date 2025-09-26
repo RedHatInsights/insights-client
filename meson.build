@@ -32,8 +32,6 @@ config_data = configuration_data({
   'CORE_SELINUX_POLICY': get_option('core_selinux_policy'),
 })
 
-run_target('update-egg', command: 'scripts/01-upgrade-egg.sh')
-
 subdir('data')
 subdir('docs')
 subdir('src')
