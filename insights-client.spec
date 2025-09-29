@@ -27,6 +27,7 @@ Requires: insights-core >= 3.6.7
 
 Requires: subscription-manager
 
+BuildRequires: dnf-command(crb)
 BuildRequires: wget
 BuildRequires: binutils
 BuildRequires: python3-devel
