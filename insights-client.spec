@@ -27,6 +27,8 @@ Requires: insights-core >= 3.6.7
 
 Requires: subscription-manager
 
+%generate_buildrequires
+%pyproject_buildrequires
 
 BuildRequires: wget
 BuildRequires: binutils
@@ -36,8 +38,6 @@ BuildRequires: pam
 BuildRequires: python3-pytest
 BuildRequires: systemd-rpm-macros
 BuildRequires: systemd-devel >= 231
-%pyproject_buildrequires
-
 
 %description
 Sends insightful information to Red Hat for automated analysis
