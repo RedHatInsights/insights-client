@@ -9,6 +9,7 @@ Summary:                Uploads Insights information to Red Hat on a periodic ba
 Version:                3.10.2
 Release:                0%{?dist}
 Source:                 {{{ git_dir_pack }}}
+License:                GPL-2.0-or-later
 URL:                    https://console.redhat.com/insights
 Group:                  Applications/System
 Vendor:                 Red Hat, Inc.
