@@ -13,7 +13,7 @@ readme = "README.md"
 requires-python = ">=3.6"
 license = { text = "GPL-2.0-or-later" }
 
-# Dependencies from the 'Requires:' tags in the .spec file
+# Runtime Python dependencies
 dependencies = [
     "requests>=2.6",
     "PyYAML",
@@ -22,9 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-# This creates the /usr/bin/insights-client executable
 insights-client = "insights_client:_main"
 
 [tool.setuptools.packages.find]
-# Locates the 'insights_client' package in the 'src/' directory
 where = ["src"]

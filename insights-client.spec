@@ -27,7 +27,7 @@ Requires: insights-core >= 3.6.7
 
 Requires: subscription-manager
 
-BuildRequires: dnf-command(crb)
+
 BuildRequires: wget
 BuildRequires: binutils
 BuildRequires: python3-devel
@@ -35,10 +35,8 @@ BuildRequires: systemd
 BuildRequires: pam
 BuildRequires: python3-pytest
 BuildRequires: systemd-rpm-macros
-BuildRequires: python3-setuptools
-BuildRequires: python3-pip
-BuildRequires: python3-build
 BuildRequires: systemd-devel >= 231
+%pyproject_buildrequires
 
 
 %description
@@ -121,7 +119,7 @@ sed -e "s|@PACKAGE@|%{name}|g" \
     -e "s|@CORE_SELINUX_POLICY@||g" \
     src/insights_client/constants.py.in > src/insights_client/constants.py
 
-python3 -m build
+%pyproject_wheel
 
 
 %install
@@ -190,7 +188,7 @@ install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 
-pip install dist/*.whl --root=%{buildroot} --no-deps
+%pyproject_install
 
 %if (0%{?rhel} && 0%{?rhel} < 10)
 install -d -m 755 %{buildroot}%{_bindir}/
