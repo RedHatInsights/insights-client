@@ -36,7 +36,6 @@ BuildRequires: python3-devel
 BuildRequires: systemd
 BuildRequires: pam
 BuildRequires: python3-pytest
-BuildRequires: systemd-rpm-macros
 BuildRequires: systemd-devel >= 231
 
 %description
