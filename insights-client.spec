@@ -27,16 +27,21 @@ Requires: insights-core >= 3.6.7
 
 Requires: subscription-manager
 
-%generate_buildrequires
-%pyproject_buildrequires
+BuildRequires: pyproject-rpm-macros
+BuildRequires: python3-devel
+BuildRequires: python3-pip
+BuildRequires: python3-setuptools
 
 BuildRequires: wget
 BuildRequires: binutils
-BuildRequires: python3-devel
 BuildRequires: systemd
 BuildRequires: pam
 BuildRequires: python3-pytest
 BuildRequires: systemd-devel >= 231
+
+
+%generate_buildrequires
+%pyproject_buildrequires
 
 %description
 Sends insightful information to Red Hat for automated analysis
@@ -290,4 +295,5 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %endif
 
 %changelog
-{{{ git_dir_changelog }}}
+* Thu Oct 02 2025 John Doe <jdoe@example.com> - 1.2.3-1
+- THIS IS A SAMPLE CHANGELOG ENTRY
