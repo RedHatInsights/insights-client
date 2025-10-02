@@ -27,11 +27,8 @@ Requires: insights-core >= 3.6.7
 
 Requires: subscription-manager
 
-BuildRequires: pyproject-rpm-macros
 BuildRequires: python3-devel
 BuildRequires: python3-pip
-BuildRequires: python3-setuptools
-
 BuildRequires: wget
 BuildRequires: binutils
 BuildRequires: systemd
@@ -39,9 +36,6 @@ BuildRequires: pam
 BuildRequires: python3-pytest
 BuildRequires: systemd-devel >= 231
 
-
-%generate_buildrequires
-%pyproject_buildrequires
 
 %description
 Sends insightful information to Red Hat for automated analysis
@@ -119,11 +113,9 @@ sed -e "s|@PACKAGE@|%{name}|g" \
     -e "s|@DATADIR@|%{_datadir}|g" \
     -e "s|@SYSCONFDIR@|%{_sysconfdir}|g" \
     -e "s|@LOCALSTATEDIR@|%{_localstatedir}|g" \
-    -e "s|@DOCDIR@|%{_docdir}|g" \
+    -e "s|@DOCDIR@|%{_docdir}/%{name}|g" \
     -e "s|@CORE_SELINUX_POLICY@||g" \
     src/insights_client/constants.py.in > src/insights_client/constants.py
-
-%pyproject_wheel
 
 
 %install
@@ -192,12 +184,19 @@ install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 
-%pyproject_install
+
+# ./src/ -------------------------------------------------------------------------------
+install -d -m 755 %{buildroot}%{_bindir}/
+
+# Install the processed scripts and set execute permissions rwxr-xr-x
+install -m 755 insights-client %{buildroot}%{_bindir}/
 
 %if (0%{?rhel} && 0%{?rhel} < 10)
-install -d -m 755 %{buildroot}%{_bindir}/
 install -m 755 redhat-access-insights %{buildroot}%{_bindir}/
 %endif
+
+install -d -m 755 %{buildroot}%{python3_sitelib}/insights_client/
+cp -pr src/insights_client/* %{buildroot}%{python3_sitelib}/insights_client/
 
 # Create different insights directories in /var
 mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
@@ -276,6 +275,10 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %attr(444,root,root) %{_sysconfdir}/insights-client/*.pem
 %attr(444,root,root) %{_sysconfdir}/insights-client/redhattools.pub.gpg
 %{python3_sitelib}/insights_client/
+%exclude %{python3_sitelib}/insights_client/__pycache__/
+%exclude %{python3_sitelib}/insights_client/constants.py.in
+%exclude %{python3_sitelib}/insights_client/meson.build
+%exclude %{python3_sitelib}/insights_client/tests
 %{_defaultdocdir}/%{name}
 %{_presetdir}/*.preset
 %attr(700,root,root) %dir %{_localstatedir}/log/insights-client/
@@ -295,5 +298,4 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %endif
 
 %changelog
-* Thu Oct 02 2025 John Doe <jdoe@example.com> - 1.2.3-1
-- THIS IS A SAMPLE CHANGELOG ENTRY
+{{{ git_dir_changelog }}}
