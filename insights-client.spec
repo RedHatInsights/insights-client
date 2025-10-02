@@ -195,6 +195,9 @@ install -m 755 insights-client %{buildroot}%{_bindir}/
 install -m 755 redhat-access-insights %{buildroot}%{_bindir}/
 %endif
 
+install -d -m 755 %{buildroot}%{python3_sitelib}/insights_client/
+cp -pr src/insights_client/* %{buildroot}%{python3_sitelib}/insights_client/
+
 # Create different insights directories in /var
 mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
 mkdir -p %{buildroot}%{_localstatedir}/lib/insights/
