@@ -27,11 +27,8 @@ Requires: insights-core >= 3.6.7
 
 Requires: subscription-manager
 
-BuildRequires: pyproject-rpm-macros
 BuildRequires: python3-devel
 BuildRequires: python3-pip
-BuildRequires: python3-setuptools
-
 BuildRequires: wget
 BuildRequires: binutils
 BuildRequires: systemd
@@ -39,9 +36,6 @@ BuildRequires: pam
 BuildRequires: python3-pytest
 BuildRequires: systemd-devel >= 231
 
-
-%generate_buildrequires
-%pyproject_buildrequires
 
 %description
 Sends insightful information to Red Hat for automated analysis
@@ -123,8 +117,6 @@ sed -e "s|@PACKAGE@|%{name}|g" \
     -e "s|@CORE_SELINUX_POLICY@||g" \
     src/insights_client/constants.py.in > src/insights_client/constants.py
 
-%pyproject_wheel
-
 
 %install
 # %{meson_install}
@@ -192,10 +184,14 @@ install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 
-%pyproject_install
+
+# ./src/ -------------------------------------------------------------------------------
+install -d -m 755 %{buildroot}%{_bindir}/
+
+# Install the processed scripts and set execute permissions rwxr-xr-x
+install -m 755 insights-client %{buildroot}%{_bindir}/
 
 %if (0%{?rhel} && 0%{?rhel} < 10)
-install -d -m 755 %{buildroot}%{_bindir}/
 install -m 755 redhat-access-insights %{buildroot}%{_bindir}/
 %endif
 
