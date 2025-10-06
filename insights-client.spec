@@ -275,6 +275,10 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %attr(444,root,root) %{_sysconfdir}/insights-client/*.pem
 %attr(444,root,root) %{_sysconfdir}/insights-client/redhattools.pub.gpg
 %{python3_sitelib}/insights_client/
+%exclude %{python3_sitelib}/insights_client/__pycache__/
+%exclude %{python3_sitelib}/insights_client/constants.py.in
+%exclude %{python3_sitelib}/insights_client/meson.build
+%exclude %{python3_sitelib}/insights_client/tests
 %{_defaultdocdir}/%{name}
 %{_presetdir}/*.preset
 %attr(700,root,root) %dir %{_localstatedir}/log/insights-client/
