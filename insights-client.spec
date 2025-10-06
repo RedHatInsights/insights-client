@@ -113,7 +113,7 @@ sed -e "s|@PACKAGE@|%{name}|g" \
     -e "s|@DATADIR@|%{_datadir}|g" \
     -e "s|@SYSCONFDIR@|%{_sysconfdir}|g" \
     -e "s|@LOCALSTATEDIR@|%{_localstatedir}|g" \
-    -e "s|@DOCDIR@|%{_docdir}|g" \
+    -e "s|@DOCDIR@|%{_docdir}/%{name}|g" \
     -e "s|@CORE_SELINUX_POLICY@||g" \
     src/insights_client/constants.py.in > src/insights_client/constants.py
 
