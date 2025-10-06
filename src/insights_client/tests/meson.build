@@ -1,9 +1,10 @@
+# NOT important for the build, only for tests. So far I ignore this file
 pytest = find_program('pytest', 'pytest-3')
 
 env = environment()
 env.append('PYTHONPATH', meson.source_root() / 'src')
 
-test_sources = files('test_client.py', 'test_commands.py')
+test_sources = files('test_client.py', 'test_commands.py') # shouldn't there be also test_motd.py?
 
 test('test',
   pytest,
