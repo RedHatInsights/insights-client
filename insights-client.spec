@@ -3,6 +3,8 @@
 # This conditional build macro adds a "--with ros" commandline option to
 # rpmbuild. The default behavior is to build without it.
 %bcond_with ros
+%bcond_with checkin
+%bcond_with auto_registration
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
