@@ -1,6 +1,23 @@
 summary: insights-client test suite
 discover:
-    how: fmf
+  how: fmf
+
+prepare:
+  - name: "Install test deps"
+    how: install
+    package:
+      - bzip2
+      - bzip2-devel
+      - git-core
+      - logrotate
+      - man-db
+      - openscap
+      - openscap-scanner
+      - podman
+      - python3-pip
+      - python3-pytest
+      - scap-security-guide
+      - zip
 
 execute:
-    how: tmt
+  how: tmt
