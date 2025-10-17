@@ -6,6 +6,7 @@
 :upstream: Yes
 """
 
+import conftest
 import pytest
 import subprocess
 import shutil
@@ -20,6 +21,7 @@ SERVICE = "pmlogger"
 
 
 @pytest.mark.tier1
+@pytest.mark.skipif(conftest.check_is_bootc_system(), reason="No dnf on bootc systems")
 def test_ros_install():
     """
     :id: 3fc19957-be97-429d-817a-610e6c69dd9d
@@ -141,6 +143,7 @@ def test_upload_pre_collected_archive_with_ros(insights_client, tmp_path):
 
 
 @pytest.mark.tier1
+@pytest.mark.skipif(conftest.check_is_bootc_system(), reason="No dnf on bootc systems")
 def test_cleanup_pmlogger_and_ros():
     """
     :id: e9e150af-4fb7-42c2-b72b-5e1656959530
