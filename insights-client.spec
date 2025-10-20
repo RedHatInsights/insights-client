@@ -10,7 +10,7 @@ Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.10.2
 Release:                0%{?dist}
-Source:                 {{{ git_dir_pack }}}
+Source:                 https://github.com/RedHatInsights/insights-client/archive/refs/tags/v%{version}.tar.gz
 License:                GPL-2.0-or-later
 URL:                    https://console.redhat.com/insights
 Group:                  Applications/System
@@ -57,7 +57,7 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 %endif
 
 %prep
-{{{ git_dir_setup_macro }}}
+%autosetup -p1
 
 
 %build
@@ -300,4 +300,5 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %endif
 
 %changelog
-{{{ git_dir_changelog }}}
+* Mon Oct 20 2025 Peter Schrimpel <pschrimp@redhat.com> - 1.2.3.4.5
+- G
