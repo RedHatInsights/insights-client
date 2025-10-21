@@ -13,14 +13,6 @@ readme = "README.md"
 requires-python = ">=3.6"
 license = { text = "Apache-2.0" }
 
-# Runtime Python dependencies
-dependencies = [
-    "requests>=2.6",
-    "PyYAML",
-    "six",
-    "setuptools",
-]
-
 [project.scripts]
 insights-client = "insights_client:_main"
 
@@ -31,3 +23,4 @@ package-dir = { "" = "src" }
 # This configures automatic package discovery to find your 'insights_client' package.
 [tool.setuptools.packages.find]
 where = ["src"]
+exclude = ["insights_client.test*", "insights_client.tests*"]

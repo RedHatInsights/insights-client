@@ -10,7 +10,7 @@ Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.10.2
 Release:                0%{?dist}
-Source:                 https://github.com/RedHatInsights/insights-client/archive/refs/tags/v%{version}.tar.gz
+Source:                 {{{ git_dir_pack }}}
 License:                GPL-2.0-or-later
 URL:                    https://console.redhat.com/insights
 Group:                  Applications/System
@@ -37,7 +37,10 @@ BuildRequires: systemd
 BuildRequires: pam
 BuildRequires: python3-pytest
 BuildRequires: systemd-devel >= 231
-
+BuildRequires: python3-setuptools
+BuildRequires: python3-rpm-macros
+BuildRequires: pyproject-rpm-macros
+BuildRequires: python3-wheel
 
 %description
 Sends insightful information to Red Hat for automated analysis
@@ -57,43 +60,49 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 %endif
 
 %prep
-cd .
-%autosetup -p1
-cd .
-
+{{{ git_dir_setup_macro }}}
 
 %build
+%pyproject_wheel
 
 %install
+%pyproject_install
+%pyproject_save_files insights_client
 
-# ./data/ ------------------------------------------------------------------------------
+# ./data/
 install -d -m 755 %{buildroot}%{_sysconfdir}/insights-client/
 install -m 644 data/cert-api.access.redhat.com.pem %{buildroot}%{_sysconfdir}/insights-client/cert-api.access.redhat.com.pem
 install -m 644 data/insights-client.conf %{buildroot}%{_sysconfdir}/insights-client/insights-client.conf
 install -m 644 data/insights-client.motd %{buildroot}%{_sysconfdir}/insights-client/insights-client.motd
 install -m 644 data/redhattools.pub.gpg %{buildroot}%{_sysconfdir}/insights-client/redhattools.pub.gpg
 
-# ./data/logrotate.d/ ------------------------------------------------------------------
+# ./data/logrotate.d/
 install -d -m 755 %{buildroot}%{_sysconfdir}/logrotate.d/
 install -m 644 data/logrotate.d/insights-client %{buildroot}%{_sysconfdir}/logrotate.d/insights-client
 
-# ./data/systemd/ ----------------------------------------------------------------------
-# install_dir: systemd.get_pkgconfig_variable('systemdsystemunitdir')
-install -d -m 755 %{buildroot}%{_unitdir}/ 
-# install_dir: systemd.get_pkgconfig_variable('systemdsystempresetdir')
-install -d -m 755 %{buildroot}%{_presetdir}/ 
-
-# Install static systemd files
+# ./data/systemd/
+install -d -m 755 %{buildroot}%{_unitdir}/
+install -d -m 755 %{buildroot}%{_presetdir}/
 install -m 644 data/systemd/insights-client-boot.service %{buildroot}%{_unitdir}/insights-client-boot.service
 install -m 644 data/systemd/insights-client.service %{buildroot}%{_unitdir}/insights-client.service
 install -m 644 data/systemd/insights-client.timer %{buildroot}%{_unitdir}/insights-client.timer
-
-# Install static preset files
 install -m 644 data/systemd/80-insights.preset %{buildroot}%{_presetdir}/80-insights.preset
-
-# Install the files generated in the %build section
 install -m 644 data/systemd/insights-client-results.service %{buildroot}%{_unitdir}/insights-client-results.service
 install -m 644 data/systemd/insights-client-results.path %{buildroot}%{_unitdir}/insights-client-results.path
+
+# ./data/tmpfiles.d/
+install -d -m 755 %{buildroot}%{_tmpfilesdir}/
+install -m 644 data/tmpfiles.d/insights-client.conf %{buildroot}%{_tmpfilesdir}/insights-client.conf
+
+# ./docs/
+install -d -m 755 %{buildroot}%{_mandir}/man5/
+install -d -m 755 %{buildroot}%{_mandir}/man8/
+install -m 644 docs/insights-client.conf.5 %{buildroot}%{_mandir}/man5/
+install -m 644 docs/insights-client.8 %{buildroot}%{_mandir}/man8/
+
+install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
+install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
+install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 
 # Conditionally install other files
 %if %{with auto_registration}
@@ -108,36 +117,6 @@ install -m 644 data/systemd/80-insights-register.preset %{buildroot}%{_presetdir
 install -m 644 data/systemd/insights-client-checkin.timer %{buildroot}%{_unitdir}/insights-client-checkin.timer
 install -m 644 data/systemd/insights-client-checkin.service %{buildroot}%{_unitdir}/insights-client-checkin.service
 %endif
-
-# ./data/tmpfiles.d/ -------------------------------------------------------------------
-install -d -m 755 %{buildroot}%{_tmpfilesdir}/
-install -m 644 data/tmpfiles.d/insights-client.conf %{buildroot}%{_tmpfilesdir}/insights-client.conf
-
-# ./docks/ -----------------------------------------------------------------------------
-# Create man page directories
-install -d -m 755 %{buildroot}%{_mandir}/man5/
-install -d -m 755 %{buildroot}%{_mandir}/man8/
-
-# Install the man pages
-install -m 644 docs/insights-client.conf.5 %{buildroot}%{_mandir}/man5/
-install -m 644 docs/insights-client.8 %{buildroot}%{_mandir}/man8/
-
-# Create the package's documentation directory
-install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
-
-# Install the example files
-install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
-install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
-
-
-# ./src/ -------------------------------------------------------------------------------
-install -d -m 755 %{buildroot}%{_bindir}/
-
-# Install the processed scripts and set execute permissions rwxr-xr-x
-install -m 755 src/insights-client %{buildroot}%{_bindir}/
-
-install -d -m 755 %{buildroot}%{python3_sitelib}/insights_client/
-cp -pr src/insights_client/* %{buildroot}%{python3_sitelib}/insights_client/
 
 # Create different insights directories in /var
 mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
@@ -208,16 +187,13 @@ fi
 sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/ros_collect=True/d' %{_sysconfdir}/insights-client/insights-client.conf
 %endif
 
-%files
+%files -f %{pyproject_files}
 %config(noreplace) %{_sysconfdir}/insights-client/*.conf
 %{_sysconfdir}/insights-client/insights-client.motd
 %{_bindir}/*
 %{_unitdir}/*
 %attr(444,root,root) %{_sysconfdir}/insights-client/*.pem
 %attr(444,root,root) %{_sysconfdir}/insights-client/redhattools.pub.gpg
-%{python3_sitelib}/insights_client/
-%exclude %{python3_sitelib}/insights_client/__pycache__/
-%exclude %{python3_sitelib}/insights_client/tests
 %{_defaultdocdir}/%{name}
 %{_presetdir}/*.preset
 %attr(700,root,root) %dir %{_localstatedir}/log/insights-client/
@@ -237,5 +213,4 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %endif
 
 %changelog
-* Mon Oct 20 2025 Peter Schrimpel <pschrimp@redhat.com> - 1.2.3.4.5
-- G
+{{{ git_dir_changelog }}}
