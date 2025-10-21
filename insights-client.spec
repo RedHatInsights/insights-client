@@ -57,21 +57,14 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 %endif
 
 %prep
+cd .
 %autosetup -p1
+cd .
 
 
 %build
-# %{meson} \
-#     -Dpython=%{__python3} \
-# %if (0%{?rhel} && 0%{?rhel} < 10)
-#     -Dredhat_access_insights=true \
-# %endif
-#     %{nil}
-# %{meson_build}
-
 
 %install
-# %{meson_install}
 
 # ./data/ ------------------------------------------------------------------------------
 install -d -m 755 %{buildroot}%{_sysconfdir}/insights-client/
