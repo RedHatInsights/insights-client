@@ -1,10 +1,10 @@
-#!@PYTHON@
+#!/usr/bin/python3
 
 import sys
 
 from insights_client import _main
 
-sys.path.insert(1, "@pythondir@")
+sys.path.insert(1, "/usr/lib/python3.12/site-packages")
 
 
 if __name__ == "__main__":

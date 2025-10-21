@@ -69,56 +69,6 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 #     %{nil}
 # %{meson_build}
 
-# ./data/systemd/ ----------------------------------------------------------------------
-sed -e "s|@bindir@|%{_bindir}|g" \
-    data/systemd/insights-client-results.service.in > insights-client-results.service
-sed -e "s|@pkgsysconfdir@|%{_sysconfdir}/insights-client|g" \
-    data/systemd/insights-client-results.path.in > insights-client-results.path
-
-# Conditionally process other templates based on build flags
-%if %{with auto_registration} 
-sed -e "s|@bindir@|%{_bindir}|g" \
-    data/systemd/insights-register.service.in > insights-register.service
-sed -e "s|@sysconfdir@|%{_sysconfdir}|g" \
-    data/systemd/insights-register.path.in > insights-register.path
-sed -e "s|@sysconfdir@|%{_sysconfdir}|g" -e "s|@bindir@|%{_bindir}|g" \
-    data/systemd/insights-unregister.service.in > insights-unregister.service
-sed -e "s|@sysconfdir@|%{_sysconfdir}|g" \
-    data/systemd/insights-unregister.path.in > insights-unregister.path
-%endif
-
-%if %{with checkin}
-sed -e "s|@bindir@|%{_bindir}|g" \
-    data/systemd/insights-client-checkin.service.in > insights-client-checkin.service
-%endif
-
-# ./src/ -------------------------------------------------------------------------------
-
-# Process the main executable script template
-sed -e "s|@PYTHON@|%{__python3}|g" -e "s|@pythondir@|%{python3_sitelib}|g" \
-    src/insights-client.in > insights-client
-
-# Conditionally process the deprecated executable
-%if (0%{?rhel} && 0%{?rhel} < 10)
-sed -e "s|@bindir@|%{_bindir}|g" \
-    src/redhat-access-insights.in > redhat-access-insights
-%endif
-
-# ./src/insights_client/ ---------------------------------------------------------------
-sed -e "s|@PACKAGE@|%{name}|g" \
-    -e "s|@PACKAGE_VERSION@|%{version}|g" \
-    -e "s|@PREFIX@|%{_prefix}|g" \
-    -e "s|@BINDIR@|%{_bindir}|g" \
-    -e "s|@SBINDIR@|%{_sbindir}|g" \
-    -e "s|@LIBEXECDIR@|%{_libexecdir}|g" \
-    -e "s|@DATAROOTDIR@|%{_datadir}|g" \
-    -e "s|@DATADIR@|%{_datadir}|g" \
-    -e "s|@SYSCONFDIR@|%{_sysconfdir}|g" \
-    -e "s|@LOCALSTATEDIR@|%{_localstatedir}|g" \
-    -e "s|@DOCDIR@|%{_docdir}/%{name}|g" \
-    -e "s|@CORE_SELINUX_POLICY@||g" \
-    src/insights_client/constants.py.in > src/insights_client/constants.py
-
 
 %install
 # %{meson_install}
@@ -137,7 +87,7 @@ install -m 644 data/logrotate.d/insights-client %{buildroot}%{_sysconfdir}/logro
 # ./data/systemd/ ----------------------------------------------------------------------
 # install_dir: systemd.get_pkgconfig_variable('systemdsystemunitdir')
 install -d -m 755 %{buildroot}%{_unitdir}/ 
-#install_dir: systemd.get_pkgconfig_variable('systemdsystempresetdir')
+# install_dir: systemd.get_pkgconfig_variable('systemdsystempresetdir')
 install -d -m 755 %{buildroot}%{_presetdir}/ 
 
 # Install static systemd files
@@ -149,21 +99,21 @@ install -m 644 data/systemd/insights-client.timer %{buildroot}%{_unitdir}/insigh
 install -m 644 data/systemd/80-insights.preset %{buildroot}%{_presetdir}/80-insights.preset
 
 # Install the files generated in the %build section
-install -m 644 insights-client-results.service %{buildroot}%{_unitdir}/insights-client-results.service
-install -m 644 insights-client-results.path %{buildroot}%{_unitdir}/insights-client-results.path
+install -m 644 data/systemd/insights-client-results.service %{buildroot}%{_unitdir}/insights-client-results.service
+install -m 644 data/systemd/insights-client-results.path %{buildroot}%{_unitdir}/insights-client-results.path
 
 # Conditionally install other files
 %if %{with auto_registration}
-install -m 644 insights-register.service %{buildroot}%{_unitdir}/insights-register.service
-install -m 644 insights-register.path %{buildroot}%{_unitdir}/insights-register.path
-install -m 644 insights-unregister.service %{buildroot}%{_unitdir}/insights-unregister.service
-install -m 644 insights-unregister.path %{buildroot}%{_unitdir}/insights-unregister.path
+install -m 644 data/systemd/insights-register.service %{buildroot}%{_unitdir}/insights-register.service
+install -m 644 data/systemd/insights-register.path %{buildroot}%{_unitdir}/insights-register.path
+install -m 644 data/systemd/insights-unregister.service %{buildroot}%{_unitdir}/insights-unregister.service
+install -m 644 data/systemd/insights-unregister.path %{buildroot}%{_unitdir}/insights-unregister.path
 install -m 644 data/systemd/80-insights-register.preset %{buildroot}%{_presetdir}/80-insights-register.preset
 %endif
 
 %if %{with checkin}
 install -m 644 data/systemd/insights-client-checkin.timer %{buildroot}%{_unitdir}/insights-client-checkin.timer
-install -m 644 insights-client-checkin.service %{buildroot}%{_unitdir}/insights-client-checkin.service
+install -m 644 data/systemd/insights-client-checkin.service %{buildroot}%{_unitdir}/insights-client-checkin.service
 %endif
 
 # ./data/tmpfiles.d/ -------------------------------------------------------------------
@@ -191,11 +141,7 @@ install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdo
 install -d -m 755 %{buildroot}%{_bindir}/
 
 # Install the processed scripts and set execute permissions rwxr-xr-x
-install -m 755 insights-client %{buildroot}%{_bindir}/
-
-%if (0%{?rhel} && 0%{?rhel} < 10)
-install -m 755 redhat-access-insights %{buildroot}%{_bindir}/
-%endif
+install -m 755 src/insights-client %{buildroot}%{_bindir}/
 
 install -d -m 755 %{buildroot}%{python3_sitelib}/insights_client/
 cp -pr src/insights_client/* %{buildroot}%{python3_sitelib}/insights_client/
@@ -278,8 +224,6 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %attr(444,root,root) %{_sysconfdir}/insights-client/redhattools.pub.gpg
 %{python3_sitelib}/insights_client/
 %exclude %{python3_sitelib}/insights_client/__pycache__/
-%exclude %{python3_sitelib}/insights_client/constants.py.in
-%exclude %{python3_sitelib}/insights_client/meson.build
 %exclude %{python3_sitelib}/insights_client/tests
 %{_defaultdocdir}/%{name}
 %{_presetdir}/*.preset

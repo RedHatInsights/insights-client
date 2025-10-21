@@ -2,17 +2,18 @@
 #
 # Any changes made to this file will be overwritten during a software update. To
 # override a parameter in this file, create a drop-in file, typically located at
-# /etc/systemd/system/insights-unregister.path.d/override.conf. Put the desired
-# overrides in that file and reload systemd.
+# /etc/systemd/system/insights-client-results.path.d/override.conf. Put the
+# desired overrides in that file and reload systemd.
 #
 # For more information about systemd drop-in files, see systemd.unit(5).
 
 [Unit]
-Description=Automatically Unregister from Red Hat Insights Path Watch
+Description=Monitor /etc/insights-client/.lastupload for modifications
 Documentation=man:insights-client(8)
+PartOf=insights-client.timer
 
 [Path]
-PathChanged=@sysconfdir@/pki/consumer/cert.pem
+PathModified=/etc/insights-client/.lastupload
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=insights-client.timer
