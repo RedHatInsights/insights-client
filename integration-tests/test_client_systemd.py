@@ -6,11 +6,11 @@
 :upstream: Yes
 """
 
-import conftest
 import pytest
 import subprocess
 from pathlib import Path
 import logging
+from pytest_client_tools.util import loop_until
 from constants import INSIGHTS_CLIENT_LOG_FILE
 
 logger = logging.getLogger(__name__)
@@ -40,8 +40,8 @@ def _wait_for_timer_execution_by_logfile(interval_minutes=3, additional_wait_sec
     wait_time = (interval_minutes * 60) + additional_wait_sec
     logger.debug(f"Waiting {wait_time} seconds for timer execution...")
 
-    # Use conftest.loop_until to check for log file recreation
-    return conftest.loop_until(
+    # Use loop_until to check for log file recreation
+    return loop_until(
         lambda: log_file.exists(),
         poll_sec=10,
         timeout_sec=wait_time,
@@ -74,7 +74,7 @@ def test_data_upload_systemd_timer(insights_client):
         6. Log file is recreated, confirming the timer triggered the upload
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Create override configuration for insights-client timer to run every 3 minutes
     override_path = Path("/etc/systemd/system/insights-client.timer.d/override.conf")

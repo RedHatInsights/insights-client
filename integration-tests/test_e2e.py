@@ -7,8 +7,7 @@
 """
 
 import pytest
-import conftest
-from pytest_client_tools.util import Version
+from pytest_client_tools.util import Version, loop_until
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -32,7 +31,7 @@ def test_insights_client_version_in_inventory(insights_client, external_inventor
         3. The system profile includes insights-client and egg version information
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     system_profile = external_inventory.this_system_profile()
 

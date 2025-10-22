@@ -15,8 +15,8 @@ import tarfile
 import pytest
 from constants import HOST_DETAILS
 from constants import MACHINE_ID_FILE
-import conftest
 import logging
+from pytest_client_tools.util import loop_until
 
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -63,7 +63,7 @@ def test_file_workflow_with_an_archive_with_only_one_canonical_fact(
     assert "Successfully uploaded report" in upload_result.stdout
 
     # once archive is uploaded system status changes to register
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     insights_client.run("--check-results")  # to get host details from inventory
     with open(HOST_DETAILS, "r") as data_file:
@@ -145,7 +145,7 @@ def test_file_workflow_archive_update_host_info(
         4. The FQDN in the Inventory matches the updated hostname
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     if "container" not in os.environ.keys():
         current_hostname = (

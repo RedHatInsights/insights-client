@@ -6,9 +6,9 @@
 :upstream: Yes
 """
 
-import conftest
 import pytest
 import distro
+from pytest_client_tools.util import loop_until
 
 pytestmark = [
     pytest.mark.usefixtures("register_subman"),
@@ -49,7 +49,7 @@ def test_compliance_option(insights_client):
     )
 
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     compliance_after_registration = insights_client.run("--compliance", check=False)
     if compliance_after_registration.returncode == 1:
@@ -81,7 +81,7 @@ def test_compliance_policies_option(insights_client):
             displayed
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     compliance_policies = insights_client.run("--compliance-policies", check=False)
     if (
