@@ -8,10 +8,10 @@
 
 import pytest
 import subprocess
-import conftest
 import shutil
 from constants import CONFIG_FILE
 from pathlib import Path
+from pytest_client_tools.util import loop_until
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -93,7 +93,7 @@ def test_register_with_ros(insights_client):
         1. Verify the client successfully registered
     """
     register_result = insights_client.run("--register")
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     assert register_result.returncode == 0
 
 
@@ -124,7 +124,7 @@ def test_upload_pre_collected_archive_with_ros(insights_client, tmp_path):
 
     # Registering the client because upload can happen on registered system
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Running insights-client in offline mode to generate archive and save at tmp dir
     insights_client.run(f"--output-file={archive_location}")
