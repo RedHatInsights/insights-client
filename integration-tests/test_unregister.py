@@ -7,8 +7,7 @@
 """
 
 import pytest
-from pytest_client_tools.util import Version
-import conftest
+from pytest_client_tools.util import Version, loop_until
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -34,7 +33,7 @@ def test_unregister(insights_client):
         3. Client unregistration is confirmed
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     unregistration_status = insights_client.run("--unregister")
     if insights_client.core_version >= Version(3, 5, 11):
@@ -44,7 +43,7 @@ def test_unregister(insights_client):
             "Successfully unregistered from the Red Hat Insights Service"
             in unregistration_status.stdout
         )
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
 
 
 @pytest.mark.tier1
@@ -71,11 +70,11 @@ def test_unregister_twice(insights_client):
             unregistration is not applicable."
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # unregister once
     unregistration_status = insights_client.run("--unregister")
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
     if insights_client.core_version >= Version(3, 5, 11):
         assert "Successfully unregistered this host." in unregistration_status.stdout
     else:
@@ -86,7 +85,7 @@ def test_unregister_twice(insights_client):
 
     # unregister twice
     unregistration_status = insights_client.run("--unregister", check=False)
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
     assert unregistration_status.returncode == 1
     assert (
         "This host is not registered, unregistration is not applicable."

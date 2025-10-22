@@ -6,12 +6,11 @@
 :upstream: Yes
 """
 
-import conftest
 from constants import REGISTERED_FILE, UNREGISTERED_FILE, MACHINE_ID_FILE
 import contextlib
 import os
 import pytest
-from pytest_client_tools.util import Version
+from pytest_client_tools.util import Version, loop_until
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -37,7 +36,7 @@ def test_status_registered(external_candlepin, insights_client):
             is registered.\n"
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     registration_status = insights_client.run("--status", selinux_context=None)
     if insights_client.config.legacy_upload:
@@ -74,7 +73,7 @@ def test_status_registered_only_locally(
     """
     insights_client.config.legacy_upload = False
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     system_id = external_inventory.this_system()["id"]
     external_inventory.delete(path=f"hosts/{system_id}")
     response = external_inventory.get(path=f"hosts?insights_id={insights_client.uuid}")
@@ -118,7 +117,7 @@ def test_status_unregistered(external_candlepin, insights_client):
     # running unregistration to ensure system is unregistered
     with contextlib.suppress(Exception):
         insights_client.unregister()
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
 
     registration_status = insights_client.run(
         "--status", check=False, selinux_context=None

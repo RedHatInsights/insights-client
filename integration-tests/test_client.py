@@ -11,8 +11,7 @@ import glob
 import os
 import subprocess
 import pytest
-import conftest
-from pytest_client_tools.util import Version
+from pytest_client_tools.util import Version, loop_until
 
 
 @pytest.mark.usefixtures("register_subman")
@@ -39,7 +38,7 @@ def test_client_files_permission(insights_client):
     with contextlib.suppress(FileNotFoundError):
         os.remove(file_last_upload)  # performing a cleanup before test
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     assert oct(os.stat(file_last_upload).st_mode & 0o777) == "0o644"
 
 
@@ -177,7 +176,7 @@ def test_verify_logrotate_feature(insights_client):
      Insights archive retained in /var/cache/insights-client/insights-test-date.tar.gz
     """
     reg_result = insights_client.run("--register", "--keep-archive")
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     archive_name = reg_result.stdout.split()[-1]
     insights_client.run(
@@ -217,7 +216,7 @@ def test_insights_details_file_exists(insights_client):
     """
     output_file = "/var/lib/insights/insights-details.json"
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Deleting file manually
     with contextlib.suppress(FileNotFoundError):
@@ -254,7 +253,7 @@ def test_insights_directory_files(insights_client):
     ]
 
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     dir_content_registered = [
         entry.name for entry in os.scandir(directory) if entry.is_file()
