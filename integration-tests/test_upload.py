@@ -8,7 +8,7 @@
 
 import os
 import pytest
-import conftest
+from pytest_client_tools.util import loop_until
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -39,7 +39,7 @@ def test_upload_pre_collected_archive(insights_client, tmp_path):
 
     # Registering the client because upload can happen on registered system
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Running insights-client in offline mode to generate archive and save at tmp dir
     insights_client.run(f"--output-file={archive_location}")
@@ -80,7 +80,7 @@ def test_upload_wrong_content_type(insights_client, tmp_path):
 
     # Registering the client because upload can happen on registered system
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Running insights-client in offline mode to generate archive and save at tmp dir
     insights_client.run(f"--output-file={archive_location}")
@@ -119,7 +119,7 @@ def test_upload_too_large_archive(insights_client, tmp_path):
         3. The upload process fails with an appropriate message
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     file_path = tmp_path / "large_file.tar.gz"
     file_size = 100 * 1024 * 1024  # 100mb
@@ -169,7 +169,7 @@ def test_upload_compressor_options(
         3. The file has expected file extension
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # using --compressor option to generate and save archive
     command_result = insights_client.run(f"--compressor={compressor}", "--no-upload")
@@ -214,7 +214,7 @@ def test_retries(insights_client):
         6. the final error message is as expected
     """
     reg_result = insights_client.run("--register", "--keep-archive")
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Save the archive, to be used while upload operation
     archive_name = reg_result.stdout.split()[-1]
@@ -258,7 +258,7 @@ def test_retries_not_happening_on_unrecoverable_errors(insights_client):
         5. No retries occurred
     """
     reg_result = insights_client.run("--register", "--keep-archive")
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Save the archive, to be used while upload operation
     archive_name = reg_result.stdout.split()[-1]
