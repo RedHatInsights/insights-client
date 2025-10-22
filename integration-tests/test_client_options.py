@@ -9,8 +9,7 @@
 import json
 import os
 import pytest
-from pytest_client_tools.util import Version
-import conftest
+from pytest_client_tools.util import Version, loop_until
 import glob
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -45,7 +44,7 @@ def test_set_ansible_host_info(insights_client, test_config):
         pytest.skip(reason="Issue was fixed in Satellite 6.16 and upwards")
     # Register system against Satellite, and register insights through satellite
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Update ansible-host
     ret = insights_client.run("--ansible-host=foo.example.com", check=False)
@@ -79,7 +78,7 @@ def test_no_upload(insights_client):
     upload_message = "Successfully uploaded report"
 
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     archive_file_before = glob.glob(f"{ARCHIVE_CACHE_DIRECTORY}/*.tar.gz")
 
@@ -228,7 +227,7 @@ def test_client_checkin_offline(insights_client):
             message 'ERROR: Cannot check-in in offline mode.'
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     checkin_result = insights_client.run("--offline", "--checkin", check=False)
     assert checkin_result.returncode == 1
     assert "ERROR: Cannot check-in in offline mode." in checkin_result.stderr
@@ -271,7 +270,7 @@ def test_client_diagnosis(insights_client):
         assert "Unable to get diagnosis data: 404" in diagnosis_result.stdout
     # Running diagnosis on registered system
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     with open("/etc/insights-client/machine-id", "r") as f:
         machine_id = f.read()
     diagnosis_result = insights_client.run("--diagnosis")
@@ -305,7 +304,7 @@ def test_check_show_results(insights_client):
     os.chmod("/etc/ssh/sshd_config", 0o777)
 
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     try:
         insights_client.run("--check-results")

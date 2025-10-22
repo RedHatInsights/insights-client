@@ -9,8 +9,7 @@
 import os
 import pytest
 import contextlib
-from pytest_client_tools.util import Version
-import conftest
+from pytest_client_tools.util import Version, loop_until
 from constants import MACHINE_ID_FILE
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -37,7 +36,7 @@ def test_register(insights_client):
         3. The output includes "Successfully uploaded report"
     """
     register_result = insights_client.run("--register")
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     assert "Starting to collect Insights data" in register_result.stdout
     assert "Successfully uploaded report" in register_result.stdout
@@ -78,7 +77,7 @@ def test_register_auth_proxy(insights_client, test_config):
     insights_client.config.save()
 
     register_result = insights_client.run("--register", "--verbose")
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     assert "Proxy Scheme: http://" in register_result.stdout
     assert f"Proxy Location: {proxy_host}" in register_result.stdout
     assert f"Proxy User: {proxy_user}" in register_result.stdout
@@ -114,7 +113,7 @@ def test_register_noauth_proxy(insights_client, test_config):
     insights_client.config.save()
 
     register_result = insights_client.run("--register", "--verbose")
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     assert f"CONF Proxy: {no_auth_proxy}" in register_result.stdout
 
 
@@ -140,7 +139,7 @@ def test_machineid_exists_only_when_registered(insights_client):
         3. Client is successfully registered and machine ID is present on the system
         4. The client is successfully unregistered and machine ID file is removed
     """
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
     assert not os.path.exists(MACHINE_ID_FILE)
 
     res = insights_client.run(check=False)
@@ -153,7 +152,7 @@ def test_machineid_exists_only_when_registered(insights_client):
     assert not os.path.exists(MACHINE_ID_FILE)
 
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     assert os.path.exists(MACHINE_ID_FILE)
 
     insights_client.unregister()
@@ -219,7 +218,7 @@ def test_double_registration(insights_client):
             'This host has already been registered'
         3. The machine ID stayed unchanged
     """
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
 
     insights_client.register()
     assert os.path.exists(MACHINE_ID_FILE)
@@ -266,7 +265,7 @@ def test_register_group_option(insights_client, legacy_upload_value):
     # make sure the system is not registered to insights
     with contextlib.suppress(Exception):
         insights_client.unregister()
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
     insights_client.config.legacy_upload = legacy_upload_value
     insights_client.config.save()
     register_group_option = insights_client.run(
@@ -301,11 +300,11 @@ def test_registered_and_unregistered_files_are_created_and_deleted(insights_clie
         3. The client is unregistered, .registered file was removed and .unregistered
             appears
     """
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
     assert not os.path.exists("/etc/insights-client/.registered")
 
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
     assert os.path.exists("/etc/insights-client/.registered")
     assert not os.path.exists("/etc/insights-client/.unregistered")
 
