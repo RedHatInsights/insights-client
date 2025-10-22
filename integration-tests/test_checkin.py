@@ -9,10 +9,9 @@
 import contextlib
 import json
 import pytest
-from pytest_client_tools.util import Version
+from pytest_client_tools.util import Version, loop_until
 
 from constants import HOST_DETAILS
-import conftest
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
@@ -43,7 +42,7 @@ def test_ultralight_checkin(insights_client, test_config):
         5. Both updated timestamps will be greater than before check-in
     """
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     # Performing check-results operation provides latest host data in host-details.json
     insights_client.run("--check-results")
@@ -84,7 +83,7 @@ def test_client_checkin_unregistered(insights_client):
     """
     with contextlib.suppress(Exception):
         insights_client.unregister()
-    assert conftest.loop_until(lambda: not insights_client.is_registered)
+    assert loop_until(lambda: not insights_client.is_registered)
 
     checkin_result = insights_client.run("--checkin", check=False)
     if insights_client.core_version >= Version(3, 4, 25):
