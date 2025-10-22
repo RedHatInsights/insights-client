@@ -11,8 +11,8 @@ import os
 import tarfile
 import json
 import pytest
-import conftest
 import uuid
+from pytest_client_tools.util import loop_until
 
 
 @pytest.mark.tier1
@@ -279,7 +279,7 @@ def test_cmd_timeout(insights_client):
     cmd_output_message = "Executing: [['timeout', '-s', '9', '10'"
 
     insights_client.register()
-    assert conftest.loop_until(lambda: insights_client.is_registered)
+    assert loop_until(lambda: insights_client.is_registered)
 
     insights_client.config.cmd_timeout = 10
     insights_client.config.save()
