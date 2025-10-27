@@ -3,6 +3,8 @@
 # This conditional build macro adds a "--with ros" commandline option to
 # rpmbuild. The default behavior is to build without it.
 %bcond_with ros
+%bcond_with checkin
+%bcond_with auto_registration
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
@@ -22,24 +24,23 @@ Requires: pciutils
 
 %{?__python3:Requires: %{__python3}}
 %{?systemd_requires}
-Requires: python3-requests >= 2.6
-Requires: python3-PyYAML
-Requires: python3-six
-Requires: python3dist(setuptools)
 Requires: coreutils
 Requires: insights-core >= 3.6.7
 
 Requires: subscription-manager
 
+BuildRequires: python3-devel
+BuildRequires: python3-pip
 BuildRequires: wget
 BuildRequires: binutils
-BuildRequires: python3-devel
 BuildRequires: systemd
 BuildRequires: pam
-BuildRequires: meson
 BuildRequires: python3-pytest
-BuildRequires: systemd-rpm-macros
-
+BuildRequires: systemd-devel >= 231
+BuildRequires: python3-setuptools
+BuildRequires: python3-rpm-macros
+BuildRequires: pyproject-rpm-macros
+BuildRequires: python3-wheel
 
 %description
 Sends insightful information to Red Hat for automated analysis
@@ -61,19 +62,61 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 %prep
 {{{ git_dir_setup_macro }}}
 
-
 %build
-%{meson} \
-    -Dpython=%{__python3} \
-%if (0%{?rhel} && 0%{?rhel} < 10)
-    -Dredhat_access_insights=true \
-%endif
-    %{nil}
-%{meson_build}
-
+%pyproject_wheel
 
 %install
-%{meson_install}
+%pyproject_install
+%pyproject_save_files insights_client
+
+# ./data/
+install -d -m 755 %{buildroot}%{_sysconfdir}/insights-client/
+install -m 644 data/cert-api.access.redhat.com.pem %{buildroot}%{_sysconfdir}/insights-client/cert-api.access.redhat.com.pem
+install -m 644 data/insights-client.conf %{buildroot}%{_sysconfdir}/insights-client/insights-client.conf
+install -m 644 data/insights-client.motd %{buildroot}%{_sysconfdir}/insights-client/insights-client.motd
+install -m 644 data/redhattools.pub.gpg %{buildroot}%{_sysconfdir}/insights-client/redhattools.pub.gpg
+
+# ./data/logrotate.d/
+install -d -m 755 %{buildroot}%{_sysconfdir}/logrotate.d/
+install -m 644 data/logrotate.d/insights-client %{buildroot}%{_sysconfdir}/logrotate.d/insights-client
+
+# ./data/systemd/
+install -d -m 755 %{buildroot}%{_unitdir}/
+install -d -m 755 %{buildroot}%{_presetdir}/
+install -m 644 data/systemd/insights-client-boot.service %{buildroot}%{_unitdir}/insights-client-boot.service
+install -m 644 data/systemd/insights-client.service %{buildroot}%{_unitdir}/insights-client.service
+install -m 644 data/systemd/insights-client.timer %{buildroot}%{_unitdir}/insights-client.timer
+install -m 644 data/systemd/80-insights.preset %{buildroot}%{_presetdir}/80-insights.preset
+install -m 644 data/systemd/insights-client-results.service %{buildroot}%{_unitdir}/insights-client-results.service
+install -m 644 data/systemd/insights-client-results.path %{buildroot}%{_unitdir}/insights-client-results.path
+
+# ./data/tmpfiles.d/
+install -d -m 755 %{buildroot}%{_tmpfilesdir}/
+install -m 644 data/tmpfiles.d/insights-client.conf %{buildroot}%{_tmpfilesdir}/insights-client.conf
+
+# ./docs/
+install -d -m 755 %{buildroot}%{_mandir}/man5/
+install -d -m 755 %{buildroot}%{_mandir}/man8/
+install -m 644 docs/insights-client.conf.5 %{buildroot}%{_mandir}/man5/
+install -m 644 docs/insights-client.8 %{buildroot}%{_mandir}/man8/
+
+install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
+install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
+install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
+
+# Conditionally install other files
+%if %{with auto_registration}
+install -m 644 data/systemd/insights-register.service %{buildroot}%{_unitdir}/insights-register.service
+install -m 644 data/systemd/insights-register.path %{buildroot}%{_unitdir}/insights-register.path
+install -m 644 data/systemd/insights-unregister.service %{buildroot}%{_unitdir}/insights-unregister.service
+install -m 644 data/systemd/insights-unregister.path %{buildroot}%{_unitdir}/insights-unregister.path
+install -m 644 data/systemd/80-insights-register.preset %{buildroot}%{_presetdir}/80-insights-register.preset
+%endif
+
+%if %{with checkin}
+install -m 644 data/systemd/insights-client-checkin.timer %{buildroot}%{_unitdir}/insights-client-checkin.timer
+install -m 644 data/systemd/insights-client-checkin.service %{buildroot}%{_unitdir}/insights-client-checkin.service
+%endif
 
 # Create different insights directories in /var
 mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
@@ -144,14 +187,13 @@ fi
 sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/ros_collect=True/d' %{_sysconfdir}/insights-client/insights-client.conf
 %endif
 
-%files
+%files -f %{pyproject_files}
 %config(noreplace) %{_sysconfdir}/insights-client/*.conf
 %{_sysconfdir}/insights-client/insights-client.motd
 %{_bindir}/*
 %{_unitdir}/*
 %attr(444,root,root) %{_sysconfdir}/insights-client/*.pem
 %attr(444,root,root) %{_sysconfdir}/insights-client/redhattools.pub.gpg
-%{python3_sitelib}/insights_client/
 %{_defaultdocdir}/%{name}
 %{_presetdir}/*.preset
 %attr(700,root,root) %dir %{_localstatedir}/log/insights-client/

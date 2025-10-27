@@ -1,5 +1,7 @@
 """Gather and upload Insights data for Red Hat Insights"""
 
+# might rework later to not use constants since they dont exist
+
 import logging
 import os
 import subprocess

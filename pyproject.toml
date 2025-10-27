@@ -1,2 +1,26 @@
 [tool.black]
 include = '(\.py(\.in)?|src/insights-client.in)$'
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "insights-client"
+version = "3.10.2"
+description = "Uploads Insights information to Red Hat on a periodic basis"
+readme = "README.md"
+requires-python = ">=3.6"
+license = { text = "Apache-2.0" }
+
+[project.scripts]
+insights-client = "insights_client:_main"
+
+[tool.setuptools]
+# This tells setuptools that your Python packages are located under the 'src' directory.
+package-dir = { "" = "src" }
+
+# This configures automatic package discovery to find your 'insights_client' package.
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["insights_client.test*", "insights_client.tests*"]
