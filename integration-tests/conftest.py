@@ -37,3 +37,24 @@ def register_subman(
             password=test_config.get("candlepin", "password"),
         )
     yield subman_session
+
+
+def check_is_bootc_system():
+    """
+    Check if the system is a bootc enabled system.
+    This function duplicates the logic from pytest-client-tools' is_bootc_system fixture
+    so it can be used in pytest.skipif decorators (which run at collection time).
+    """
+    try:
+        bootc_status = subprocess.run(
+            ["bootc", "status", "--format", "humanreadable"],
+            capture_output=True,
+            text=True,
+        )
+        return (bootc_status.returncode == 0) and (
+            not bootc_status.stdout.strip().startswith(
+                "System is not deployed via bootc"
+            )
+        )
+    except FileNotFoundError:
+        return False
