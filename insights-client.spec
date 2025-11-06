@@ -3,8 +3,6 @@
 # This conditional build macro adds a "--with ros" commandline option to
 # rpmbuild. The default behavior is to build without it.
 %bcond_with ros
-%bcond_with checkin
-%bcond_with auto_registration
 
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
@@ -113,20 +111,6 @@ install -m 644 docs/insights-client.8 %{buildroot}%{_mandir}/man8/
 install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
-
-# Conditionally install other files
-%if %{with auto_registration}
-install -m 644 data/systemd/insights-register.service %{buildroot}%{_unitdir}/insights-register.service
-install -m 644 data/systemd/insights-register.path %{buildroot}%{_unitdir}/insights-register.path
-install -m 644 data/systemd/insights-unregister.service %{buildroot}%{_unitdir}/insights-unregister.service
-install -m 644 data/systemd/insights-unregister.path %{buildroot}%{_unitdir}/insights-unregister.path
-install -m 644 data/systemd/80-insights-register.preset %{buildroot}%{_presetdir}/80-insights-register.preset
-%endif
-
-%if %{with checkin}
-install -m 644 data/systemd/insights-client-checkin.timer %{buildroot}%{_unitdir}/insights-client-checkin.timer
-install -m 644 data/systemd/insights-client-checkin.service %{buildroot}%{_unitdir}/insights-client-checkin.service
-%endif
 
 # Create different insights directories in /var
 mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
