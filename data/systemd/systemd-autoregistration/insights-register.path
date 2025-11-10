@@ -12,7 +12,7 @@ Description=Automatically Register with Red Hat Insights Path Watch
 Documentation=man:insights-client(8)
 
 [Path]
-PathExists=@sysconfdir@/pki/consumer/cert.pem
+PathExists=/etc/pki/consumer/cert.pem
 
 [Install]
 WantedBy=multi-user.target

@@ -17,5 +17,5 @@ After=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=no
-ExecStart=@bindir@/insights-client --check-results
+ExecStart=/usr/bin/insights-client --check-results
 Restart=no
