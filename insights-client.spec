@@ -1,5 +1,8 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
+%bcond_with checkin
+%bcond_with auto_registration
+
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.10.3
@@ -34,9 +37,9 @@ BuildRequires: binutils
 BuildRequires: python3-devel
 BuildRequires: systemd
 BuildRequires: pam
-BuildRequires: meson
 BuildRequires: python3-pytest
 BuildRequires: systemd-rpm-macros
+BuildRequires: make
 Requires(post): policycoreutils-python-utils
 
 
@@ -59,23 +62,22 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 
 
 %build
-%{meson} \
-    -Dpython=%{__python3} -Dcore_selinux_policy=insights_core_t \
-%if (0%{?rhel} && 0%{?rhel} < 10)
-    -Dredhat_access_insights=true \
-%endif
-    %{nil}
-%{meson_build}
-
+sed -e "s|@PACKAGE_VERSION@|%{version}|g" \
+    -e "s|@CORE_SELINUX_POLICY@|insights_core_t|g" \
+    src/insights_client/constants.py.in > src/insights_client/constants.py
 
 %install
-%{meson_install}
-
-# Create different insights directories in /var
-mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
-mkdir -p %{buildroot}%{_localstatedir}/lib/insights/
-mkdir -p %{buildroot}%{_localstatedir}/cache/insights/
-mkdir -p %{buildroot}%{_localstatedir}/cache/insights-client/
+make install-files \
+    BUILDROOT='%{buildroot}' \
+    PYTHON3_SITELIB='%{python3_sitelib}' \
+    SYSCONFDIR='%{_sysconfdir}' \
+    UNITDIR='%{_unitdir}' \
+    PRESETDIR='%{_presetdir}' \
+    TMPFILESDIR='%{_tmpfilesdir}' \
+    MANDIR='%{_mandir}' \
+    DEFAULTDOCDIR='%{_defaultdocdir}' \
+    LOCALSTATEDIR='%{_localstatedir}' \
+    NAME='%{name}'
 
 %post
 %systemd_post %{name}.timer
