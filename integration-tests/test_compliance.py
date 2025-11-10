@@ -6,14 +6,29 @@
 :upstream: Yes
 """
 
+import os
 import pytest
-import distro
 from pytest_client_tools.util import loop_until
+
+
+def _system_is_rhel() -> bool:
+    """
+    Check if the OS is RHEL based on /etc/os-release file.
+    """
+    if not os.path.isfile("/etc/os-release"):
+        return False
+    with open("/etc/os-release", encoding="utf-8") as f:
+        for line in f:
+            if line.startswith("ID="):
+                os_id = line.strip().split("=")[-1].strip('"')
+                return os_id == "rhel"
+    return False
+
 
 pytestmark = [
     pytest.mark.usefixtures("register_subman"),
     pytest.mark.skipif(
-        distro.id() != "rhel",
+        not _system_is_rhel(),
         reason="Skipping tests because OS ID is not RHEL",
         allow_module_level=True,
     ),
