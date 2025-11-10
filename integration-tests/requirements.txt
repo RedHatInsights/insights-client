@@ -1,4 +1,3 @@
 git+https://github.com/RedHatInsights/pytest-client-tools@main
 pyyaml
 pytest-subtests
-distro
