@@ -13,11 +13,11 @@
 Description=Automatically Unregister from Red Hat Insights
 Documentation=man:insights-client(8)
 After=network-online.target
-ConditionPathExists=!@sysconfdir@/pki/consumer/cert.pem
+ConditionPathExists=!/etc/pki/consumer/cert.pem
 
 [Service]
 Type=simple
-ExecStart=@bindir@/insights-client --unregister --force
+ExecStart=/usr/bin/insights-client --unregister --force
 ExecStopPost=systemctl unmask --now insights-register.path
 ExecStopPost=systemctl start insights-register.path
 Restart=no

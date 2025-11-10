@@ -1,3 +1,6 @@
 [tool.black]
-include = '(\.py(\.in)?|src/insights-client.in)$'
+include = '(\.py(\.in)?|src/insights-client)$'
 line-length = 100
+
+[tool.codespell]
+ignore-words-list = "checkin"

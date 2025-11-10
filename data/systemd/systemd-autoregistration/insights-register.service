@@ -16,7 +16,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=@bindir@/insights-client --register
+ExecStart=/usr/bin/insights-client --register
 Restart=no
 WatchdogSec=900
 CPUQuota=30%
