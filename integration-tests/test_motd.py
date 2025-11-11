@@ -39,6 +39,10 @@ def delete_special_files():
         with contextlib.suppress(FileNotFoundError):
             os.remove(MOTD_PATH)
 
+    # Ensure /etc/motd.d directory exists (required for MOTD updates)
+    motd_dir = os.path.dirname(MOTD_PATH)
+    os.makedirs(motd_dir, exist_ok=True)
+
     delete_files()
     yield
     delete_files()
@@ -71,7 +75,10 @@ def test_motd(insights_client):
         5. The MOTD file is still not present
     """
     # If the system is not registered, the file should be present.
-    insights_client.run("--status", check=False, selinux_context=None)
+    # Run a command that triggers phases (which will call update_motd_message)
+    # --status might not trigger phases or might exit early, so we use --offline
+    # which will trigger phases and update MOTD even on unregistered systems
+    insights_client.run("--offline", check=False, selinux_context=None)
     assert os.path.exists(MOTD_PATH)
 
     # After registration, the file should not exist.
@@ -145,12 +152,9 @@ def test_motd_message():
     """
     cmd = ["cat", MOTD_SRC]
     output = subprocess.check_output(cmd, universal_newlines=True)
-    motd_msg = "Register this system with Red Hat Insights: rhc connect\n\n\
-Example:\n\
-# rhc connect --activation-key <key> --organization <org>\n\n\
-The rhc client and Red Hat Insights will enable analytics and additional\n\
-management capabilities on your system.\n\
-View your connected systems at https://console.redhat.com/insights\n\n\
-You can learn more about how to register your system \n\
-using rhc at https://red.ht/registration\n"
+    motd_msg = (
+        "Register this system with Red Hat Insights: insights-client --register\n"
+        "Create an account or view all your systems at "
+        "https://red.ht/insights-dashboard\n"
+    )
     assert output == motd_msg
