@@ -1,9 +1,9 @@
-Register this system with Red Hat Insights: rhc connect
+Register this system with Red Hat Lightspeed: rhc connect
 
 Example:
 # rhc connect --activation-key <key> --organization <org>
 
-The rhc client and Red Hat Insights will enable analytics and additional
+The rhc client and Red Hat Lightspeed will enable analytics and additional
 management capabilities on your system.
 View your connected systems at https://console.redhat.com/insights
 
