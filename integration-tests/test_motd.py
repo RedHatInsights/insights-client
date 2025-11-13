@@ -143,10 +143,10 @@ def test_motd_message():
     """
     cmd = ["cat", MOTD_SRC]
     output = subprocess.check_output(cmd, universal_newlines=True)
-    motd_msg = "Register this system with Red Hat Insights: rhc connect\n\n\
+    motd_msg = "Register this system with Red Hat Lightspeed: rhc connect\n\n\
 Example:\n\
 # rhc connect --activation-key <key> --organization <org>\n\n\
-The rhc client and Red Hat Insights will enable analytics and additional\n\
+The rhc client and Red Hat Lightspeed will enable analytics and additional\n\
 management capabilities on your system.\n\
 View your connected systems at https://console.redhat.com/insights\n\n\
 You can learn more about how to register your system \n\
