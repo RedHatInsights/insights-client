@@ -21,7 +21,7 @@ jobs:
             python3-flake8 \
             python3-pip
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - uses: psf/black@stable
       with:
