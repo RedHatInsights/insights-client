@@ -16,7 +16,7 @@ jobs:
       image: fedora:latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Base setup for Betelgeuse
         run: |
