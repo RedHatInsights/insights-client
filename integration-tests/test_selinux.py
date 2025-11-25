@@ -14,6 +14,8 @@ from contextlib import contextmanager
 from pytest_client_tools.util import loop_until
 from datetime import datetime
 
+from constants import REGISTERED_FILE
+
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
@@ -328,3 +330,60 @@ def test_register_unconfined_service_t_registration(insights_client):
                     f"context {scontext}. "
                     f"Found contexts: {checker.get_process_contexts()}"
                 )
+
+
+@pytest.mark.tier2
+def test_selinux_core_context(insights_client):
+    f"""
+    :id: 27163bb4-ab05-421b-b471-b2ba655f3773
+    :title: insights-client executed by insights-client.service or
+        other service that transitions to insights_client_t
+    :description:
+        Check that the core code is executed with correct context (insights_core_t) if
+        insights-client is executed under insights_client_t context.
+        Check this by invoking unregister code that removes .registered file,
+        and have that file with file context that insights_core_t process
+        should not be allowed to remove.
+    :tags: Tier 2
+    :reference: https://issues.redhat.com/browse/CCT-1719
+    :steps:
+        1. Register system using subscription-manager and insights-client (setup)
+        2. Change SELinux context type of '{REGISTERED_FILE}' to "shadow_t" (setup)
+        3. Switch system to SELinux permissive mode (setup)
+        4. Run insights-client --unregister in insights_client_t SELinux context
+        5. Look for denial about removing '{REGISTERED_FILE}' by
+           a process with SELinux context insights_core_t
+    :expectedresults:
+        1. System is registered (setup)
+        2. SELinux context type of the file is changed (setup)
+        3. System is running in SELinux permissive mode (setup)
+        4. System is successfully unregistered
+        5. The SELinux AVC was hit
+    """
+    insights_client.register(wait_for_registered=True)
+    subprocess.run(["chcon", "-t", "shadow_t", REGISTERED_FILE], check=True)
+
+    with _selinux_mode("permissive"):
+        with SELinuxDenialsChecker() as checker:
+            status = insights_client.run("--unregister")
+            assert status.returncode == 0
+            assert status.stdout == "Successfully unregistered this host.\n"
+
+    expected_denial_pattern = re.compile(
+        r"type=AVC .* avc:  denied  { unlink } for .* "
+        r'name="\.registered" .* '
+        r"scontext=system_u:system_r:insights_core_t:s0 "
+        r"tcontext=unconfined_u:object_r:shadow_t:s0 "
+        r"tclass=file permissive=1"
+    )
+    for avc in checker.get_denials().split("----\n")[1:]:
+        if expected_denial_pattern.search(avc, re.MULTILINE):
+            # Found the expected AVC
+            break
+    else:
+        pytest.fail(
+            "No AVC about attempting to access shadow_t file found.\n"
+            "This most probably means that either the client/core process ran "
+            "under incorrect SELinux context or the selinux policy is too graceful.\n"
+            "Only following AVCs were hit:\n" + checker.get_denials()
+        )
