@@ -49,18 +49,18 @@ def _format_audit_time(timestamp):
     return timestamp or "today"
 
 
-def _check_denials_with_ausearch(start_time, end_time=None):
+def _check_denials_with_ausearch(start_time, end_time=None, proc=None):
     # Check for denials using ausearch command.
     cmd = [
         "ausearch",
         "--message",
         "AVC",
-        "--comm",
-        "insights-client",
         "--start",
     ] + _format_audit_time(start_time)
     if end_time:
         cmd.extend(["--end"] + _format_audit_time(end_time))
+    if proc:
+        cmd += ["--comm", proc]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, check=False)
     return result.stdout.strip()
 
@@ -196,9 +196,9 @@ class SELinuxDenialsChecker:
         self.end_time = time.time()
         return False
 
-    def get_denials(self):
+    def get_denials(self, proc=None):
         # Get AVC denials that occurred during the context manager period.
-        return _check_denials_with_ausearch(self.start_time, self.end_time)
+        return _check_denials_with_ausearch(self.start_time, self.end_time, proc=proc)
 
     def get_process_contexts(self):
         # Get process contexts from execve events during the context manager period.
@@ -269,5 +269,5 @@ def test_register_unconfined_t_no_context_change(insights_client):
                     )
 
         # Verify no SELinux denials
-        denials = checker.get_denials()
+        denials = checker.get_denials("insights-client")
         assert not denials, f"SELinux denials found:\n{denials}"
