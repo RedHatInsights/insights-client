@@ -1,5 +1,4 @@
 import os
-
 import pytest
 import subprocess
 import tempfile
@@ -117,3 +116,22 @@ def check_is_bootc_system():
         )
     except FileNotFoundError:
         return False
+
+
+@pytest.fixture(autouse=True)
+def check_avcs():
+    checkpoint_file = f"/tmp/avc_checkpoint.{os.getpid()}"
+    subprocess.run(
+        ['ausearch', '-m', 'AVC', '--checkpoint', checkpoint_file],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+    yield
+    avcs = subprocess.run(
+        ['ausearch', '-m', 'AVC', '--checkpoint', checkpoint_file],
+        stdout=subprocess.PIPE,
+    )
+    if avcs.stdout:
+        pytest.fail(
+            "AVCs detected during test run!\n" +
+            avcs.stdout.decode(),
+        )
