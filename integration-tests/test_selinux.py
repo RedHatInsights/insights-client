@@ -8,12 +8,11 @@
 
 import re
 import subprocess
-import time
 import pytest
 from contextlib import contextmanager
 from pytest_client_tools.util import loop_until
-from datetime import datetime
 
+from selinux import SELinuxAVCChecker
 from constants import REGISTERED_FILE
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -44,117 +43,6 @@ def _get_current_context():
         return context.replace("\x00", "")
 
 
-def _format_audit_time(timestamp):
-    """Convert timestamp to audit log format."""
-    if isinstance(timestamp, (int, float)):
-        return datetime.fromtimestamp(timestamp).strftime("%m/%d/%Y %H:%M:%S").split()
-    return timestamp or "today"
-
-
-def _check_denials_with_ausearch(start_time, end_time=None, proc=None):
-    # Check for denials using ausearch command.
-    cmd = [
-        "ausearch",
-        "--message",
-        "AVC",
-        "--start",
-    ] + _format_audit_time(start_time)
-    if end_time:
-        cmd.extend(["--end"] + _format_audit_time(end_time))
-    if proc:
-        cmd += ["--comm", proc]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, check=False)
-    return result.stdout.strip()
-
-
-def _parse_execve_event_block(event_lines):
-    """
-    Parse a block of audit lines (one event) to extract process info.
-    Correlates SYSCALL (context) with EXECVE (full arguments).
-    """
-    # Join lines to make searching easier, or iterate
-    full_text = "\n".join(event_lines)
-
-    # 1. Extract contexts from SYSCALL
-    # scontext = subject context (parent process that executed)
-    scontext_match = re.search(r"(?:subj|scontext)=([^\s]+)", full_text)
-    if not scontext_match:
-        return None
-    scontext = scontext_match.group(1)
-
-    # tcontext = target context (file being executed)
-    # newcontext = actual running context if setexeccon was used
-    newcontext_match = re.search(r"newcontext=([^\s]+)", full_text)
-    tcontext_match = re.search(r"tcontext=([^\s]+)", full_text)
-
-    # Running context is newcontext if setexeccon was used, otherwise tcontext
-    if newcontext_match:
-        running_context = newcontext_match.group(1)
-    elif tcontext_match:
-        running_context = tcontext_match.group(1)
-    else:
-        # Fallback to scontext if neither found (shouldn't happen normally)
-        running_context = scontext
-
-    # 2. Extract Command/Arguments from EXECVE
-    if "type=EXECVE" not in full_text:
-        return None
-
-    # Extract all arguments to reconstruct the command roughly
-    args = re.findall(r'a\d+=(?:"([^"]+)"|([^\s]+))', full_text)
-    cmd_args = [x[0] or x[1] for x in args]
-    cmd_string = " ".join(cmd_args)
-
-    # 3. Filter: Is this the process we care about?
-    # We only care if the arguments mention insights-client structure
-    target_markers = ["insights-client", "insights_client", "insights-core", "run.py"]
-    if not any(marker in cmd_string for marker in target_markers):
-        return None
-    # Comm is usually the base command (first arg or explicit comm field)
-    comm_match = re.search(r'comm="([^"]+)"', full_text)
-    comm = comm_match.group(1) if comm_match else (cmd_args[0] if cmd_args else "unknown")
-    # Return format: (comm_name, source_context, running_context)
-    return (comm, scontext, running_context)
-
-
-def _check_process_contexts_from_audit(start_time, end_time=None):
-    """Check SELinux contexts of executed processes from audit logs.
-    Groups lines by event ID to correlate EXECVE arguments with SYSCALL context.
-    """
-    contexts = []
-
-    # Prepare ausearch command
-    # Note: We search for both SYSCALL and EXECVE to ensure we get the full block
-    cmd = [
-        "ausearch",
-        "--message",
-        "SYSCALL,EXECVE",
-        "--start",
-    ] + _format_audit_time(start_time)
-    if end_time:
-        cmd.extend(["--end"] + _format_audit_time(end_time))
-
-    # Helper to process a block of lines
-    def process_block(lines):
-        if not lines:
-            return
-        parsed = _parse_execve_event_block(lines)
-        if parsed:
-            contexts.append(parsed)
-
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, check=False)
-    if result.returncode == 0 and result.stdout:
-        current_event = []
-        for line in result.stdout.splitlines():
-            if line.strip() == "----":
-                process_block(current_event)
-                current_event = []
-            else:
-                current_event.append(line)
-        process_block(current_event)  # Process the last block
-    return contexts
-
-
 # Context managers
 @contextmanager
 def _selinux_mode(mode):
@@ -177,34 +65,6 @@ def _selinux_mode(mode):
             except subprocess.CalledProcessError:
                 # Log but don't fail if restore fails
                 pass
-
-
-# Classes
-class SELinuxDenialsChecker:
-    """Context manager for checking SELinux denials during a time period.
-    This context manager automatically tracks start_time and end_time,
-    removing the need for manual time tracking in tests.
-    """
-
-    def __init__(self):
-        self.start_time = None
-        self.end_time = None
-
-    def __enter__(self):
-        self.start_time = time.time()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.end_time = time.time()
-        return False
-
-    def get_denials(self, proc=None):
-        # Get AVC denials that occurred during the context manager period.
-        return _check_denials_with_ausearch(self.start_time, self.end_time, proc=proc)
-
-    def get_process_contexts(self):
-        # Get process contexts from execve events during the context manager period.
-        return _check_process_contexts_from_audit(self.start_time, self.end_time)
 
 
 @pytest.mark.tier2
@@ -241,7 +101,7 @@ def test_register_unconfined_t_no_context_change(insights_client):
         context = _get_current_context()
         assert "unconfined_t" in context, f"Expected unconfined_t, got: {context}"
 
-        with SELinuxDenialsChecker() as checker:
+        with SELinuxAVCChecker() as checker:
             result = insights_client.run("--register", selinux_context=None)
             assert result.returncode == 0, f"Registration failed: {result.returncode}"
 
@@ -302,7 +162,7 @@ def test_register_unconfined_service_t_registration(insights_client):
     """
     # Not switching explicitly to enforcing mode, the system should be already in it
     # unless someone wanted to explicitly test with permissive mode.
-    with SELinuxDenialsChecker() as checker:
+    with SELinuxAVCChecker() as checker:
         subprocess.run(
             [
                 "runcon",
@@ -364,7 +224,7 @@ def test_selinux_core_context(insights_client):
     subprocess.run(["chcon", "-t", "shadow_t", REGISTERED_FILE], check=True)
 
     with _selinux_mode("permissive"):
-        with SELinuxDenialsChecker() as checker:
+        with SELinuxAVCChecker() as checker:
             status = insights_client.run("--unregister")
             assert status.returncode == 0
             assert status.stdout == "Successfully unregistered this host.\n"
