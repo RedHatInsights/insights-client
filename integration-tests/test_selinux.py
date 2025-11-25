@@ -62,7 +62,7 @@ def _check_denials_with_ausearch(start_time, end_time=None, proc=None):
     if proc:
         cmd += ["--comm", proc]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, check=False)
-    return result.stdout.strip() or None
+    return result.stdout.strip()
 
 
 def _parse_execve_event_block(event_lines):
