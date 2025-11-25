@@ -135,3 +135,8 @@ def check_avcs():
             "AVCs detected during test run!\n" +
             avcs.stdout.decode(),
         )
+
+@pytest.fixture(autouse=True)
+def use_selinux_permissive_mode():
+    subprocess.run(['setenforce', 'permissive'], check=True)
+    yield
