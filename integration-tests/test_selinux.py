@@ -47,7 +47,7 @@ def _get_current_context():
 def _format_audit_time(timestamp):
     """Convert timestamp to audit log format."""
     if isinstance(timestamp, (int, float)):
-        return datetime.fromtimestamp(timestamp).strftime("%Y/%m/%d %H:%M:%S")
+        return datetime.fromtimestamp(timestamp).strftime("%m/%d/%Y %H:%M:%S").split()
     return timestamp or "today"
 
 
@@ -60,10 +60,9 @@ def _check_denials_with_ausearch(start_time, end_time=None):
         "--comm",
         "insights-client",
         "--start",
-        _format_audit_time(start_time),
-    ]
+    ] + _format_audit_time(start_time)
     if end_time:
-        cmd.extend(["--end", _format_audit_time(end_time)])
+        cmd.extend(["--end"] + _format_audit_time(end_time))
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, check=False)
     return result.stdout.strip() or None
 
@@ -133,10 +132,9 @@ def _check_process_contexts_from_audit(start_time, end_time=None):
         "--message",
         "SYSCALL,EXECVE",
         "--start",
-        _format_audit_time(start_time),
-    ]
+    ] + _format_audit_time(start_time)
     if end_time:
-        cmd.extend(["--end", _format_audit_time(end_time)])
+        cmd.extend(["--end"] + _format_audit_time(end_time))
 
     # Helper to process a block of lines
     def process_block(lines):
