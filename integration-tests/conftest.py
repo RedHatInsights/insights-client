@@ -39,6 +39,32 @@ def register_subman(
     yield subman_session
 
 
+@pytest.fixture(scope="session", autouse=True)
+def insights_core_workaround():
+    import subprocess
+    policy = """module core_output 1.0;
+
+require {
+  type insights_core_t;
+  type unconfined_t;
+  type user_devpts_t;
+  class fifo_file write;
+  class chr_file { ioctl read write };
+}
+
+#============= insights_core_t ==============
+allow insights_core_t unconfined_t:fifo_file write;
+allow insights_core_t user_devpts_t:chr_file { ioctl read write };
+"""
+    with open('/tmp/core_output.te', 'wt') as selinux_file:
+        selinux_file.write(policy)
+    subprocess.run(['checkmodule', '-M', '-m', '-o', '/tmp/core_output.mod', '/tmp/core_output.te'], check=True)
+    subprocess.run(['semodule_package', '-o', '/tmp/core_output.pp', '-m', '/tmp/core_output.mod'], check=True)
+    subprocess.run(['semodule', '-i', '/tmp/core_output.pp'], check=True)
+    yield
+    subprocess.run(['semodule', '-r', 'core_output'], check=True)
+
+
 def check_is_bootc_system():
     """
     Check if the system is a bootc enabled system.
