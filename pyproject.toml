@@ -1,2 +1,5 @@
 [tool.black]
 include = '(\.py(\.in)?|src/insights-client.in)$'
+
+[tool.codespell]
+ignore-words-list = "checkin"
