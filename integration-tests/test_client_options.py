@@ -114,7 +114,10 @@ def test_group(insights_client, tmp_path):
 
     # Running insights-client in offline mode to generate archive
     insights_client.run(
-        "--offline", f"--group={group_name}", f"--output-dir={tmp_path}"
+        "--offline",
+        f"--group={group_name}",
+        f"--output-dir={tmp_path}",
+        selinux_context=None,  # using --group, not a service related option
     )
 
     with (tmp_path / "data/tags.json").open("r") as f:

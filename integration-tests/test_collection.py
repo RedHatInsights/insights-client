@@ -39,7 +39,10 @@ def test_output_file_valid_parameters(insights_client, tmp_path):
     archive_name = tmp_path / "archive"
 
     # Running insights-client in offline mode to generate archive
-    cmd_result = insights_client.run(f"--output-file={archive_name}")
+    cmd_result = insights_client.run(
+        f"--output-file={archive_name}",
+        selinux_context=None,  # using custom archive location, not a service related option
+    )
     assert os.path.isfile(f"{archive_name}.tar.gz")
     assert f"Collected data copied to {archive_name}.tar.gz" in cmd_result.stdout
 
