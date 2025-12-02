@@ -42,8 +42,9 @@ def test_ultralight_checkin(insights_client, test_config):
         4. The updated timestamps were retrieved and recorded
         5. Both updated timestamps will be greater than before check-in
     """
-    insights_client.register()
-    assert loop_until(lambda: insights_client.is_registered)
+    assert insights_client.register(wait_for_registered=True)
+    assert insights_client.wait_for_inventory()  # required by --check-results
+    assert insights_client.wait_for_advisor()  # required by --check-results
 
     # Performing check-results operation provides latest host data in host-details.json
     insights_client.run("--check-results")
