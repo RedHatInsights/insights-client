@@ -39,7 +39,10 @@ def test_output_file_valid_parameters(insights_client, tmp_path):
     archive_name = tmp_path / "archive"
 
     # Running insights-client in offline mode to generate archive
-    cmd_result = insights_client.run(f"--output-file={archive_name}")
+    cmd_result = insights_client.run(
+        f"--output-file={archive_name}",
+        selinux_context=None,  # using custom archive location, not a service related option
+    )
     assert os.path.isfile(f"{archive_name}.tar.gz")
     assert f"Collected data copied to {archive_name}.tar.gz" in cmd_result.stdout
 
@@ -180,7 +183,11 @@ def test_output_dir_with_not_empty_directory(insights_client):
         5. The error message is as expected
     """
     relative_path = os.path.realpath("")
-    cmd_result = insights_client.run(f"--output-dir={relative_path}", check=False)
+    cmd_result = insights_client.run(
+        f"--output-dir={relative_path}",
+        check=False,
+        selinux_context=None,  # using custom archive location, not a service related option
+    )
     assert cmd_result.returncode == 1
     assert f"Directory {relative_path} already exists and is not empty." in cmd_result.stderr
 

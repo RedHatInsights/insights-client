@@ -271,6 +271,7 @@ def test_register_group_option(insights_client, legacy_upload_value):
         "--register",
         "--group=tag",
         check=False,
+        selinux_context=None,  # using --group, not a service related option
     )
     assert register_group_option.returncode == 0
 
