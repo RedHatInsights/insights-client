@@ -213,8 +213,9 @@ def test_insights_details_file_exists(insights_client):
         4. The file /var/lib/insights/insights-client.json does not exists
     """
     output_file = "/var/lib/insights/insights-details.json"
-    insights_client.register()
-    assert loop_until(lambda: insights_client.is_registered)
+    insights_client.register(wait_for_registered=True)
+    assert insights_client.wait_for_inventory()  # required by --check-results
+    assert insights_client.wait_for_advisor()  # required by --check-results
 
     # Deleting file manually
     with contextlib.suppress(FileNotFoundError):

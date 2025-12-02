@@ -287,8 +287,9 @@ def test_check_show_results(insights_client):
     """
     os.chmod("/etc/ssh/sshd_config", 0o777)
 
-    insights_client.register()
-    assert loop_until(lambda: insights_client.is_registered)
+    insights_client.register(wait_for_registered=True)
+    assert insights_client.wait_for_inventory()  # required by --check-results
+    assert insights_client.wait_for_advisor()  # required by --check-results
 
     try:
         insights_client.run("--check-results")
