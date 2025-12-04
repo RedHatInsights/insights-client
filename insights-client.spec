@@ -1,9 +1,5 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
-# This conditional build macro adds a "--with ros" commandline option to
-# rpmbuild. The default behavior is to build without it.
-%bcond_with ros
-
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.9.1
@@ -48,7 +44,6 @@ Requires(post): policycoreutils-python-utils
 %description
 Sends insightful information to Red Hat for automated analysis
 
-%if %{with ros}
 %package ros
 Requires: pcp-zeroconf
 Requires: insights-client
@@ -56,11 +51,9 @@ Requires: insights-client
 Summary: The subpackage for Insights resource optimization service
 
 %description ros
-
 The ros subpackage add ros_collect configuration parameter to insights-client.conf file,
 the parameter is set to True by default. The system starts sending PCP archives to
 Resource Optimization service upon modifying ros_collect parameter to True.
-%endif
 
 %prep
 {{{ git_dir_setup_macro }}}
@@ -116,7 +109,6 @@ if [ $1 -eq 2 ]; then
     fi
 fi
 
-%if %{with ros}
 %post ros
 rm -f /var/lib/pcp/config/pmlogger/config.ros
 sed -i "/PCP_LOG_DIR\/pmlogger\/ros/d" /etc/pcp/pmlogger/control.d/local
@@ -128,7 +120,6 @@ ros_collect=True
 ### End insights-client-ros ###
 EOF
 fi
-%endif
 
 %preun
 %systemd_preun %{name}.timer
@@ -152,10 +143,8 @@ if [ $1 -eq 0 ]; then
     rm -f %{_sysconfdir}/logrotate.d/insights-client
 fi
 
-%if %{with ros}
 %postun ros
 sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/ros_collect=True/d' %{_sysconfdir}/insights-client/insights-client.conf
-%endif
 
 %clean
 rm -rf %{buildroot}
@@ -184,9 +173,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/*.8.gz
 %{_mandir}/man5/*.5.gz
 
-%if %{with ros}
 %files ros
-%endif
 
 %changelog
 {{{ git_dir_changelog }}}
