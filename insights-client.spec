@@ -107,7 +107,6 @@ if [ "$_SHOULD_WRITE_MOTD" -eq 1 ]; then
     ln -sn %{_sysconfdir}/insights-client/insights-client.motd %{_sysconfdir}/motd.d/insights-client
 fi
 
-%if %{with ros}
 if [ $1 -eq 2 ]; then
     /usr/sbin/semanage permissive --list | grep -q 'insights_client_t'
     if [ $? -eq 0 ]; then
@@ -115,6 +114,7 @@ if [ $1 -eq 2 ]; then
     fi
 fi
 
+%if %{with ros}
 %post ros
 rm -f /var/lib/pcp/config/pmlogger/config.ros
 sed -i "/PCP_LOG_DIR\/pmlogger\/ros/d" /etc/pcp/pmlogger/control.d/local
