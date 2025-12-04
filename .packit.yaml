@@ -21,7 +21,10 @@ jobs:
   - job: copr_build
     trigger: pull_request
     targets:
-      - rhel-10
+      - rhel-10-x86_64
+      - rhel-10-aarch64
+      - rhel-10-s390x
+      - rhel-10-ppc64le
       - centos-stream-10-x86_64
       - centos-stream-10-aarch64
       - centos-stream-10-s390x
@@ -33,7 +36,10 @@ jobs:
     owner: "@yggdrasil"
     project: latest
     targets:
-      - rhel-10
+      - rhel-10-x86_64
+      - rhel-10-aarch64
+      - rhel-10-s390x
+      - rhel-10-ppc64le
       - centos-stream-10-x86_64
       - centos-stream-10-aarch64
       - centos-stream-10-s390x
