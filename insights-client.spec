@@ -1,8 +1,5 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
-# This conditional build macro adds a "--with ros" commandline option to
-# rpmbuild. The default behavior is to build without it.
-%bcond_with ros
 %bcond_with checkin
 %bcond_with auto_registration
 
@@ -64,29 +61,36 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 
 
 %build
-sed -e "s|@PYTHON@|%{__python3}|g" -e "s|@pythondir@|%{python3_sitelib}|g" \
-    src/insights-client.in > insights-client
-
-sed -e "s|@PACKAGE@|%{name}|g" \
-    -e "s|@PACKAGE_VERSION@|%{version}|g" \
+sed -e "s|@PACKAGE_VERSION@|%{version}|g" \
     -e "s|@CORE_SELINUX_POLICY@||g" \
     src/insights_client/constants.py.in > src/insights_client/constants.py
 
 %install
+# make -f Makefile install-files \
+#     BUILDROOT='%{buildroot}' \
+#     PYTHON3_SITELIB='%{python3_sitelib}' \
+#     SYSCONFDIR='%{_sysconfdir}' \
+#     UNITDIR='%{_unitdir}' \
+#     PRESETDIR='%{_presetdir}' \
+#     TMPFILESDIR='%{_tmpfilesdir}' \
+#     MANDIR='%{_mandir}' \
+#     DEFAULTDOCDIR='%{_defaultdocdir}' \
+#     NAME='%{name}'
+
 # ./src/
 install -d -m 755 %{buildroot}%{_bindir}/
-install -m 755 insights-client %{buildroot}%{_bindir}/
+install -m 755 src/insights-client %{buildroot}%{_bindir}/
 install -d -m 755 %{buildroot}%{python3_sitelib}/insights_client/
 cp -pr src/insights_client/* %{buildroot}%{python3_sitelib}/insights_client/
 rm -rf %{buildroot}%{python3_sitelib}/insights_client/tests/
 rm -f %{buildroot}%{python3_sitelib}/insights_client/constants.py.in
 
-# ./data/
+# ./data/etc/
 install -d -m 755 %{buildroot}%{_sysconfdir}/insights-client/
-install -m 644 data/cert-api.access.redhat.com.pem %{buildroot}%{_sysconfdir}/insights-client/cert-api.access.redhat.com.pem
-install -m 644 data/insights-client.conf %{buildroot}%{_sysconfdir}/insights-client/insights-client.conf
-install -m 644 data/insights-client.motd %{buildroot}%{_sysconfdir}/insights-client/insights-client.motd
-install -m 644 data/redhattools.pub.gpg %{buildroot}%{_sysconfdir}/insights-client/redhattools.pub.gpg
+install -m 644 data/etc/cert-api.access.redhat.com.pem %{buildroot}%{_sysconfdir}/insights-client/cert-api.access.redhat.com.pem
+install -m 644 data/etc/insights-client.conf %{buildroot}%{_sysconfdir}/insights-client/insights-client.conf
+install -m 644 data/etc/insights-client.motd %{buildroot}%{_sysconfdir}/insights-client/insights-client.motd
+install -m 644 data/etc/redhattools.pub.gpg %{buildroot}%{_sysconfdir}/insights-client/redhattools.pub.gpg
 
 # ./data/logrotate.d/
 install -d -m 755 %{buildroot}%{_sysconfdir}/logrotate.d/
@@ -116,18 +120,19 @@ install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
 
-# Conditionally install other files
+# ./data/systemd/systemd-autoregistration/
 %if %{with auto_registration}
-install -m 644 data/systemd/insights-register.service %{buildroot}%{_unitdir}/insights-register.service
-install -m 644 data/systemd/insights-register.path %{buildroot}%{_unitdir}/insights-register.path
-install -m 644 data/systemd/insights-unregister.service %{buildroot}%{_unitdir}/insights-unregister.service
-install -m 644 data/systemd/insights-unregister.path %{buildroot}%{_unitdir}/insights-unregister.path
-install -m 644 data/systemd/80-insights-register.preset %{buildroot}%{_presetdir}/80-insights-register.preset
+install -m 644 data/systemd/systemd-autoregistration/insights-register.service %{buildroot}%{_unitdir}/insights-register.service
+install -m 644 data/systemd/systemd-autoregistration/insights-register.path %{buildroot}%{_unitdir}/insights-register.path
+install -m 644 data/systemd/systemd-autoregistration/insights-unregister.service %{buildroot}%{_unitdir}/insights-unregister.service
+install -m 644 data/systemd/systemd-autoregistration/insights-unregister.path %{buildroot}%{_unitdir}/insights-unregister.path
+install -m 644 data/systemd/systemd-autoregistration/80-insights-register.preset %{buildroot}%{_presetdir}/80-insights-register.preset
 %endif
 
+# ./data/systemd/systemd-checkin/
 %if %{with checkin}
-install -m 644 data/systemd/insights-client-checkin.timer %{buildroot}%{_unitdir}/insights-client-checkin.timer
-install -m 644 data/systemd/insights-client-checkin.service %{buildroot}%{_unitdir}/insights-client-checkin.service
+install -m 644 data/systemd/systemd-checkin/insights-client-checkin.timer %{buildroot}%{_unitdir}/insights-client-checkin.timer
+install -m 644 data/systemd/systemd-checkin/insights-client-checkin.service %{buildroot}%{_unitdir}/insights-client-checkin.service
 %endif
 
 # Create different insights directories in /var

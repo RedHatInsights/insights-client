@@ -2,11 +2,9 @@
 Constants
 """
 
-APP_NAME = "@PACKAGE@"
 VERSION = "@PACKAGE_VERSION@"
 CORE_SELINUX_POLICY = "@CORE_SELINUX_POLICY@"
 
 
 class InsightsConstants(object):
-    app_name = APP_NAME
     version = VERSION
