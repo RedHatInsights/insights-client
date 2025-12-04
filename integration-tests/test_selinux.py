@@ -271,3 +271,60 @@ def test_register_unconfined_t_no_context_change(insights_client):
         # Verify no SELinux denials
         denials = checker.get_denials("insights-client")
         assert not denials, f"SELinux denials found:\n{denials}"
+
+
+@pytest.mark.tier2
+def test_register_unconfined_service_t_registration(insights_client):
+    """
+    :id: 38fb9519-a4cf-4677-a55a-d7f660a21a3e
+    :title: Check registration running in unconfined_service_t context
+    :description:
+        This test checks that if insights --register is invoked by other (unconfined)
+        service, the registrations is still successful and more strict confinement is
+        not applied. This is mostly needed because insights-client is used not only
+        for reporting to insights,but also to invoke other code that is shipped within
+        the insights-core python library.
+    :tags: Tier 2
+    :reference: https://issues.redhat.com/browse/CCT-1718
+    :steps:
+        1. (setup) Switch system to SELinux enforcing mode
+        2. As a root user run insights-client --register in unconfined_service_t
+           context.
+        3. Check that “insights-core” code was executed in unconfined_service_t
+           context
+    :expectedresults:
+        1. (setup) The system is running in SELinux enforcing mode
+        2. Registration is successful
+        3. The insights-client (and the children processes) did not run under different
+          (more confined) mode.
+    """
+    # Not switching explicitly to enforcing mode, the system should be already in it
+    # unless someone wanted to explicitly test with permissive mode.
+    with SELinuxDenialsChecker() as checker:
+        subprocess.run(
+            [
+                "runcon",
+                "system_u:system_r:unconfined_service_t:s0",
+                "/bin/bash",
+                "-c",
+                "insights-client --register",
+            ],
+            check=True,
+        )
+
+    # copied from test_register_unconfined_t_no_context_change
+    # and reformatted because black demanded it
+    for proc_name, scontext, running_context in checker.get_process_contexts():
+        if any(x in proc_name for x in ["insights-core", "insights_client", "python"]):
+            if any(x in running_context for x in ["insights_client_t", "insights_core_t"]):
+                pytest.fail(
+                    f"Process {proc_name} ran in confined context "
+                    f"{running_context} instead of unconfined_service_t. "
+                    f"Found contexts: {checker.get_process_contexts()}"
+                )
+            if "unconfined_service_t" not in scontext:
+                pytest.fail(
+                    f"Process {proc_name} executed from non-unconfined "
+                    f"context {scontext}. "
+                    f"Found contexts: {checker.get_process_contexts()}"
+                )
