@@ -42,12 +42,17 @@ def test_upload_pre_collected_archive(insights_client, tmp_path):
     assert loop_until(lambda: insights_client.is_registered)
 
     # Running insights-client in offline mode to generate archive and save at tmp dir
-    insights_client.run(f"--output-file={archive_location}")
+    insights_client.run(
+        f"--output-file={archive_location}",
+        selinux_context=None,  # using custom archive location, not a service action
+    )
 
     # Running insights-client --payload with --content-type to upload archive
     # collected in previous step
     upload_result = insights_client.run(
-        f"--payload={archive_location}", "--content-type=gz"
+        f"--payload={archive_location}",
+        "--content-type=gz",
+        selinux_context=None,  # using custom archive location, not a service action
     )
     assert "Uploading Insights data." in upload_result.stdout
     assert "Successfully uploaded report" in upload_result.stdout
@@ -83,18 +88,27 @@ def test_upload_wrong_content_type(insights_client, tmp_path):
     assert loop_until(lambda: insights_client.is_registered)
 
     # Running insights-client in offline mode to generate archive and save at tmp dir
-    insights_client.run(f"--output-file={archive_location}")
+    insights_client.run(
+        f"--output-file={archive_location}",
+        selinux_context=None,  # using custom archive location, not a service action
+    )
 
     # Running insights-client --payload with invalid --content-type to upload archive
     # collected in previous step
     upload_result = insights_client.run(
-        f"--payload={archive_location}", "--content-type=bzip", check=False
+        f"--payload={archive_location}",
+        "--content-type=bzip",
+        check=False,
+        selinux_context=None,  # using custom archive location, not a service action
     )
     assert "Invalid content-type." in upload_result.stdout
 
     # trying to upload with a valid content type but different from compressor
     upload_result = insights_client.run(
-        f"--payload={archive_location}", "--content-type=xz", check=False
+        f"--payload={archive_location}",
+        "--content-type=xz",
+        check=False,
+        selinux_context=None,  # using custom archive location, not a service action
     )
     assert "Content type different from compression" in upload_result.stdout
 
