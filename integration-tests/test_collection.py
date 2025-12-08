@@ -183,7 +183,11 @@ def test_output_dir_with_not_empty_directory(insights_client):
         5. The error message is as expected
     """
     relative_path = os.path.realpath("")
-    cmd_result = insights_client.run(f"--output-dir={relative_path}", check=False)
+    cmd_result = insights_client.run(
+        f"--output-dir={relative_path}",
+        check=False,
+        selinux_context=None,  # using custom archive location, not a service related option
+    )
     assert cmd_result.returncode == 1
     assert (
         f"Directory {relative_path} already exists and is not empty."
