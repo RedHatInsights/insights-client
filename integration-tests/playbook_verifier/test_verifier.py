@@ -49,8 +49,7 @@ def test_official_playbook(insights_client, filename: str):
         and filename == "bugs.yml"
     ):
         pytest.xfail(
-            f"Core {insights_client.core_version} suffers from "
-            "CCT-1065, CCT-1101, CCT-1102."
+            f"Core {insights_client.core_version} suffers from CCT-1065, CCT-1101, CCT-1102."
         )
 
     playbook_content: str = (PLAYBOOK_DIRECTORY / filename).read_text()

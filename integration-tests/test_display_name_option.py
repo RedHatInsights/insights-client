@@ -107,9 +107,7 @@ def test_register_with_display_name(insights_client):
 
 
 @pytest.mark.tier1
-def test_register_twice_with_different_display_name(
-    insights_client, test_config, subtests
-):
+def test_register_twice_with_different_display_name(insights_client, test_config, subtests):
     """
     :id: 3d28562d-16c4-4fb1-b9b1-f39044e05ef5
     :title: Test re-registration with different display names
@@ -259,10 +257,7 @@ def test_display_name_disable_autoconfig_and_autoupdate(insights_client, test_co
     try:
         status = insights_client.run("--register")
     except subprocess.CalledProcessError as e:
-        if (
-            "certificate verify failed" in e.stdout.lower()
-            or "certificate verify failed" in str(e)
-        ):
+        if "certificate verify failed" in e.stdout.lower() or "certificate verify failed" in str(e):
             pytest.skip("Skipping test due to SSL certificate verification failure")
         raise
     assert loop_until(lambda: insights_client.is_registered)

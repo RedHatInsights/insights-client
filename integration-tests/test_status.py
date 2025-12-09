@@ -45,9 +45,7 @@ def test_status_registered(external_candlepin, insights_client):
 
 
 @pytest.mark.tier1
-def test_status_registered_only_locally(
-    external_candlepin, insights_client, external_inventory
-):
+def test_status_registered_only_locally(external_candlepin, insights_client, external_inventory):
     """
     :id: 2ca3be87-8322-47b8-b451-9ea7fa3dbeef
     :title: Test insights-client --status when registered only locally
@@ -78,9 +76,7 @@ def test_status_registered_only_locally(
     response = external_inventory.get(path=f"hosts?insights_id={machine_id}")
     assert response.json()["total"] == 0
 
-    registration_status = insights_client.run(
-        "--status", check=False, selinux_context=None
-    )
+    registration_status = insights_client.run("--status", check=False, selinux_context=None)
     if insights_client.core_version >= Version(3, 5, 7):
         assert "This host is registered.\n" == registration_status.stdout
         assert os.path.exists(REGISTERED_FILE)
@@ -117,15 +113,10 @@ def test_status_unregistered(external_candlepin, insights_client):
         insights_client.unregister()
     assert loop_until(lambda: not insights_client.is_registered)
 
-    registration_status = insights_client.run(
-        "--status", check=False, selinux_context=None
-    )
+    registration_status = insights_client.run("--status", check=False, selinux_context=None)
     if insights_client.config.legacy_upload:
         assert registration_status.returncode == 1
-        assert (
-            "Insights API says this machine is NOT registered."
-            in registration_status.stdout
-        )
+        assert "Insights API says this machine is NOT registered." in registration_status.stdout
     else:
         if insights_client.core_version >= Version(3, 5, 3):
             assert registration_status.returncode == 1
