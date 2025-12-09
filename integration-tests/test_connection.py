@@ -213,9 +213,7 @@ def test_wrong_url_connection(insights_client):
     insights_client.config.authmethod = "CERT"
     insights_client.config.save()
 
-    test_connection = insights_client.run(
-        "--test-connection", check=False, selinux_context=None
-    )
+    test_connection = insights_client.run("--test-connection", check=False, selinux_context=None)
     assert test_connection.returncode == 1
 
     if _is_using_proxy(insights_client.config):

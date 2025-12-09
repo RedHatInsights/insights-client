@@ -4,7 +4,7 @@ filename =
     *.py.in,
     */src/insights-client.in,
 # same limit as black
-max-line-length = 88
+max-line-length = 100
 ignore =
     # E203 whitespace before ':'
     # result of black-formatted code
