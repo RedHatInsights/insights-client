@@ -21,9 +21,7 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 def _get_selinux_mode():
     """Get current SELinux mode (Enforcing, Permissive, or Disabled)."""
     try:
-        result = subprocess.run(
-            ["getenforce"], capture_output=True, text=True, check=True
-        )
+        result = subprocess.run(["getenforce"], capture_output=True, text=True, check=True)
         return result.stdout.strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "Disabled"
@@ -112,9 +110,7 @@ def _parse_execve_event_block(event_lines):
         return None
     # Comm is usually the base command (first arg or explicit comm field)
     comm_match = re.search(r'comm="([^"]+)"', full_text)
-    comm = (
-        comm_match.group(1) if comm_match else (cmd_args[0] if cmd_args else "unknown")
-    )
+    comm = comm_match.group(1) if comm_match else (cmd_args[0] if cmd_args else "unknown")
     # Return format: (comm_name, source_context, running_context)
     return (comm, scontext, running_context)
 
@@ -249,25 +245,17 @@ def test_register_unconfined_t_no_context_change(insights_client):
 
             # Verify registration
             def check_registered():
-                status = insights_client.run(
-                    "--status", check=False, selinux_context=None
-                )
+                status = insights_client.run("--status", check=False, selinux_context=None)
                 return status.returncode == 0 and any(
-                    i in status.stdout
-                    for i in ["This host is registered", "Registered"]
+                    i in status.stdout for i in ["This host is registered", "Registered"]
                 )
 
             assert loop_until(check_registered)
 
         # Verify process contexts from audit logs
         for proc_name, scontext, running_context in checker.get_process_contexts():
-            if any(
-                x in proc_name for x in ["insights-core", "insights_client", "python"]
-            ):
-                if any(
-                    x in running_context
-                    for x in ["insights_client_t", "insights_core_t"]
-                ):
+            if any(x in proc_name for x in ["insights-core", "insights_client", "python"]):
+                if any(x in running_context for x in ["insights_client_t", "insights_core_t"]):
                     pytest.fail(
                         f"Process {proc_name} ran in confined context "
                         f"{running_context} instead of unconfined_t. "
@@ -328,9 +316,7 @@ def test_register_unconfined_service_t_registration(insights_client):
     # and reformatted because black demanded it
     for proc_name, scontext, running_context in checker.get_process_contexts():
         if any(x in proc_name for x in ["insights-core", "insights_client", "python"]):
-            if any(
-                x in running_context for x in ["insights_client_t", "insights_core_t"]
-            ):
+            if any(x in running_context for x in ["insights_client_t", "insights_core_t"]):
                 pytest.fail(
                     f"Process {proc_name} ran in confined context "
                     f"{running_context} instead of unconfined_service_t. "

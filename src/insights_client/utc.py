@@ -18,6 +18,4 @@ class UTC(datetime.tzinfo):
 
 
 def make_utc_datetime_rfc3339():
-    return (
-        datetime.datetime.utcnow().replace(microsecond=0, tzinfo=UTC()).isoformat("T")
-    )
+    return datetime.datetime.utcnow().replace(microsecond=0, tzinfo=UTC()).isoformat("T")

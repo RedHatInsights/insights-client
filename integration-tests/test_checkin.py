@@ -91,7 +91,4 @@ def test_client_checkin_unregistered(insights_client):
         assert "This host is not registered" in checkin_result.stdout
     else:
         assert checkin_result.returncode == 1
-        assert (
-            "Error: failed to find host with matching machine-id"
-            in checkin_result.stdout
-        )
+        assert "Error: failed to find host with matching machine-id" in checkin_result.stdout
