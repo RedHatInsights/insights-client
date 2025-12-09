@@ -40,7 +40,7 @@ python3 -m venv venv
 
 pip install -r integration-tests/requirements.txt
 
-pytest --log-level debug --junit-xml=./junit.xml -v integration-tests ${PYTEST_FILTER:+-k ${PYTEST_FILTER}}
+pytest --log-level debug --junit-xml=./junit.xml -v integration-tests ${PYTEST_FILTER:+-k "${PYTEST_FILTER}"}
 retval=$?
 
 if [ -d "$TMT_PLAN_DATA" ]; then
