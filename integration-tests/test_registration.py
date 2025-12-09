@@ -145,8 +145,7 @@ def test_machineid_exists_only_when_registered(insights_client):
     res = insights_client.run(check=False)
     assert (
         "This host is unregistered. Use --register to register this host" in res.stdout
-        or "This host has not been registered. Use --register to register this host"
-        in res.stdout
+        or "This host has not been registered. Use --register to register this host" in res.stdout
     )
     assert res.returncode != 0
     assert not os.path.exists(MACHINE_ID_FILE)

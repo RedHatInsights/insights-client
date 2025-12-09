@@ -25,6 +25,4 @@ def pytest_configure(config):
 
     insights_client.TEMPORARY_GPG_HOME_PARENT_DIRECTORY = "/tmp/"
     # Point to the actual key we ship to be able to actually verify the bundled egg.
-    insights_client.GPG_KEY = str(
-        (repo_root / "data" / "redhattools.pub.gpg").resolve()
-    )
+    insights_client.GPG_KEY = str((repo_root / "data" / "redhattools.pub.gpg").resolve())

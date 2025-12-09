@@ -36,9 +36,7 @@ def test_ros_install():
         1. Subpackage insights-client-ros is installed
         2. Field ros_collect is set to true in insights-client.conf
     """
-    install = subprocess.run(
-        ["dnf", "install", "-y", PACKAGE], capture_output=True, text=True
-    )
+    install = subprocess.run(["dnf", "install", "-y", PACKAGE], capture_output=True, text=True)
     assert install.returncode == 0, f"{PACKAGE} was not installed"
 
     cat_result = subprocess.run(["cat", CONFIG_FILE], capture_output=True, text=True)
@@ -71,9 +69,7 @@ def test_pmlogger_running_and_metrics_exist():
         )
     assert status_result.stdout.strip() == "active", f"{SERVICE} is not active"
 
-    hostname = subprocess.run(
-        ["hostname"], capture_output=True, text=True
-    ).stdout.strip()
+    hostname = subprocess.run(["hostname"], capture_output=True, text=True).stdout.strip()
     metrics_dir = Path(f"/var/log/pcp/pmlogger/{hostname}")
     assert metrics_dir.exists(), f"{metrics_dir} does not exist"
     archives = list(metrics_dir.glob("*.0"))
@@ -133,9 +129,7 @@ def test_upload_pre_collected_archive_with_ros(insights_client, tmp_path):
 
     # Running insights-client --payload with --content-type to upload archive
     # collected in previous step
-    upload_result = insights_client.run(
-        f"--payload={archive_location}", "--content-type=gz"
-    )
+    upload_result = insights_client.run(f"--payload={archive_location}", "--content-type=gz")
     assert "Uploading Insights data." in upload_result.stdout
     assert "Successfully uploaded report" in upload_result.stdout
 
@@ -159,12 +153,8 @@ def test_cleanup_pmlogger_and_ros():
         2. The directory is removed and insights-client-ros is uninstalled
     """
     # Stop pmlogger service
-    stop_result = subprocess.run(
-        ["systemctl", "stop", SERVICE], capture_output=True, text=True
-    )
-    assert (
-        stop_result.returncode == 0
-    ), f"Failed to stop {SERVICE}: {stop_result.stderr}"
+    stop_result = subprocess.run(["systemctl", "stop", SERVICE], capture_output=True, text=True)
+    assert stop_result.returncode == 0, f"Failed to stop {SERVICE}: {stop_result.stderr}"
 
     # Verify pmlogger is inactive
     status_result = subprocess.run(
