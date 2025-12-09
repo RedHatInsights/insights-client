@@ -108,12 +108,8 @@ def test_data_upload_systemd_timer(insights_client):
     _run_systemctl_command(["systemctl", "daemon-reload"], "daemon reload")
 
     # Enable and restart the timer to apply new configuration
-    _run_systemctl_command(
-        ["systemctl", "enable", "insights-client.timer"], "timer enable"
-    )
-    _run_systemctl_command(
-        ["systemctl", "restart", "insights-client.timer"], "timer restart"
-    )
+    _run_systemctl_command(["systemctl", "enable", "insights-client.timer"], "timer enable")
+    _run_systemctl_command(["systemctl", "restart", "insights-client.timer"], "timer restart")
 
     # Verify timer is now active
     _run_systemctl_command(
@@ -136,17 +132,11 @@ def test_data_upload_systemd_timer(insights_client):
 
     finally:
         # Clean up: revert timer configuration and restore original state
-        _run_systemctl_command(
-            ["systemctl", "revert", "insights-client.timer"], "timer revert"
-        )
-        _run_systemctl_command(
-            ["systemctl", "daemon-reload"], "daemon reload after revert"
-        )
+        _run_systemctl_command(["systemctl", "revert", "insights-client.timer"], "timer revert")
+        _run_systemctl_command(["systemctl", "daemon-reload"], "daemon reload after revert")
 
         # Ensure timer is stopped after revert
-        _run_systemctl_command(
-            ["systemctl", "stop", "insights-client.timer"], "timer stop"
-        )
+        _run_systemctl_command(["systemctl", "stop", "insights-client.timer"], "timer stop")
 
         # Ensure override file is removed
         try:

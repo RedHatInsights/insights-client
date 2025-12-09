@@ -81,9 +81,7 @@ def test_client_rpm_mandatory_files(filename, rpm_ql_insights_client):
         1. A list of files is generated
         2. All of the mandatory files are present in the RPM
     """
-    assert (
-        filename in rpm_ql_insights_client
-    ), f"{filename} is not in insights-client package"
+    assert filename in rpm_ql_insights_client, f"{filename} is not in insights-client package"
 
 
 @pytest.mark.usefixtures("register_subman")
@@ -255,9 +253,7 @@ def test_insights_directory_files(insights_client):
     insights_client.register()
     assert loop_until(lambda: insights_client.is_registered)
 
-    dir_content_registered = [
-        entry.name for entry in os.scandir(directory) if entry.is_file()
-    ]
+    dir_content_registered = [entry.name for entry in os.scandir(directory) if entry.is_file()]
 
     for item in registered_contents:
         assert item in dir_content_registered, f"File '{item}' not found in directory."
