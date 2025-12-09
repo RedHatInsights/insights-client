@@ -23,9 +23,7 @@ def install_katello_rpm(test_config):
 
 
 @pytest.fixture(scope="session")
-def register_subman(
-    external_candlepin, install_katello_rpm, subman_session, test_config
-):
+def register_subman(external_candlepin, install_katello_rpm, subman_session, test_config):
     if "satellite" in test_config.environment:
         subman_session.register(
             activationkey=test_config.get("candlepin", "activation_keys"),
@@ -52,9 +50,7 @@ def check_is_bootc_system():
             text=True,
         )
         return (bootc_status.returncode == 0) and (
-            not bootc_status.stdout.strip().startswith(
-                "System is not deployed via bootc"
-            )
+            not bootc_status.stdout.strip().startswith("System is not deployed via bootc")
         )
     except FileNotFoundError:
         return False

@@ -5,9 +5,7 @@ import pytest
 
 # Test config load error
 @mock.patch("os.getuid", return_value=0)
-@mock.patch(
-    "insights.client.InsightsConfig.load_all", side_effect=ValueError("mocked error")
-)
+@mock.patch("insights.client.InsightsConfig.load_all", side_effect=ValueError("mocked error"))
 def test_load_config_error(os_uid, insightsConfig):
     with pytest.raises(SystemExit) as sys_exit:
         insights_client._main()

@@ -46,9 +46,7 @@ def test_upload_pre_collected_archive(insights_client, tmp_path):
 
     # Running insights-client --payload with --content-type to upload archive
     # collected in previous step
-    upload_result = insights_client.run(
-        f"--payload={archive_location}", "--content-type=gz"
-    )
+    upload_result = insights_client.run(f"--payload={archive_location}", "--content-type=gz")
     assert "Uploading Insights data." in upload_result.stdout
     assert "Successfully uploaded report" in upload_result.stdout
 
@@ -127,9 +125,7 @@ def test_upload_too_large_archive(insights_client, tmp_path):
         f.seek(int(file_size) + 1)
         f.write(b"\0")
 
-    upload_result = insights_client.run(
-        f"--payload={file_path}", "--content-type=gz", check=False
-    )
+    upload_result = insights_client.run(f"--payload={file_path}", "--content-type=gz", check=False)
 
     assert "Archive is too large to upload" in upload_result.stdout
     assert "Upload failed." in upload_result.stdout
@@ -180,9 +176,7 @@ def test_upload_compressor_options(
     assert (os.path.splitext(archive_name)[0]).endswith(".tar")
 
     # Now try to upload the pre-collected archive
-    upload_result = insights_client.run(
-        f"--payload={archive_name}", f"--content-type={compressor}"
-    )
+    upload_result = insights_client.run(f"--payload={archive_name}", f"--content-type={compressor}")
     assert "Uploading Insights data." in upload_result.stdout
     assert "Successfully uploaded report" in upload_result.stdout
 
