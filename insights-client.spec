@@ -24,11 +24,14 @@ Requires: pciutils
 %{?systemd_requires}
 Requires: python3-requests >= 2.6
 Requires: python3-PyYAML
+Requires: python3-magic
 Requires: python3-six
 Requires: python3dist(setuptools)
 Requires: coreutils
-Requires: insights-core >= 3.6.7
+Requires: ((selinux-policy >= 38.1.68-1) if selinux-policy)
+Requires: (python3-libselinux if selinux-policy)
 
+Requires: insights-core >= 3.6.10.1-6
 Requires: subscription-manager
 
 BuildRequires: wget
@@ -39,6 +42,7 @@ BuildRequires: pam
 BuildRequires: meson
 BuildRequires: python3-pytest
 BuildRequires: systemd-rpm-macros
+Requires(post): policycoreutils-python-utils
 
 
 %description
@@ -64,6 +68,7 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 
 %build
 %{meson} \
+    -Dcore_selinux_policy=insights_core_t \
     -Dpython=%{__python3} \
 %if (0%{?rhel} && 0%{?rhel} < 10)
     -Dredhat_access_insights=true \
@@ -104,6 +109,13 @@ if [ "$_SHOULD_WRITE_MOTD" -eq 1 ]; then
     ln -sn %{_sysconfdir}/insights-client/insights-client.motd %{_sysconfdir}/motd.d/insights-client
 fi
 
+if [ $1 -eq 2 ]; then
+    /usr/sbin/semanage permissive --list | grep -q 'insights_client_t'
+    if [ $? -eq 0 ]; then
+        /usr/sbin/semanage permissive --delete insights_client_t &>/dev/null
+    fi
+fi
+
 %if %{with ros}
 %post ros
 rm -f /var/lib/pcp/config/pmlogger/config.ros
@@ -137,12 +149,17 @@ if [ $1 -eq 0 ]; then
     rm -rf %{_localstatedir}/lib/insights
     rm -rf %{_localstatedir}/log/insights-client
     rm -f %{_sysconfdir}/insights-client/.*.etag
+    rm -f %{_sysconfdir}/logrotate.d/insights-client
 fi
 
 %if %{with ros}
 %postun ros
 sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/ros_collect=True/d' %{_sysconfdir}/insights-client/insights-client.conf
 %endif
+
+%clean
+rm -rf %{buildroot}
+
 
 %files
 %config(noreplace) %{_sysconfdir}/insights-client/*.conf
