@@ -215,9 +215,7 @@ def gpg_validate(path):
     # The /var/lib/insights/ directory is used instead of /tmp/ because
     # GPG needs to have RW permissions in it, and existing SELinux rules only
     # allow access here.
-    logger.debug(
-        "Creating temporary directory in %s...", TEMPORARY_GPG_HOME_PARENT_DIRECTORY
-    )
+    logger.debug("Creating temporary directory in %s...", TEMPORARY_GPG_HOME_PARENT_DIRECTORY)
     home = tempfile.mkdtemp(dir=TEMPORARY_GPG_HOME_PARENT_DIRECTORY)
 
     # Import the public keys into temporary environment
@@ -386,8 +384,7 @@ def update_motd_message():
                 )
         else:
             logger.debug(
-                ".registered and .unregistered do not exist; "
-                "file '%s' correctly points to '%s'",
+                ".registered and .unregistered do not exist; file '%s' correctly points to '%s'",
                 MOTD_SRC,
                 MOTD_FILE,
             )
@@ -405,8 +402,7 @@ def update_motd_message():
                 logger.debug("could not remove the MOTD file '%s': %s", MOTD_FILE, exc)
         else:
             logger.debug(
-                ".registered or .unregistered exist; file '%s' correctly does "
-                "not exist",
+                ".registered or .unregistered exist; file '%s' correctly does not exist",
                 MOTD_FILE,
             )
 
