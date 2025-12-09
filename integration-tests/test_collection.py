@@ -182,10 +182,7 @@ def test_output_dir_with_not_empty_directory(insights_client):
     relative_path = os.path.realpath("")
     cmd_result = insights_client.run(f"--output-dir={relative_path}", check=False)
     assert cmd_result.returncode == 1
-    assert (
-        f"Directory {relative_path} already exists and is not empty."
-        in cmd_result.stderr
-    )
+    assert f"Directory {relative_path} already exists and is not empty." in cmd_result.stderr
 
 
 @pytest.mark.tier1

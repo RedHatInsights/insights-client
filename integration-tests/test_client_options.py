@@ -37,10 +37,7 @@ def test_set_ansible_host_info(insights_client, test_config):
         2. The command completes successfully
         3. The return code is 0
     """
-    if (
-        "satellite614" in test_config.environment
-        or "satellite615" in test_config.environment
-    ):
+    if "satellite614" in test_config.environment or "satellite615" in test_config.environment:
         pytest.skip(reason="Issue was fixed in Satellite 6.16 and upwards")
     # Register system against Satellite, and register insights through satellite
     insights_client.register()
@@ -113,9 +110,7 @@ def test_group(insights_client, tmp_path):
     group_name = "testing-group"
 
     # Running insights-client in offline mode to generate archive
-    insights_client.run(
-        "--offline", f"--group={group_name}", f"--output-dir={tmp_path}"
-    )
+    insights_client.run("--offline", f"--group={group_name}", f"--output-dir={tmp_path}")
 
     with (tmp_path / "data/tags.json").open("r") as f:
         tag_file_content: dict = json.load(f)
@@ -195,10 +190,7 @@ def test_client_validate_no_network_call(insights_client):
         validate_result = insights_client.run("--validate", selinux_context=None)
 
         # validating tags.yaml is loaded and no metric data in output
-        assert (
-            "/etc/insights-client/tags.yaml loaded successfully"
-            in validate_result.stdout
-        )
+        assert "/etc/insights-client/tags.yaml loaded successfully" in validate_result.stdout
         assert "metrics Metrics:" not in validate_result.stdout
     finally:
         # Remove tags file at the end of test to leave system in clean state
@@ -255,9 +247,7 @@ def test_client_diagnosis(insights_client):
         4. The machine ID in the diagnostic data matches the system's machine id
     """
     # Running diagnosis on unregistered system returns appropriate error message
-    diagnosis_result = insights_client.run(
-        "--diagnosis", check=False, selinux_context=None
-    )
+    diagnosis_result = insights_client.run("--diagnosis", check=False, selinux_context=None)
     assert diagnosis_result.returncode == 1
     if insights_client.core_version >= Version(3, 5, 7):
         assert "Could not get diagnosis data." in diagnosis_result.stdout
@@ -304,15 +294,9 @@ def test_check_show_results(insights_client):
         insights_client.run("--check-results")
         show_results = insights_client.run("--show-results")
 
-        assert (
-            "hardening_ssh_config_perms|OPENSSH_HARDENING_CONFIG_PERMS"
-            in show_results.stdout
-        )
+        assert "hardening_ssh_config_perms|OPENSSH_HARDENING_CONFIG_PERMS" in show_results.stdout
         assert "Decreased security: OpenSSH config permissions" in show_results.stdout
-        assert (
-            "examine the following detected issues in OpenSSH settings:"
-            in show_results.stdout
-        )
+        assert "examine the following detected issues in OpenSSH settings:" in show_results.stdout
         assert "OPENSSH_HARDENING_CONFIG_PERMS" in show_results.stdout
     finally:
         os.chmod("/etc/ssh/sshd_config", 0o600)
