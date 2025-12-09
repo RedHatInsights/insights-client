@@ -1,2 +1,3 @@
 [tool.black]
 include = '(\.py(\.in)?|src/insights-client.in)$'
+line-length = 100

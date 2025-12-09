@@ -120,10 +120,7 @@ def run_phase(phase):
         else:
             # Do transition insights-core context if we're running in
             # other (unknown), confined context.
-            logger.debug(
-                "Switching SELinux context from "
-                f"{source_type} to {CORE_SELINUX_POLICY}"
-            )
+            logger.debug(f"Switching SELinux context from {source_type} to {CORE_SELINUX_POLICY}")
             selinux.context_type_set(context, CORE_SELINUX_POLICY)
             new_core_context = selinux.context_str(context)
             selinux.setexeccon(new_core_context)
@@ -213,8 +210,7 @@ def update_motd_message():
                 )
         else:
             logger.debug(
-                ".registered and .unregistered do not exist; "
-                "file '%s' correctly points to '%s'",
+                ".registered and .unregistered do not exist; file '%s' correctly points to '%s'",
                 MOTD_SRC,
                 MOTD_FILE,
             )
@@ -232,8 +228,7 @@ def update_motd_message():
                 logger.debug("could not remove the MOTD file '%s': %s", MOTD_FILE, exc)
         else:
             logger.debug(
-                ".registered or .unregistered exist; file '%s' correctly does "
-                "not exist",
+                ".registered or .unregistered exist; file '%s' correctly does not exist",
                 MOTD_FILE,
             )
 
