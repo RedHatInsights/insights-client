@@ -27,8 +27,6 @@ jobs:
   - job: copr_build
     trigger: commit
     branch: rhel-9-main
-    owner: "@yggdrasil"
-    project: latest
     targets:
       - centos-stream-9
       - rhel-9
@@ -40,11 +38,6 @@ jobs:
       - centos-stream-9
     labels:
       - unit
-    tf_extra_params:
-      environments:
-        - artifacts:
-            - type: repository-file
-              id: https://copr.fedorainfracloud.org/coprs/g/yggdrasil/latest/repo/centos-stream-$releasever/group_yggdrasil-latest-centos-stream-$releasever.repo
 
   - job: tests
     trigger: pull_request
@@ -57,10 +50,7 @@ jobs:
       - unit
     tf_extra_params:
       environments:
-        - artifacts:
-            - type: repository-file
-              id: https://copr.fedorainfracloud.org/coprs/g/yggdrasil/latest/repo/rhel-$releasever/group_yggdrasil-latest-rhel-$releasever.repo
-          settings:
+        - settings:
             provisioning:
               tags:
                 BusinessUnit: sst_csi_client_tools
