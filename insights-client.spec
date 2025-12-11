@@ -78,6 +78,17 @@ sed -e "s|@PACKAGE_VERSION@|%{version}|g" \
 #     NAME='%{name}'
 
 # ./src/
+echo %{buildroot}
+echo %{_bindir}
+echo %{python3_sitelib}
+echo %{_sysconfdir}
+echo %{_unitdir}
+echo %{_presetdir}
+echo %{_tmpfilesdir}
+echo %{_mandir}
+echo %{_defaultdocdir}
+echo %{name}
+
 install -d -m 755 %{buildroot}%{_bindir}/
 install -m 755 src/insights-client %{buildroot}%{_bindir}/
 install -d -m 755 %{buildroot}%{python3_sitelib}/insights_client/
