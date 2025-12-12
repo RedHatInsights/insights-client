@@ -1,5 +1,8 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
+%bcond_with checkin
+%bcond_with auto_registration
+
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.10.2
@@ -34,7 +37,6 @@ BuildRequires: binutils
 BuildRequires: python3-devel
 BuildRequires: systemd
 BuildRequires: pam
-BuildRequires: meson
 BuildRequires: python3-pytest
 BuildRequires: systemd-rpm-macros
 Requires(post): policycoreutils-python-utils
@@ -59,17 +61,90 @@ Resource Optimization service upon modifying ros_collect parameter to True.
 
 
 %build
-%{meson} \
-    -Dpython=%{__python3} -Dcore_selinux_policy=insights_core_t \
-%if (0%{?rhel} && 0%{?rhel} < 10)
-    -Dredhat_access_insights=true \
-%endif
-    %{nil}
-%{meson_build}
-
+sed -e "s|@PACKAGE_VERSION@|%{version}|g" \
+    -e "s|@CORE_SELINUX_POLICY@||g" \
+    src/insights_client/constants.py.in > src/insights_client/constants.py
 
 %install
-%{meson_install}
+# make -f Makefile install-files \
+#     BUILDROOT='%{buildroot}' \
+#     PYTHON3_SITELIB='%{python3_sitelib}' \
+#     SYSCONFDIR='%{_sysconfdir}' \
+#     UNITDIR='%{_unitdir}' \
+#     PRESETDIR='%{_presetdir}' \
+#     TMPFILESDIR='%{_tmpfilesdir}' \
+#     MANDIR='%{_mandir}' \
+#     DEFAULTDOCDIR='%{_defaultdocdir}' \
+#     NAME='%{name}'
+
+# ./src/
+echo %{buildroot}
+echo %{_bindir}
+echo %{python3_sitelib}
+echo %{_sysconfdir}
+echo %{_unitdir}
+echo %{_presetdir}
+echo %{_tmpfilesdir}
+echo %{_mandir}
+echo %{_defaultdocdir}
+echo %{name}
+
+install -d -m 755 %{buildroot}%{_bindir}/
+install -m 755 src/insights-client %{buildroot}%{_bindir}/
+install -d -m 755 %{buildroot}%{python3_sitelib}/insights_client/
+cp -pr src/insights_client/* %{buildroot}%{python3_sitelib}/insights_client/
+rm -rf %{buildroot}%{python3_sitelib}/insights_client/tests/
+rm -f %{buildroot}%{python3_sitelib}/insights_client/constants.py.in
+
+# ./data/etc/
+install -d -m 755 %{buildroot}%{_sysconfdir}/insights-client/
+install -m 644 data/etc/cert-api.access.redhat.com.pem %{buildroot}%{_sysconfdir}/insights-client/cert-api.access.redhat.com.pem
+install -m 644 data/etc/insights-client.conf %{buildroot}%{_sysconfdir}/insights-client/insights-client.conf
+install -m 644 data/etc/insights-client.motd %{buildroot}%{_sysconfdir}/insights-client/insights-client.motd
+install -m 644 data/etc/redhattools.pub.gpg %{buildroot}%{_sysconfdir}/insights-client/redhattools.pub.gpg
+
+# ./data/logrotate.d/
+install -d -m 755 %{buildroot}%{_sysconfdir}/logrotate.d/
+install -m 644 data/logrotate.d/insights-client %{buildroot}%{_sysconfdir}/logrotate.d/insights-client
+
+# ./data/systemd/
+install -d -m 755 %{buildroot}%{_unitdir}/
+install -d -m 755 %{buildroot}%{_presetdir}/
+install -m 644 data/systemd/insights-client-boot.service %{buildroot}%{_unitdir}/insights-client-boot.service
+install -m 644 data/systemd/insights-client.service %{buildroot}%{_unitdir}/insights-client.service
+install -m 644 data/systemd/insights-client.timer %{buildroot}%{_unitdir}/insights-client.timer
+install -m 644 data/systemd/80-insights.preset %{buildroot}%{_presetdir}/80-insights.preset
+install -m 644 data/systemd/insights-client-results.service %{buildroot}%{_unitdir}/insights-client-results.service
+install -m 644 data/systemd/insights-client-results.path %{buildroot}%{_unitdir}/insights-client-results.path
+
+# ./data/tmpfiles.d/
+install -d -m 755 %{buildroot}%{_tmpfilesdir}/
+install -m 644 data/tmpfiles.d/insights-client.conf %{buildroot}%{_tmpfilesdir}/insights-client.conf
+
+# ./docs/
+install -d -m 755 %{buildroot}%{_mandir}/man5/
+install -d -m 755 %{buildroot}%{_mandir}/man8/
+install -m 644 docs/insights-client.conf.5 %{buildroot}%{_mandir}/man5/
+install -m 644 docs/insights-client.8 %{buildroot}%{_mandir}/man8/
+
+install -d -m 755 %{buildroot}%{_defaultdocdir}/%{name}/
+install -m 644 docs/file-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
+install -m 644 docs/file-content-redaction.yaml.example %{buildroot}%{_defaultdocdir}/%{name}/
+
+# ./data/systemd/systemd-autoregistration/
+%if %{with auto_registration}
+install -m 644 data/systemd/systemd-autoregistration/insights-register.service %{buildroot}%{_unitdir}/insights-register.service
+install -m 644 data/systemd/systemd-autoregistration/insights-register.path %{buildroot}%{_unitdir}/insights-register.path
+install -m 644 data/systemd/systemd-autoregistration/insights-unregister.service %{buildroot}%{_unitdir}/insights-unregister.service
+install -m 644 data/systemd/systemd-autoregistration/insights-unregister.path %{buildroot}%{_unitdir}/insights-unregister.path
+install -m 644 data/systemd/systemd-autoregistration/80-insights-register.preset %{buildroot}%{_presetdir}/80-insights-register.preset
+%endif
+
+# ./data/systemd/systemd-checkin/
+%if %{with checkin}
+install -m 644 data/systemd/systemd-checkin/insights-client-checkin.timer %{buildroot}%{_unitdir}/insights-client-checkin.timer
+install -m 644 data/systemd/systemd-checkin/insights-client-checkin.service %{buildroot}%{_unitdir}/insights-client-checkin.service
+%endif
 
 # Create different insights directories in /var
 mkdir -p %{buildroot}%{_localstatedir}/log/insights-client/
