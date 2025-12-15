@@ -25,7 +25,6 @@ jobs:
       - rhel-9-x86_64
       - rhel-9-aarch64
       - rhel-9-s390x
-      - rhel-9-ppc64le
 
   - job: copr_build
     trigger: commit
@@ -35,7 +34,6 @@ jobs:
       - rhel-9-x86_64
       - rhel-9-aarch64
       - rhel-9-s390x
-      - rhel-9-ppc64le
 
   - job: tests
     trigger: pull_request
