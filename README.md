@@ -24,10 +24,9 @@ Follow these instructions to prepare your system for development.
 4. Install the `insights-core` as a Python package.
 
    First, make sure the following directories and files exist, otherwise the code will scream at you:
- 
+
    ```shell
    $ sudo mkdir -p /etc/insights-client
-   $ sudo ln -s `pwd`/data/redhattools.pub.gpg /etc/insights-client/
    $ sudo ln -s `pwd`/data/cert-api.access.redhat.com.pem /etc/insights-client/
    ```
 
@@ -89,7 +88,7 @@ The client utilizes several directories on the system for its operation:
 - `/var/tmp/` - Used as a temporary location for building the archive before upload.
 
 ## Log Management
-The developer logs its activity to provide a record of its operations, which is essential for troubleshooting. 
+The developer logs its activity to provide a record of its operations, which is essential for troubleshooting.
 All of the following switches were already explained in the **Configuration** section.
 
 ### Log File
@@ -122,6 +121,6 @@ The client operates in its default mode. It connects directly to the primary Red
 
 This entire auto-detection process is based on reading **local** config files only (managed by RHSM).
 
-examples what you could see in logs if `auto_config=True`:  
-`DEBUG insights.client.auto_config:159 Connected to staging RHSM, using cert.cloud.stage.redhat.com`  
+examples what you could see in logs if `auto_config=True`:
+`DEBUG insights.client.auto_config:159 Connected to staging RHSM, using cert.cloud.stage.redhat.com`
 `DEBUG insights.client.auto_config:81 Not connected to Satellite, skipping branch_info`
