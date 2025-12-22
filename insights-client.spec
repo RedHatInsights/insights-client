@@ -83,9 +83,7 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/insights-client/
 %systemd_post %{name}.timer
 %systemd_post %{name}-boot.service
 
-# Remove legacy egg files from previous installations
-rm -f %{_sysconfdir}/insights-client/rpm.egg
-rm -f %{_sysconfdir}/insights-client/rpm.egg.asc
+# Remove legacy egg files from previous runtime installations
 rm -f %{_localstatedir}/lib/insights/*.egg
 rm -f %{_localstatedir}/lib/insights/*.egg.asc
 
