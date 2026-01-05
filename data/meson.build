@@ -1,8 +1,7 @@
 sysconf_sources = [
   'cert-api.access.redhat.com.pem',
   'insights-client.conf',
-  'insights-client.motd',
-  'redhattools.pub.gpg'
+  'insights-client.motd'
 ]
 
 install_data(
