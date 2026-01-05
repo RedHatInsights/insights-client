@@ -27,7 +27,6 @@ Follow these instructions to prepare your system for development.
  
    ```shell
    $ sudo mkdir -p /etc/insights-client
-   $ sudo ln -s `pwd`/data/redhattools.pub.gpg /etc/insights-client/
    $ sudo ln -s `pwd`/data/cert-api.access.redhat.com.pem /etc/insights-client/
    ```
 
