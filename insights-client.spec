@@ -157,7 +157,6 @@ rm -rf %{buildroot}
 %{_bindir}/*
 %{_unitdir}/*
 %attr(444,root,root) %{_sysconfdir}/insights-client/*.pem
-%attr(444,root,root) %{_sysconfdir}/insights-client/redhattools.pub.gpg
 %{python3_sitelib}/insights_client/
 %{_defaultdocdir}/%{name}
 %{_presetdir}/*.preset
