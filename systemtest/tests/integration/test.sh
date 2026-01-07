@@ -11,7 +11,7 @@ if ! command -v bootc >/dev/null || bootc status | grep -q 'System is not deploy
   # If TEST_RPMS is set then install the RPM builds for gating.
   if [[ -v TEST_RPMS ]]; then
     echo "Installing RPMs: ${TEST_RPMS}"
-    dnf -y install --allowerasing ${TEST_RPMS}
+    dnf -y install --allowerasing ${TEST_RPMS} || { echo "REQUESTED insights-client PACKAGE IS NOT INSTALLED"; exit 2; }
   fi
 
   # Simulate the packit setup on downstream builds.
