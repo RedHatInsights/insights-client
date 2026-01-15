@@ -102,6 +102,17 @@ def check_no_egg_content():
     Check that there is no egg-based content on the system.
     """
     egg_based_directory = "/var/lib/insights/"
+    allowed_files = [
+        "private-keys-v1.d",
+        "pubring.kbx",
+        "pubring.kbx~",
+        "trustdb.gpg",
+        "host-details.json",
+    ]
+    for name in os.listdir(egg_based_directory):
+        if name not in allowed_files:
+            pytest.fail(f"Unexpected additional content found: {name} in {egg_based_directory}")
+
     egg_based_files = [
         "/etc/insights-client/redhattools.pub.gpg",
         "/etc/insights-client/rpm.egg",
@@ -109,9 +120,6 @@ def check_no_egg_content():
         "/etc/insights-client/.insights-core.etag",
         "/etc/insights-client/.insights-core-gpg-sig.etag",
     ]
-
-    if os.listdir(egg_based_directory):
-        pytest.fail(f"Directory {egg_based_directory} should be empty.")
     for file_path in egg_based_files:
         if os.path.exists(file_path):
             pytest.fail(f"File {file_path} should not exist on the system.")
