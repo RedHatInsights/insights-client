@@ -96,7 +96,7 @@ allow insights_core_t user_devpts_t:chr_file { ioctl read write };
     subprocess.run(["semodule", "-r", "core_output"], check=True)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def check_no_egg_content():
     """
     Check that there is no egg-based content on the system.
