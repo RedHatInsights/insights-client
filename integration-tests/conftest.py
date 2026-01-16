@@ -137,17 +137,23 @@ def check_is_bootc_system():
 
 
 @pytest.fixture(autouse=True)
-def check_avcs():
+def check_avcs(request):
+    try:
+        avc_skiplist = request.node.get_closest_marker("avc_skiplist").args[0]
+    except AttributeError:
+        avc_skiplist = ()
     checkpoint_file = f"/tmp/avc_checkpoint.{os.getpid()}"
     subprocess.run(
         ["ausearch", "-m", "AVC", "--checkpoint", checkpoint_file],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
+    def test_check_avcs():
+        avcs = subprocess.run(
+            ["ausearch", "-m", "AVC", "--checkpoint", checkpoint_file],
+            stdout=subprocess.PIPE,
+        )
+        if avcs.stdout:
+            pytest.fail("AVCs detected during test run!\n" + avcs.stdout.decode())
+    request.addfinalizer(test_check_avcs)
     yield
-    avcs = subprocess.run(
-        ["ausearch", "-m", "AVC", "--checkpoint", checkpoint_file],
-        stdout=subprocess.PIPE,
-    )
-    if avcs.stdout:
-        pytest.fail("AVCs detected during test run!\n" + avcs.stdout.decode())

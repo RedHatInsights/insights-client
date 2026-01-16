@@ -387,3 +387,7 @@ def test_selinux_core_context(insights_client):
             "under incorrect SELinux context or the selinux policy is too graceful.\n"
             "Only following AVCs were hit:\n" + checker.get_denials()
         )
+
+@pytest.mark.avc_skiplist((".*",))
+def test_avc_fixture():
+    pass
