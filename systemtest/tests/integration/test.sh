@@ -16,7 +16,7 @@ if ! command -v bootc >/dev/null || bootc status | grep -q 'System is not deploy
 
   # Simulate the packit setup on downstream builds.
   # This is for ad-hoc and compose testing.
-  rpm -q insights-client || ./systemtest/guest-setup.sh
+  rpm -q insights-client > /dev/null || ./systemtest/guest-setup.sh
 
   # In most cases these should already be installed by tmt, see systemtest/plans/main.fmf
   dnf --setopt install_weak_deps=False install -y \
@@ -39,6 +39,9 @@ python3 -m venv venv
 . venv/bin/activate
 
 pip install -r integration-tests/requirements.txt
+
+# Print versions of packages that are actively being tested
+rpm -q insights-client insights-core selinux-policy || true
 
 pytest --log-level debug --junit-xml=./junit.xml -v integration-tests ${PYTEST_FILTER:+-k "${PYTEST_FILTER}"}
 retval=$?
