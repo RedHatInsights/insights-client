@@ -244,3 +244,33 @@ def test_selinux_core_context(insights_client, check_avcs):
             "This most probably means that either the client/core process ran "
             "under incorrect SELinux context or the selinux policy is too graceful.\n"
         )
+
+
+def test_avc_fixture():
+    subprocess.run(["runcon", "system_u:system_r:insights_client_t:s0", "/bin/true"], check=False)
+
+
+def test_avc_fixture_skiplisted(check_avcs):
+    # check_avcs.avc_skiplist.append(lambda entry: re.match(".*", str(entry)))
+    # check_avcs.skip_avc_re(".*")
+    check_avcs.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "execve",
+            "permission": "entrypoint",
+            "obj": "system_u:object_r:bin_t:s0",
+        }
+    )
+    subprocess.run(["runcon", "system_u:system_r:insights_client_t:s0", "/bin/true"], check=False)
+    subprocess.run(["runcon", "system_u:system_r:insights_client_t:s0", "/bin/false"], check=False)
+    subprocess.run(
+        ["runcon", "system_u:system_r:insights_client_t:s0", "/bin/passwd"],
+        stdin=subprocess.DEVNULL,
+        check=False,
+    )
+    assert isinstance(check_avcs, SELinuxAVCChecker)
+
+
+def test_avc_fixture_disabled(check_avcs):
+    check_avcs.skip_all_avcs()
+    subprocess.run(["runcon", "system_u:system_r:insights_client_t:s0", "/bin/true"], check=False)
