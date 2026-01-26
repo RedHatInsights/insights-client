@@ -190,10 +190,6 @@ class SELinuxAVCChecker:
             cmd += ["--end", *self.end_aureport_time]
         return cmd
 
-    def get_denials(self, proc=None):
-        # Get AVC denials that occurred during the context manager period.
-        return list(self.get_avcs())
-
     def get_process_contexts(self):
         # Get process contexts from execve events during the context manager period.
         return _check_process_contexts_from_audit(self.start_time, self.end_time)

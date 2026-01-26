@@ -5,6 +5,8 @@ import subprocess
 import tempfile
 import logging
 
+from selinux import SELinuxAVCChecker
+
 logger = logging.getLogger(__name__)
 
 
@@ -143,3 +145,30 @@ def check_is_bootc_system():
         )
     except FileNotFoundError:
         return False
+
+
+@pytest.fixture(autouse=True)
+def check_avcs(request):
+    """
+    Monitor SELinux AVCs during the test execution.
+    This fixture is applied to all tests and can be configured following way:
+     * Skipping all SELinux AVCs (only logging them):
+        Use this fixture explicitly by the test (adding `check_avcs` to test arguments)
+        and then at the beginning of the test call: `check_avcs.skip_all_avcs()`
+     * Skipping selected SELinux AVCs (only logging them)
+        Use this fixture explicitly by the test (adding `check_avcs` to test arguments)
+        and then at the beginning of the test call one of `SELinuxAVCChecker` skip methods.
+
+    This pytest fixture yields instance of SELinuxAVCChecker class.
+    """
+    with SELinuxAVCChecker() as checker:
+        yield checker
+    logger.info(
+        "All AVCs detected during test execution:\n"
+        + "\n".join([str(denial) for denial in checker.get_avcs(skiplisted=False)])
+    )
+    denials = tuple(checker.get_avcs())
+    if denials:
+        pytest.fail(
+            "AVCs detected during test run!\n" + "\n".join([str(denial) for denial in denials])
+        )
