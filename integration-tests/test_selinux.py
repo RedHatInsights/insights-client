@@ -130,10 +130,6 @@ def test_register_unconfined_t_no_context_change(insights_client):
                         f"Found contexts: {checker.get_process_contexts()}"
                     )
 
-        # Verify no SELinux denials
-        denials = checker.get_denials("insights-client")
-        assert not denials, f"SELinux denials found:\n{denials}"
-
 
 @pytest.mark.tier2
 def test_register_unconfined_service_t_registration(insights_client):
@@ -193,7 +189,7 @@ def test_register_unconfined_service_t_registration(insights_client):
 
 
 @pytest.mark.tier2
-def test_selinux_core_context(insights_client):
+def test_selinux_core_context(insights_client, check_avcs):
     f"""
     :id: 27163bb4-ab05-421b-b471-b2ba655f3773
     :title: insights-client executed by insights-client.service or
@@ -220,6 +216,15 @@ def test_selinux_core_context(insights_client):
         4. System is successfully unregistered
         5. The SELinux AVC was hit
     """
+    expected_denial_pattern = re.compile(
+        r"^type=AVC .* avc:  denied  { unlink } for .* "
+        r"name=\.registered .* "
+        r"scontext=system_u:system_r:insights_core_t:s0 "
+        r"tcontext=unconfined_u:object_r:shadow_t:s0 "
+        r"tclass=file permissive=1 $",
+        flags=re.MULTILINE,
+    )
+    check_avcs.skip_avc_re(expected_denial_pattern)
     insights_client.register(wait_for_registered=True)
     subprocess.run(["chcon", "-t", "shadow_t", REGISTERED_FILE], check=True)
 
@@ -229,15 +234,8 @@ def test_selinux_core_context(insights_client):
             assert status.returncode == 0
             assert status.stdout == "Successfully unregistered this host.\n"
 
-    expected_denial_pattern = re.compile(
-        r"type=AVC .* avc:  denied  { unlink } for .* "
-        r'name="\.registered" .* '
-        r"scontext=system_u:system_r:insights_core_t:s0 "
-        r"tcontext=unconfined_u:object_r:shadow_t:s0 "
-        r"tclass=file permissive=1"
-    )
-    for avc in checker.get_denials().split("----\n")[1:]:
-        if expected_denial_pattern.search(avc, re.MULTILINE):
+    for avc in checker.get_avcs(skiplisted=False):
+        if expected_denial_pattern.search(str(avc)):
             # Found the expected AVC
             break
     else:
@@ -245,5 +243,4 @@ def test_selinux_core_context(insights_client):
             "No AVC about attempting to access shadow_t file found.\n"
             "This most probably means that either the client/core process ran "
             "under incorrect SELinux context or the selinux policy is too graceful.\n"
-            "Only following AVCs were hit:\n" + checker.get_denials()
         )
