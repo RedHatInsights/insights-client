@@ -2,7 +2,7 @@
 filename =
     *.py,
     *.py.in,
-    */src/insights-client.in,
+    */src/insights-client,
 # same limit as black
 max-line-length = 100
 ignore =
