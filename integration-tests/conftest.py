@@ -164,6 +164,25 @@ def wait_for_services_to_finish(services=None):
     logger.debug(f"{datetime.datetime.now()} Finished waiting for systemd services to finish")
 
 
+def add_known_avcs_to_skiplist(avc_checker):
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "openat",
+            "permission": "search",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        }
+    )  # Bug: https://issues.redhat.com/browse/CCT-2009
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "fstat",
+            "permission": "getattr",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        }
+    )  # Bug: https://issues.redhat.com/browse/CCT-2009
+
+
 @pytest.fixture(autouse=True)
 def check_avcs(request):
     """
@@ -179,6 +198,7 @@ def check_avcs(request):
     This pytest fixture yields instance of SELinuxAVCChecker class.
     """
     with SELinuxAVCChecker() as checker:
+        add_known_avcs_to_skiplist(checker)
         # WORKAROUND: Wait for important services to finish be finished before running
         # the test to ensure stable environment. If the services are not finished and
         # the test starts, it may very easily happen, that the test starts touching

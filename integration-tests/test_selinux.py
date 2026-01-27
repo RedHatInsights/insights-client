@@ -225,6 +225,13 @@ def test_selinux_core_context(insights_client, check_avcs):
         flags=re.MULTILINE,
     )
     check_avcs.skip_avc_re(expected_denial_pattern)
+    check_avcs.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "openat",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        }
+    )  # Bug: https://issues.redhat.com/browse/CCT-2009
     insights_client.register(wait_for_registered=True)
     subprocess.run(["chcon", "-t", "shadow_t", REGISTERED_FILE], check=True)
 
