@@ -149,6 +149,29 @@ def check_is_bootc_system():
 @pytest.fixture(autouse=True)
 def check_avcs(request):
     with SELinuxAVCChecker() as checker:
+        # TODO: file insights-client policy bug !!!
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "openat",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        })
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "fstat",
+            "permission": "getattr",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        })
+        # TODO: insigths-client bug2
+        # E           ----
+        # E           type=PROCTITLE msg=audit(01/28/2026 04:56:18.710:11954) : proctitle=/usr/bin/python3 /usr/bin/insights-client --check-results
+        # E           type=SYSCALL msg=audit(01/28/2026 04:56:18.710:11954) : arch=x86_64 syscall=newfstatat success=no exit=EACCES(Permission denied) a0=AT_FDCWD a1=0x7f25ce52fa90 a2=0x7ffe21057b60 a3=0x100 items=0 ppid=1 pid=193999 auid=unset uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=(none) ses=unset comm=insights-client exe=/usr/bin/python3.12 subj=system_u:system_r:insights_client_t:s0 key=(null)
+        # E           type=AVC msg=audit(01/28/2026 04:56:18.710:11954) : avc:  denied  { getattr } for  pid=193999 comm=insights-client path=/run/insights-client.ppid dev="tmpfs" ino=17407 scontext=system_u:system_r:insights_client_t:s0 tcontext=unconfined_u:object_r:var_run_t:s0 tclass=file permissive=0
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "newfstatat",
+            "permission": "getattr",
+            "obj": "unconfined_u:object_r:var_run_t:s0",
+        })
         yield checker
     print(
         "All AVCs detected during test execution:\n"
