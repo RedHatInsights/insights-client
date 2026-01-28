@@ -189,6 +189,14 @@ def add_known_avcs_to_skiplist(avc_checker):
             "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
         }
     )  # Bug: https://issues.redhat.com/browse/CCT-2009
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:system_dbusd_t:s0-s0:c0.c1023",
+            "class": "dbus",
+            "permission": "send_msg",
+            "obj": "system_u:system_r:firewalld_t:s0",
+        }
+    )  # Bug: https://issues.redhat.com/browse/RHEL-146177
 
 
 @pytest.fixture(autouse=True)
