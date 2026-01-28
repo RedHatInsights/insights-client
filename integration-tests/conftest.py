@@ -172,6 +172,26 @@ def check_avcs(request):
             "permission": "getattr",
             "obj": "unconfined_u:object_r:var_run_t:s0",
         })
+        # TODO: file insights-core bug !!!
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:system_dbusd_t:s0-s0:c0.c1023",
+            "class": "dbus",
+            "permission": "send_msg",
+            "obj": "system_u:system_r:firewalld_t:s0",
+        })
+        # TODO: file insights-core 2 bug !!!
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_core_t:s0",
+            "syscall": "write",
+            "permission": "setfscreate",
+            "obj": "system_u:system_r:insights_core_t:s0",
+        })
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_core_t:s0",
+            "syscall": "inotify_add_watch",
+            "permission": "watch",
+            "obj": "system_u:system_r:insights_core_t:s0",
+        })
         yield checker
     print(
         "All AVCs detected during test execution:\n"
