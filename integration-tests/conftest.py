@@ -101,6 +101,7 @@ def check_no_egg_content():
     """
     Check that there is no egg-based content on the system.
     """
+    yield
     egg_based_directory = "/var/lib/insights/"
     allowed_files = [
         "private-keys-v1.d",
