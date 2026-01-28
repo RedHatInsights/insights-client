@@ -232,6 +232,21 @@ def test_selinux_core_context(insights_client, check_avcs):
             "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
         }
     )  # Bug: https://issues.redhat.com/browse/CCT-2009
+    check_avcs.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_core_t:s0",
+            "syscall": "write",
+            "permission": "setfscreate",
+            "obj": "system_u:system_r:insights_core_t:s0",
+        }  # https://issues.redhat.com/browse/RHEL-146146
+    )
+    check_avcs.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_core_t:s0",
+            "syscall": "inotify_add_watch",
+            "permission": "watch",
+        }  # https://issues.redhat.com/browse/RHEL-146146
+    )
     insights_client.register(wait_for_registered=True)
     subprocess.run(["chcon", "-t", "shadow_t", REGISTERED_FILE], check=True)
 
