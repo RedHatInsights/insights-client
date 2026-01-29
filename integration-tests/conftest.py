@@ -1,8 +1,10 @@
+import datetime
 import pytest
 import subprocess
 import logging
 
 from selinux import SELinuxAVCChecker
+from pytest_client_tools.util import loop_until
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +60,21 @@ def check_is_bootc_system():
         return False
 
 
+def wait_for_services_to_finish(services=None):
+    if services is None:
+        services = (
+            "insights-client.service",
+            "insights-client-results.service",
+        )
+    logger.debug(f"{datetime.datetime.now()} Waiting for systemd services to finish: {services}")
+    for service in services:
+        if not loop_until(
+            lambda: subprocess.run(["systemctl", "is-active", "--quiet", service]).returncode != 0
+        ):
+            logger.info(f"Systemd service is still running: {service}")
+    logger.debug(f"{datetime.datetime.now()} Finished waiting for systemd services to finish")
+
+
 @pytest.fixture(autouse=True)
 def check_avcs(request):
     """
@@ -73,7 +90,22 @@ def check_avcs(request):
     This pytest fixture yields instance of SELinuxAVCChecker class.
     """
     with SELinuxAVCChecker() as checker:
+        # WORKAROUND: Wait for important services to finish be finished before running
+        # the test to ensure stable environment. If the services are not finished and
+        # the test starts, it may very easily happen, that the test starts touching
+        # files used by the service bringing the system to undefined state eventually
+        # also raising unexpected SELinux AVCs. This waiting should not belong here
+        # and should be implemented somehow differently "the pytest way".
+        wait_for_services_to_finish()
         yield checker
+        # WORKAROUND: Wait for the services that are implicitly part of the test
+        # to finish in order to ensure that all the operations done by those services
+        # are monitored for the SELinux AVCs. The tests generally do not care about
+        # status of services. It is crucial for the SELinux AVCs monitoring to
+        # capture all events even those that happen on the background to be able to
+        # associate those SELinux AVCs to the relevant tests during which those AVCs
+        # occurred.
+        wait_for_services_to_finish()
     logger.info(
         "All AVCs detected during test execution:\n"
         + "\n".join([str(denial) for denial in checker.get_avcs(skiplisted=False)])
