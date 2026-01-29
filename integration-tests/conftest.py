@@ -1,11 +1,13 @@
 import os
 
+import datetime
 import pytest
 import subprocess
 import tempfile
 import logging
 
 from selinux import SELinuxAVCChecker
+from pytest_client_tools.util import loop_until
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +194,22 @@ def check_avcs(request):
             "permission": "watch",
             "obj": "system_u:system_r:insights_core_t:s0",
         })
+        wait_for_services = (
+            "insights-client.service",
+            "insights-client-results.service",
+            #"rhsmcertd.service",
+            #"rhsm-facts.service",
+            #"rhsm.service",
+        )
+        print("Zvukovy signal oznamil ze prave je: ", datetime.datetime.now())
+        print("Cekame na ukonceni behu systemd service:", wait_for_services)
+        print("Zvukovy signal oznamil ze prave je: ", datetime.datetime.now())
         yield checker
+        print("Zvukovy signal oznamil ze prave je: ", datetime.datetime.now())
+        print("Cekame na ukonceni behu systemd service:", wait_for_services)
+        for service in wait_for_services:
+            loop_until(lambda: subprocess.run(["systemctl", "is-active", "--quiet", service]).returncode != 0)
+        print("Zvukovy signal oznamil ze prave je: ", datetime.datetime.now())
     print(
         "All AVCs detected during test execution:\n"
         + "\n".join([str(denial) for denial in checker.get_avcs(skiplisted=False)])
