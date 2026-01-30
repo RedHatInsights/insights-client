@@ -1,9 +1,13 @@
 import os
 
+import datetime
 import pytest
 import subprocess
 import tempfile
 import logging
+
+from selinux import SELinuxAVCChecker
+from pytest_client_tools.util import loop_until
 
 logger = logging.getLogger(__name__)
 
@@ -143,3 +147,76 @@ def check_is_bootc_system():
         )
     except FileNotFoundError:
         return False
+
+
+@pytest.fixture(autouse=True)
+def check_avcs(request):
+    with SELinuxAVCChecker() as checker:
+        # TODO: file insights-client policy bug !!!
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "openat",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        })
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "fstat",
+            "permission": "getattr",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        })
+        # TODO: insigths-client bug2
+        # E           ----
+        # E           type=PROCTITLE msg=audit(01/28/2026 04:56:18.710:11954) : proctitle=/usr/bin/python3 /usr/bin/insights-client --check-results
+        # E           type=SYSCALL msg=audit(01/28/2026 04:56:18.710:11954) : arch=x86_64 syscall=newfstatat success=no exit=EACCES(Permission denied) a0=AT_FDCWD a1=0x7f25ce52fa90 a2=0x7ffe21057b60 a3=0x100 items=0 ppid=1 pid=193999 auid=unset uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=(none) ses=unset comm=insights-client exe=/usr/bin/python3.12 subj=system_u:system_r:insights_client_t:s0 key=(null)
+        # E           type=AVC msg=audit(01/28/2026 04:56:18.710:11954) : avc:  denied  { getattr } for  pid=193999 comm=insights-client path=/run/insights-client.ppid dev="tmpfs" ino=17407 scontext=system_u:system_r:insights_client_t:s0 tcontext=unconfined_u:object_r:var_run_t:s0 tclass=file permissive=0
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "newfstatat",
+            "permission": "getattr",
+            "obj": "unconfined_u:object_r:var_run_t:s0",
+        })
+        # TODO: file insights-core bug !!!
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:system_dbusd_t:s0-s0:c0.c1023",
+            "class": "dbus",
+            "permission": "send_msg",
+            "obj": "system_u:system_r:firewalld_t:s0",
+        })
+        # TODO: file insights-core 2 bug !!!
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_core_t:s0",
+            "syscall": "write",
+            "permission": "setfscreate",
+            "obj": "system_u:system_r:insights_core_t:s0",
+        })
+        checker.skip_avc_entry_by_fields({
+            "subj": "system_u:system_r:insights_core_t:s0",
+            "syscall": "inotify_add_watch",
+            "permission": "watch",
+            "obj": "system_u:system_r:insights_core_t:s0",
+        })
+        wait_for_services = (
+            "insights-client.service",
+            "insights-client-results.service",
+            #"rhsmcertd.service",
+            #"rhsm-facts.service",
+            #"rhsm.service",
+        )
+        print("Zvukovy signal oznamil ze prave je: ", datetime.datetime.now())
+        print("Cekame na ukonceni behu systemd service:", wait_for_services)
+        print("Zvukovy signal oznamil ze prave je: ", datetime.datetime.now())
+        yield checker
+        print("Zvukovy signal oznamil ze prave je: ", datetime.datetime.now())
+        print("Cekame na ukonceni behu systemd service:", wait_for_services)
+        for service in wait_for_services:
+            loop_until(lambda: subprocess.run(["systemctl", "is-active", "--quiet", service]).returncode != 0)
+        print("Zvukovy signal oznamil ze prave je: ", datetime.datetime.now())
+    print(
+        "All AVCs detected during test execution:\n"
+        + "\n".join([str(denial) for denial in checker.get_avcs(skiplisted=False)])
+    )
+    denials = checker.get_denials()
+    if denials:
+        pytest.fail(
+            "AVCs detected during test run!\n" + "\n".join([str(denial) for denial in denials])
+        )
