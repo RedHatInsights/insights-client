@@ -1,8 +1,5 @@
 %define _binaries_in_noarch_packages_terminate_build 0
 
-%bcond_with checkin
-%bcond_with auto_registration
-
 Name:                   insights-client
 Summary:                Uploads Insights information to Red Hat on a periodic basis
 Version:                3.10.3

@@ -62,13 +62,3 @@ install-files:
 	install -d -m 755 "$(BUILDROOT)$(LOCALSTATEDIR)/lib/insights/"
 	install -d -m 755 "$(BUILDROOT)$(LOCALSTATEDIR)/cache/insights/"
 	install -d -m 755 "$(BUILDROOT)$(LOCALSTATEDIR)/cache/insights-client/"
-
-.PHONY: install-auto-registration-files
-install-auto-registration-files:
-	# ./data/systemd/systemd-autoregistration/ -> /usr/lib/systemd/system/
-	install -m 644 data/systemd/systemd-autoregistration/* "$(BUILDROOT)$(UNITDIR)/"
-
-.PHONY: install-checkin-files
-install-checkin-files:
-	# ./data/systemd/systemd-checkin/ -> /usr/lib/systemd/system/
-	install -m 644 data/systemd/systemd-checkin/* "$(BUILDROOT)$(UNITDIR)/"
