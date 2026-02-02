@@ -205,6 +205,14 @@ def add_known_avcs_to_skiplist(avc_checker):
             "obj": "system_u:system_r:firewalld_t:s0",
         }
     )  # Bug: https://issues.redhat.com/browse/RHEL-145614
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:rhsmcertd_t:s0",
+            "syscall": "openat",
+            "permission": "read",
+            "obj": "unconfined_u:object_r:admin_home_t:s0",
+        }
+    )  # Testing farm misconfiguration: https://issues.redhat.com/browse/TFT-4293
 
 
 @pytest.fixture(autouse=True)
