@@ -75,6 +75,17 @@ def wait_for_services_to_finish(services=None):
     logger.debug(f"{datetime.datetime.now()} Finished waiting for systemd services to finish")
 
 
+def add_known_avcs_to_skiplist(avc_checker):
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:rhsmcertd_t:s0",
+            "syscall": "openat",
+            "permission": "read",
+            "obj": "unconfined_u:object_r:admin_home_t:s0",
+        }
+    )  # Testing farm misconfiguration: https://issues.redhat.com/browse/TFT-4293
+
+
 @pytest.fixture(autouse=True)
 def check_avcs(request):
     """
@@ -90,6 +101,7 @@ def check_avcs(request):
     This pytest fixture yields instance of SELinuxAVCChecker class.
     """
     with SELinuxAVCChecker() as checker:
+        add_known_avcs_to_skiplist(checker)
         # WORKAROUND: Wait for important services to finish be finished before running
         # the test to ensure stable environment. If the services are not finished and
         # the test starts, it may very easily happen, that the test starts touching
