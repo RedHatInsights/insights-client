@@ -40,8 +40,8 @@ def test_set_ansible_host_info(insights_client, test_config):
     if "satellite614" in test_config.environment or "satellite615" in test_config.environment:
         pytest.skip(reason="Issue was fixed in Satellite 6.16 and upwards")
     # Register system against Satellite, and register insights through satellite
-    insights_client.register()
-    assert loop_until(lambda: insights_client.is_registered)
+    insights_client.register(wait_for_registered=True)
+    assert insights_client.wait_for_inventory()
 
     # Update ansible-host
     ret = insights_client.run("--ansible-host=foo.example.com", check=False)
