@@ -45,19 +45,11 @@ jobs:
 
   - job: tests
     trigger: pull_request
-    identifier: "unit/centos-stream"
-    targets:
-      - centos-stream-10-x86_64
-    labels:
-      - unit
-
-  - job: tests
-    trigger: pull_request
     identifier: "unit/rhel"
     targets:
       rhel-10-x86_64:
         distros:
-          - RHEL-10-Nightly
+          - RHEL-10.0-Nightly
     labels:
       - unit
     tf_extra_params:
