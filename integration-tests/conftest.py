@@ -1,9 +1,13 @@
 import os
 
+import datetime
 import pytest
 import subprocess
 import tempfile
 import logging
+
+from selinux import SELinuxAVCChecker
+from pytest_client_tools.util import loop_until
 
 logger = logging.getLogger(__name__)
 
@@ -143,3 +147,103 @@ def check_is_bootc_system():
         )
     except FileNotFoundError:
         return False
+
+
+def wait_for_services_to_finish(services=None):
+    if services is None:
+        services = (
+            "insights-client.service",
+            "insights-client-results.service",
+        )
+    logger.debug(datetime.datetime.now(), "Waiting for systemd services to finish:", services)
+    for service in services:
+        if not loop_until(
+            lambda: subprocess.run(["systemctl", "is-active", "--quiet", service]).returncode != 0
+        ):
+            logger.info("Systemd service is still running:", service)
+    logger.debug(datetime.datetime.now(), "Finished waiting for systemd services to finish")
+
+
+def add_known_avcs_to_skiplist(avc_checker):
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "openat",
+            "permission": "write",
+            "obj": "unconfined_u:object_r:var_run_t:s0",
+        }
+    )  # Bug: https://issues.redhat.com/browse/RHEL-146687
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "newfstatat",
+            "permission": "getattr",
+            "obj": "unconfined_u:object_r:var_run_t:s0",
+        }
+    )  # Bug: https://issues.redhat.com/browse/RHEL-146687
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "openat",
+            "permission": "search",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        }
+    )  # Bug: https://issues.redhat.com/browse/RHEL-145608
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "fstat",
+            "permission": "getattr",
+            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+        }
+    )  # Bug: https://issues.redhat.com/browse/RHEL-145608
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:rhsmcertd_t:s0",
+            "syscall": "openat",
+            "permission": "read",
+            "obj": "unconfined_u:object_r:admin_home_t:s0",
+        }
+    )  # Testing farm misconfiguration: https://issues.redhat.com/browse/TFT-4293
+
+
+@pytest.fixture(autouse=True)
+def check_avcs(request):
+    """
+    Monitor SELinux AVCs during the test execution.
+    This fixture is applied to all tests and can be configured following way:
+     * Skipping all SELinux AVCs (only logging them):
+        Use this fixture explicitly by the test (adding `check_avcs` to test arguments)
+        and then at the beginning of the test call: `check_avcs.skip_all_avcs()`
+     * Skipping selected SELinux AVCs (only logging them)
+        Use this fixture explicitly by the test (adding `check_avcs` to test arguments)
+        and then at the beginning of the test call one of `SELinuxAVCChecker` skip methods.
+
+    This pytest fixture yields instance of SELinuxAVCChecker class.
+    """
+    with SELinuxAVCChecker() as checker:
+        # WORKAROUND: Wait for important services to finish be finished before running
+        # the test to ensure stable environment. If the services are not finished and
+        # the test starts, it may very easily happen, that the test starts touching
+        # files used by the service bringing the system to undefined state eventually
+        # also raising unexpected SELinux AVCs. This waiting should not belong here
+        # and should be implemented somehow differently "the pytest way".
+        wait_for_services_to_finish()
+        yield checker
+        # WORKAROUND: Wait for the services that are implicitly part of the test
+        # to finish in order to ensure that all the operations done by those services
+        # are monitored for the SELinux AVCs. The tests generally do not care about
+        # status of services. It is crucial for the SELinux AVCs monitoring to
+        # capture all events even those that happen on the background to be able to
+        # associate those SELinux AVCs to the relevant tests during which those AVCs
+        # occurred.
+        wait_for_services_to_finish()
+    logger.info(
+        "All AVCs detected during test execution:\n"
+        + "\n".join([str(denial) for denial in checker.get_avcs(skiplisted=False)])
+    )
+    denials = tuple(checker.get_avcs())
+    if denials:
+        pytest.fail(
+            "AVCs detected during test run!\n" + "\n".join([str(denial) for denial in denials])
+        )

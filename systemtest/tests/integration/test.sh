@@ -43,7 +43,7 @@ pip install -r integration-tests/requirements.txt
 # Print versions of packages that are actively being tested
 rpm -q insights-client insights-core selinux-policy || true
 
-pytest --log-level debug --junit-xml=./junit.xml -v integration-tests ${PYTEST_FILTER:+-k "${PYTEST_FILTER}"}
+pytest -rA --log-level debug --junit-xml=./junit.xml -v integration-tests ${PYTEST_FILTER:+-k "${PYTEST_FILTER}"}
 retval=$?
 
 if [ -d "$TMT_PLAN_DATA" ]; then
