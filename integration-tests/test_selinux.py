@@ -77,7 +77,7 @@ def test_register_unconfined_t_no_context_change(insights_client):
         in unconfined_t SELinux context with SELinux enforcing mode, the insights-core
         code executes in unconfined_t context without any SELinux context change
         and without any SELinux denials.
-    :tags: Tier 1
+    :tags: Tier 2
     :reference: https://issues.redhat.com/browse/CCT-1717
     :steps:
         1. Register system using subscription-manager (already done by fixture)
