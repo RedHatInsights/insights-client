@@ -168,6 +168,14 @@ def add_known_avcs_to_skiplist(avc_checker):
     avc_checker.skip_avc_entry_by_fields(
         {
             "subj": "system_u:system_r:insights_client_t:s0",
+            "syscall": "newfstatat",
+            "permission": "getattr",
+            "obj": "unconfined_u:object_r:var_run_t:s0",
+        }
+    )  # Bug: https://issues.redhat.com/browse/RHEL-146688
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
             "syscall": "openat",
             "permission": "search",
             "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
