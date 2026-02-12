@@ -49,7 +49,7 @@ jobs:
     targets:
       rhel-9-x86_64:
         distros:
-          - RHEL-9-Nightly
+          - RHEL-9.6.0-Nightly
     labels:
       - unit
     tf_extra_params:
