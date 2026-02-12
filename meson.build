@@ -1,5 +1,5 @@
 project('insights-client',
-  version: '3.2.8',
+  version: '3.2.2',
   meson_version: '>=0.49'
 )
 
