@@ -57,7 +57,7 @@ jobs:
     targets:
       rhel-10-x86_64:
         distros:
-          - RHEL-10-Nightly
+          - RHEL-10.0-Nightly
     labels:
       - unit
     tf_extra_params:
