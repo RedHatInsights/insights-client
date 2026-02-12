@@ -25,10 +25,6 @@ jobs:
       - rhel-10-aarch64
       - rhel-10-s390x
       - rhel-10-ppc64le
-      - centos-stream-10-x86_64
-      - centos-stream-10-aarch64
-      - centos-stream-10-s390x
-      - centos-stream-10-ppc64le
 
   - job: copr_build
     trigger: commit
@@ -38,18 +34,6 @@ jobs:
       - rhel-10-aarch64
       - rhel-10-s390x
       - rhel-10-ppc64le
-      - centos-stream-10-x86_64
-      - centos-stream-10-aarch64
-      - centos-stream-10-s390x
-      - centos-stream-10-ppc64le
-
-  - job: tests
-    trigger: pull_request
-    identifier: "unit/centos-stream"
-    targets:
-      - centos-stream-10-x86_64
-    labels:
-      - unit
 
   - job: tests
     trigger: pull_request
