@@ -21,7 +21,6 @@ jobs:
   - job: copr_build
     trigger: pull_request
     targets:
-      - centos-stream-9
       - rhel-9-x86_64
       - rhel-9-aarch64
       - rhel-9-s390x
@@ -30,18 +29,9 @@ jobs:
     trigger: commit
     branch: rhel-9-egg
     targets:
-      - centos-stream-9
       - rhel-9-x86_64
       - rhel-9-aarch64
       - rhel-9-s390x
-
-  - job: tests
-    trigger: pull_request
-    identifier: "unit/centos-stream"
-    targets:
-      - centos-stream-9
-    labels:
-      - unit
 
   - job: tests
     trigger: pull_request
