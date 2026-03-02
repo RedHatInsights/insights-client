@@ -1,0 +1,7 @@
+/stage:
+  environment+:
+    ENV_FOR_DYNACONF: stage
+/prod:
+  enabled: true
+  environment+:
+    ENV_FOR_DYNACONF: prod
