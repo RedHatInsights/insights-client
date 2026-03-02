@@ -1,0 +1,9 @@
+/satellite616:
+  environment+:
+    ENV_FOR_DYNACONF: satellite616
+/satellite617:
+  environment+:
+    ENV_FOR_DYNACONF: satellite617
+/satellite618:
+  environment+:
+    ENV_FOR_DYNACONF: satellite618

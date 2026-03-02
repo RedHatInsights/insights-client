@@ -21,3 +21,8 @@ prepare:
 
 execute:
   how: tmt
+
+enabled: false
+adjust:
+  - enabled: true
+    when: test_event == ctc
