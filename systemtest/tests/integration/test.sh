@@ -46,9 +46,11 @@ rpm -q insights-client insights-core selinux-policy || true
 pytest --log-level debug --junit-xml=./junit.xml -v integration-tests ${PYTEST_FILTER:+-k "${PYTEST_FILTER}"}
 retval=$?
 
-if [ -d "$TMT_PLAN_DATA" ]; then
-  cp ./junit.xml "$TMT_PLAN_DATA/junit.xml"
-  cp -r ./artifacts "$TMT_PLAN_DATA/"
-fi
+for TARGET_DIR in "$TMT_PLAN_DATA" "$TMT_TEST_DATA"; do
+  if [ -d "$TARGET_DIR" ]; then
+    cp ./junit.xml "$TARGET_DIR/junit.xml"
+    cp -r ./artifacts "$TARGET_DIR/"
+  fi
+done
 
 exit $retval
