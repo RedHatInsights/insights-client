@@ -12,7 +12,6 @@ import sys
 import pytest
 from pytest_client_tools.util import Version
 
-
 PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
 
 
