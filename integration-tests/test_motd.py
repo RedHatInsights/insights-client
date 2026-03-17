@@ -12,7 +12,6 @@ import subprocess
 import pytest
 from pytest_client_tools.util import loop_until
 
-
 DOT_REGISTERED_PATH = "/etc/insights-client/.registered"
 DOT_UNREGISTERED_PATH = "/etc/insights-client/.unregistered"
 

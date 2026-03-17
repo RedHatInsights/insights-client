@@ -147,7 +147,7 @@ def test_register_twice_with_different_display_name(insights_client, test_config
         assert unique_hostname == record["display_name"]
         insights_id = record["insights_id"]
 
-    (status, host_details, record) = (None, None, None)
+    status, host_details, record = (None, None, None)
     with subtests.test(msg="The second registration"):
         status = insights_client.run("--register", "--display-name", unique_hostname_02)
         registration_message = "This host has already been registered"
