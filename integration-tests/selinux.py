@@ -148,21 +148,29 @@ class SELinuxAVCChecker:
         self.avc_skiplist.append(condition)
         return condition
 
+    _SEPARATOR = "=" * 63
+
     def get_avcs(self, skiplisted=True):
-        lines = (
-            subprocess.run(self.aureport_command, stdout=subprocess.PIPE)
-            .stdout.decode()
-            .splitlines()
-        )
-        assert lines.pop(0) == ""
-        assert lines.pop(0) == "AVC Report"
-        assert lines.pop(0) == "==============================================================="
-        keys = lines.pop(0).split()
-        assert lines.pop(0) == "==============================================================="
-        if lines[0] == "<no events of interest were found>":
+        output = subprocess.run(self.aureport_command, stdout=subprocess.PIPE).stdout.decode()
+        lines = [line for line in output.splitlines() if line.strip()]
+
+        if not lines or "<no events of interest were found>" in output:
             return
-        for line in lines:
-            if not line:  # skip empty lines
+
+        # Find the column-header line: it sits between two separator rows.
+        keys = None
+        data_start = None
+        for i, line in enumerate(lines):
+            if line.startswith("===") and i + 2 < len(lines) and lines[i + 2].startswith("==="):
+                keys = lines[i + 1].split()
+                data_start = i + 3
+                break
+
+        if keys is None or data_start is None:
+            return
+
+        for line in lines[data_start:]:
+            if line.startswith("===") or not line.strip():
                 continue
             entry = AuditLogEntry(keys, line.split())
             if skiplisted and any(condition(entry) for condition in self.avc_skiplist):
