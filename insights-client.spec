@@ -82,6 +82,7 @@ make install-files \
 # Remove legacy egg files from previous runtime installations
 rm -f %{_localstatedir}/lib/insights/*.egg
 rm -f %{_localstatedir}/lib/insights/*.egg.asc
+rm -f %{_sysconfdir}/insights-client/.*.etag
 
 # Symlink the message of the day if the system has not been registered with Insights
 _SHOULD_WRITE_MOTD=1
