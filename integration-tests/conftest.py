@@ -12,6 +12,25 @@ from pytest_client_tools.util import loop_until
 logger = logging.getLogger(__name__)
 
 
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """
+    Reclassify check_* fixture "teardown"/"setup" failures as FAIL (instead of ERROR) by
+    setting the test execution phase to "call" instead of "setup"/"teardown".
+    """
+    outcome = yield
+    rep = outcome.get_result()
+    if call.when == "call" or not call.excinfo:
+        return
+    if not isinstance(call.excinfo.value, pytest.fail.Exception):
+        return
+
+    for entry in call.excinfo.traceback:
+        if getattr(entry, "name", "").startswith("check_"):
+            rep.when = "call"
+            return
+
+
 @pytest.fixture(scope="session")
 def install_katello_rpm(test_config):
     if "satellite" in test_config.environment:
