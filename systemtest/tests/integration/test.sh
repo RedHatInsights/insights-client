@@ -44,7 +44,8 @@ python3 -m venv venv
 pip install -r integration-tests/requirements.txt
 
 # Print versions of packages that are actively being tested
-rpm -q insights-client insights-core selinux-policy || true
+rpm -q insights-client selinux-policy || true
+insights-client --version
 
 pytest --log-level debug --junit-xml=./junit.xml -v integration-tests ${PYTEST_FILTER:+-k "${PYTEST_FILTER}"}
 retval=$?
