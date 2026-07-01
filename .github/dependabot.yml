@@ -7,3 +7,10 @@ updates:
     target-branch: "main"
     commit-message:
       prefix: "ci"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "rhel-9-main"
+    commit-message:
+      prefix: "ci"
