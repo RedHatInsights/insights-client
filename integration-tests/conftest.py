@@ -192,14 +192,18 @@ def add_known_avcs_to_skiplist(avc_checker):
             "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
         }
     )  # Bug: https://issues.redhat.com/browse/CCT-2009
-    avc_checker.skip_avc_entry_by_fields(
-        {
-            "subj": "system_u:system_r:insights_client_t:s0",
-            "syscall": "fstat",
-            "permission": "getattr",
-            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
-        }
-    )  # Bug: https://issues.redhat.com/browse/CCT-2009
+
+    # aarch64 uses newfstat
+    for syscall in ("fstat", "newfstat"):
+        avc_checker.skip_avc_entry_by_fields(
+            {
+                "subj": "system_u:system_r:insights_client_t:s0",
+                "syscall": syscall,
+                "permission": "getattr",
+                "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+            }
+        )  # Bug: https://issues.redhat.com/browse/CCT-2009
+
     avc_checker.skip_avc_entry_by_fields(
         {
             "subj": "system_u:system_r:rhsmcertd_t:s0",
