@@ -39,17 +39,6 @@ BuildRequires: systemd-rpm-macros
 %description
 Sends insightful information to Red Hat for automated analysis
 
-%package ros
-Requires: pcp-zeroconf
-Requires: insights-client
-
-Summary: The subpackage for Insights resource optimization service
-
-%description ros
-The ros subpackage add ros_collect configuration parameter to insights-client.conf file,
-the parameter is set to True by default. The system starts sending PCP archives to
-Resource Optimization service upon modifying ros_collect parameter to True.
-
 %prep
 {{{ git_dir_setup_macro }}}
 
@@ -86,18 +75,6 @@ if [ -d %{_sysconfdir}/motd.d ]; then
     fi
 fi
 
-%post ros
-rm -f /var/lib/pcp/config/pmlogger/config.ros
-sed -i "/PCP_LOG_DIR\/pmlogger\/ros/d" /etc/pcp/pmlogger/control.d/local
-
-if ! grep -q "^ros_collect" %{_sysconfdir}/insights-client/insights-client.conf; then
-cat <<EOF >> %{_sysconfdir}/insights-client/insights-client.conf
-### Begin insights-client-ros ###
-ros_collect=True
-### End insights-client-ros ###
-EOF
-fi
-
 %preun
 %systemd_preun %{name}.timer
 %systemd_preun %{name}.service
@@ -118,9 +95,6 @@ if [ $1 -eq 0 ]; then
     rm -rf %{_localstatedir}/log/insights-client
     rm -f %{_sysconfdir}/insights-client/.*.etag
 fi
-
-%postun ros
-sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/ros_collect=True/d' %{_sysconfdir}/insights-client/insights-client.conf
 
 %files
 %config(noreplace) %{_sysconfdir}/insights-client/*.conf
@@ -146,7 +120,6 @@ sed -i '/### Begin insights-client-ros ###/,/### End insights-client-ros ###/d;/
 %{_mandir}/man8/*.8.gz
 %{_mandir}/man5/*.5.gz
 
-%files ros
 
 %changelog
 {{{ git_dir_changelog }}}
