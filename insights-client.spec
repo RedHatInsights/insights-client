@@ -117,6 +117,7 @@ if [ $1 -eq 0 ]; then
     rm -rf %{_localstatedir}/lib/insights
     rm -rf %{_localstatedir}/log/insights-client
     rm -f %{_sysconfdir}/insights-client/.*.etag
+    rm -f %{_sysconfdir}/logrotate.d/insights-client
 fi
 
 %postun ros
