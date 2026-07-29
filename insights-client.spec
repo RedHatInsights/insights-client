@@ -79,6 +79,8 @@ make install-files \
 %systemd_post %{name}.timer
 %systemd_post %{name}-boot.service
 
+%tmpfiles_create insights-client.conf
+
 # Remove legacy egg files from previous runtime installations
 rm -f %{_localstatedir}/lib/insights/*.egg
 rm -f %{_localstatedir}/lib/insights/*.egg.asc
@@ -154,10 +156,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/insights_client/
 %{_defaultdocdir}/%{name}
 %{_presetdir}/*.preset
-%attr(700,root,root) %dir %{_localstatedir}/log/insights-client/
-%attr(700,root,root) %dir %{_localstatedir}/cache/insights-client/
-%attr(750,root,root) %dir %{_localstatedir}/cache/insights/
-%attr(750,root,root) %dir %{_localstatedir}/lib/insights/
+%ghost %attr(700,root,root) %dir %{_localstatedir}/log/insights-client/
+%ghost %attr(700,root,root) %dir %{_localstatedir}/cache/insights-client/
+%ghost %attr(750,root,root) %dir %{_localstatedir}/cache/insights/
+%ghost %attr(750,root,root) %dir %{_localstatedir}/lib/insights/
 %{_sysconfdir}/logrotate.d/insights-client
 %{_tmpfilesdir}/insights-client.conf
 
