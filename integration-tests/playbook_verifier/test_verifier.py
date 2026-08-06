@@ -15,6 +15,14 @@ from pytest_client_tools.util import Version
 PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
 
 
+def _core_ships_playbook() -> bool:
+    proc = subprocess.run(["rpm", "-ql", "insights-core"], capture_output=True, text=True)
+    return proc.returncode == 0 and "playbook_verifier" in proc.stdout
+
+
+@pytest.mark.skipif(
+    not _core_ships_playbook(), reason="playbook_verifier not in insights-core (RHEL-147440)"
+)
 @pytest.mark.parametrize(
     "filename",
     [
