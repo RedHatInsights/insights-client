@@ -5,7 +5,7 @@ https://betelgeuse.readthedocs.io/en/stable/
 https://betelgeuse.readthedocs.io/en/stable/config.html
 
 ## Test-case command
-Command generates an XML file suited to be imported by the **Test Case XML Importer**. It reads the Python test suite source code and generated XML file with all the information necessary.
+Command generates an XML file suited to be imported by the **Test Case XML Importer**. It reads the Python test suite source code and generates an XML file with all the information necessary.
 
 The `test-case` requires:
 
