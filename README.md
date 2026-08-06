@@ -6,7 +6,7 @@
 
 Follow these instructions to prepare your system for development.
 
-1. Fork both this and [insights-core](https://github.com/RedHatInsights/insights-core) repository.
+1. Fork both this and the [insights-core](https://github.com/RedHatInsights/insights-core) repository.
 
 2. Clone both of them to the same directory:
 
@@ -84,11 +84,11 @@ The client utilizes several directories on the system for its operation:
 - `/etc/insights-client/` - The primary directory for configuration. It contains `insights-client.conf`, redaction files (`file-redaction.yaml`, `file-content-redaction.yaml`), and security certificates.
 - `/var/log/insights-client/` - The default directory for log files.
 - `/var/lib/insights/` - Stores information about the core module (egg), including `last_stable.egg`.
-- `/var/cache/insights-client/` - The default location where the archive is stored when the `--keep-archive`, `--no-upload` and `--offline` flag is used.
+- `/var/cache/insights-client/` - The default location where the archive is stored when the `--keep-archive`, `--no-upload` and `--offline` flags are used.
 - `/var/tmp/` - Used as a temporary location for building the archive before upload.
 
 ## Log Management
-The developer logs its activity to provide a record of its operations, which is essential for troubleshooting. 
+The client logs its activity to provide a record of its operations, which is essential for troubleshooting. 
 All of the following switches were already explained in the **Configuration** section.
 
 ### Log File
@@ -104,7 +104,7 @@ The level of detail in the logs can be controlled.
 When you run `insights-client`, it connects to several Red Hat services. Connectivity to these services is required for a standard, non-offline execution.
 
 ### Red Hat Insights API
-This are the primary services the client communicates with.
+These are the primary services the client communicates with.
 
 Purpose: To upload the collected system data archive, download updated insights-core, and retrieve analysis results. It can also optionally connect to services for Compliance and Malware detection.
 
@@ -121,6 +121,6 @@ The client operates in its default mode. It connects directly to the primary Red
 
 This entire auto-detection process is based on reading **local** config files only (managed by RHSM).
 
-examples what you could see in logs if `auto_config=True`:  
+examples of what you could see in logs if `auto_config=True`:  
 `DEBUG insights.client.auto_config:159 Connected to staging RHSM, using cert.cloud.stage.redhat.com`  
 `DEBUG insights.client.auto_config:81 Not connected to Satellite, skipping branch_info`
