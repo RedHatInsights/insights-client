@@ -27,3 +27,35 @@ MemoryHigh=1G
 MemoryMax=2G
 TasksMax=300
 BlockIOWeight=100
+
+#
+# Security
+#
+
+# Filesystem protection
+ProtectHome=read-only
+PrivateTmp=yes
+ProtectSystem=true
+# Cannot be set to "full": /etc/ needs to be writable by insights-client
+
+# Device access
+PrivateDevices=yes
+
+# Kernel
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+NoNewPrivileges=no
+# Cannot be enabled, insights-client client calls selinux.setexeccon() to
+# transition child processes into the insights_core_t SELinux domain.
+
+# Process and privilege restrictions
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+KeyringMode=private
+SystemCallArchitectures=native
