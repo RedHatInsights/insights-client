@@ -37,12 +37,12 @@ def test_help_command(capsys):
 
 @patch("insights_client.sys.argv", ["insights-client"])
 @patch("insights_client.InsightsConfig")
-def test_exit_when_run_phases_no_sudo(mock_config):
+@patch("insights_client._has_required_capabilities", return_value=False)
+def test_exit_when_run_phases_no_sudo(mock_has_caps, mock_config):
     # Mock config to return version=False so it doesn't exit early
     mock_config.return_value.load_all.return_value = {"version": False}
 
     with raises(SystemExit) as pytest_wrapped_e:
-        with patch("os.getuid", return_value=1):
-            insights_client._main()
+        insights_client._main()
     assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.args[0] == "Insights client must be run as root."
+    assert "CAP_DAC_READ_SEARCH" in pytest_wrapped_e.value.args[0]

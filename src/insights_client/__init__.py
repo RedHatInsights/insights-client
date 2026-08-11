@@ -42,6 +42,46 @@ UNREGISTERED_FILE = "/etc/insights-client/.unregistered"
 
 logger = logging.getLogger(__name__)
 
+# Linux capability bit positions (see capabilities(7)).
+_CAP_DAC_READ_SEARCH = 2  # bypass DAC read/search checks on any file/directory
+
+
+def _has_required_capabilities():
+    """Return True if the process has sufficient privilege to run.
+
+    Accepts either uid 0 (traditional root) or a process that holds
+    CAP_DAC_READ_SEARCH in its effective capability set.  The latter allows
+    the service to run as a dedicated non-root user with AmbientCapabilities
+    set in the systemd unit, without needing uid 0.
+
+    The effective capability set is read from /proc/self/status (CapEff field),
+    which is always present on Linux and requires no additional dependencies.
+    """
+    uid = os.getuid()
+    logger.debug("Running as uid %d", uid)
+
+    if uid == 0:
+        return True
+
+    try:
+        with open("/proc/self/status") as f:
+            for line in f:
+                if line.startswith("CapEff:"):
+                    cap_eff = int(line.split()[1], 16)
+                    has_cap = bool(cap_eff & (1 << _CAP_DAC_READ_SEARCH))
+                    logger.debug(
+                        "uid=%d CapEff=0x%x CAP_DAC_READ_SEARCH=%s",
+                        uid,
+                        cap_eff,
+                        has_cap,
+                    )
+                    return has_cap
+    except OSError as e:
+        logger.debug("Could not read /proc/self/status: %s; falling back to uid check", e)
+
+    logger.debug("uid=%d and capability check inconclusive — denying", uid)
+    return False
+
 
 def get_logging_config():
     config = {}
@@ -254,8 +294,8 @@ def _main():
             print("Core: %s" % InsightsClient().version())
             return
 
-        if os.getuid() != 0:
-            sys.exit("Insights client must be run as root.")
+        if not _has_required_capabilities():
+            sys.exit("insights-client must be run with elevated privileges.")
 
         client = InsightsClient(config, False)  # read config, but dont setup logging
         logger.debug(

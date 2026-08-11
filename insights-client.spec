@@ -37,6 +37,7 @@ BuildRequires: python3-pytest
 BuildRequires: systemd-rpm-macros
 BuildRequires: make
 Requires(post): policycoreutils-python-utils
+Requires(pre): shadow-utils
 
 
 %description
@@ -74,6 +75,13 @@ make install-files \
     DEFAULTDOCDIR='%{_defaultdocdir}' \
     LOCALSTATEDIR='%{_localstatedir}' \
     NAME='%{name}'
+
+%pre
+getent group insights > /dev/null || groupadd -r insights
+getent passwd insights > /dev/null || \
+    useradd -r -g insights -d /var/lib/insights -s /sbin/nologin \
+        -c "Red Hat Insights client" insights
+exit 0
 
 %post
 %systemd_post %{name}.timer
@@ -154,10 +162,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/insights_client/
 %{_defaultdocdir}/%{name}
 %{_presetdir}/*.preset
-%attr(700,root,root) %dir %{_localstatedir}/log/insights-client/
-%attr(700,root,root) %dir %{_localstatedir}/cache/insights-client/
-%attr(750,root,root) %dir %{_localstatedir}/cache/insights/
-%attr(750,root,root) %dir %{_localstatedir}/lib/insights/
+%attr(700,insights,insights) %dir %{_localstatedir}/log/insights-client/
+%attr(700,insights,insights) %dir %{_localstatedir}/cache/insights-client/
+%attr(750,insights,insights) %dir %{_localstatedir}/cache/insights/
+%attr(750,insights,insights) %dir %{_localstatedir}/lib/insights/
 %{_sysconfdir}/logrotate.d/insights-client
 %{_tmpfilesdir}/insights-client.conf
 

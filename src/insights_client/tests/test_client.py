@@ -4,9 +4,9 @@ import pytest
 
 
 # Test config load error
-@mock.patch("os.getuid", return_value=0)
+@mock.patch("insights_client._has_required_capabilities", return_value=True)
 @mock.patch("insights_client.InsightsConfig")
-def test_load_config_error(mock_config, os_uid):
+def test_load_config_error(mock_config, mock_has_caps):
     mock_config.return_value.load_all.side_effect = ValueError("mocked error")
 
     with pytest.raises(SystemExit) as sys_exit:
@@ -15,9 +15,9 @@ def test_load_config_error(mock_config, os_uid):
 
 
 # test keyboardinterrupt handler
-@mock.patch("os.getuid", return_value=0)
+@mock.patch("insights_client._has_required_capabilities", return_value=True)
 @mock.patch("insights_client.InsightsConfig")
-def test_keyboard_interrupt(mock_config, os_uid):
+def test_keyboard_interrupt(mock_config, mock_has_caps):
     mock_config.return_value.load_all.side_effect = KeyboardInterrupt()
 
     with pytest.raises(SystemExit) as sys_exit:
@@ -39,11 +39,11 @@ def test_phase_error_100(mock_subprocess):
 
 
 # Test version display
-@mock.patch("os.getuid", return_value=0)
+@mock.patch("insights_client._has_required_capabilities", return_value=True)
 @mock.patch("insights_client.InsightsConfig")
 @mock.patch("insights_client.InsightsClient")
 @mock.patch("builtins.print")
-def test_version_display(mock_print, mock_client_class, mock_config, os_uid):
+def test_version_display(mock_print, mock_client_class, mock_config, mock_has_caps):
     mock_config.return_value.load_all.return_value = {"version": True}
     mock_client_instance = mock.MagicMock()
     mock_client_instance.version.return_value = "test_core_version"
@@ -57,12 +57,12 @@ def test_version_display(mock_print, mock_client_class, mock_config, os_uid):
     mock_print.assert_any_call("Core: test_core_version")
 
 
-# Test non-root user
-@mock.patch("os.getuid", return_value=1000)
+# Test non-root user without sufficient capabilities
+@mock.patch("insights_client._has_required_capabilities", return_value=False)
 @mock.patch("insights_client.InsightsConfig")
-def test_non_root_user(mock_config, os_uid):
+def test_non_root_user(mock_config, mock_has_caps):
     mock_config.return_value.load_all.return_value = {"version": False}
 
     with pytest.raises(SystemExit) as sys_exit:
         insights_client._main()
-    assert "root" in str(sys_exit.value)
+    assert "CAP_DAC_READ_SEARCH" in str(sys_exit.value)
