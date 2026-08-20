@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 from datetime import datetime
@@ -80,7 +81,10 @@ def _check_process_contexts_from_audit(start_time, end_time=None):
         if parsed:
             contexts.append(parsed)
 
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, check=False)
+    # See LC_TIME note in SELinuxAVCChecker.get_avcs() below -- ausearch has the
+    # same locale-dependent date parsing as aureport.
+    env = {**os.environ, "LC_TIME": "en_US.UTF-8"}
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, check=False, env=env)
     if result.returncode == 0 and result.stdout:
         current_event = []
         for line in result.stdout.splitlines():
@@ -148,21 +152,49 @@ class SELinuxAVCChecker:
         self.avc_skiplist.append(condition)
         return condition
 
+    # aureport's exact separator row, used both to find the header and to
+    # skip repeated separators in the data section below.
+    _SEPARATOR = "=" * 63
+
     def get_avcs(self, skiplisted=True):
-        lines = (
-            subprocess.run(self.aureport_command, stdout=subprocess.PIPE)
-            .stdout.decode()
-            .splitlines()
+        # aureport parses --start/--end dates according to LC_TIME, not a fixed
+        # format. Force the locale to match the "%m/%d/%Y" strings we generate
+        # below, otherwise aureport fails with "Error parsing start date" on
+        # any system where LC_TIME isn't (or doesn't resolve to) en_US-style
+        # formatting. See https://bugzilla.redhat.com/show_bug.cgi?id=456441
+        env = {**os.environ, "LC_TIME": "en_US.UTF-8"}
+        result = subprocess.run(
+            self.aureport_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
         )
-        assert lines.pop(0) == ""
-        assert lines.pop(0) == "AVC Report"
-        assert lines.pop(0) == "==============================================================="
-        keys = lines.pop(0).split()
-        assert lines.pop(0) == "==============================================================="
-        if lines[0] == "<no events of interest were found>":
+        # aureport (like ausearch, which it shares exit-status semantics with)
+        # exits 1 both when nothing was found and on minor argument/file
+        # errors, so a non-zero exit alone isn't a reliable failure signal.
+        # A clean "nothing found" run leaves stderr empty, so only treat this
+        # as a hard failure when aureport actually wrote something to stderr.
+        stderr = result.stderr.decode(errors="replace").strip()
+        if result.returncode != 0 and stderr:
+            raise RuntimeError(f"aureport failed (exit {result.returncode}): {stderr}")
+
+        output = result.stdout.decode()
+        lines = [line for line in output.splitlines() if line.strip()]
+
+        if not lines or "<no events of interest were found>" in output:
             return
-        for line in lines:
-            if not line:  # skip empty lines
+
+        # Find the column-header line: it sits between two separator rows.
+        keys = None
+        data_start = None
+        for i, line in enumerate(lines):
+            if line == self._SEPARATOR and i + 2 < len(lines) and lines[i + 2] == self._SEPARATOR:
+                keys = lines[i + 1].split()
+                data_start = i + 3
+                break
+
+        if keys is None or data_start is None:
+            raise RuntimeError(f"unrecognized aureport output format:\n{output}")
+
+        for line in lines[data_start:]:
+            if line == self._SEPARATOR:
                 continue
             entry = AuditLogEntry(keys, line.split())
             if skiplisted and any(condition(entry) for condition in self.avc_skiplist):
