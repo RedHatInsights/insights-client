@@ -213,6 +213,14 @@ def add_known_avcs_to_skiplist(avc_checker):
         }
     )  # Testing farm misconfiguration: https://issues.redhat.com/browse/TFT-4293
 
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_client_t:s0",
+            "permission": "search",
+            "obj": "system_u:object_r:container_file_t:s0",
+        }
+    )  # Also related to the above: https://redhat.atlassian.net/browse/TFT-4293
+
 
 @pytest.fixture(autouse=True)
 def check_avcs(request):
