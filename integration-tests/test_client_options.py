@@ -9,6 +9,7 @@
 import json
 import os
 import pytest
+from cloud_inventory import ensure_cloud_inventory
 from pytest_client_tools.util import Version, loop_until
 import glob
 
@@ -18,6 +19,7 @@ ARCHIVE_CACHE_DIRECTORY = "/var/cache/insights-client"
 
 
 @pytest.mark.tier1
+@pytest.mark.requires_cloud_inventory
 def test_set_ansible_host_info(insights_client, test_config):
     """
     :id: 18fc9438-8f2e-40f7-88b8-b51f36c9c396
@@ -41,6 +43,7 @@ def test_set_ansible_host_info(insights_client, test_config):
         pytest.skip(reason="Issue was fixed in Satellite 6.16 and upwards")
     # Register system against Satellite, and register insights through satellite
     insights_client.register(wait_for_registered=True)
+    ensure_cloud_inventory(insights_client)
     assert insights_client.wait_for_inventory()
 
     # Update ansible-host
@@ -270,6 +273,7 @@ def test_client_diagnosis(insights_client):
 
 
 @pytest.mark.tier1
+@pytest.mark.requires_cloud_inventory
 def test_check_show_results(insights_client):
     """
     :id: 82571026-af14-464c-b9ff-5c03ecfe77c9
@@ -293,6 +297,7 @@ def test_check_show_results(insights_client):
     os.chmod("/etc/ssh/sshd_config", 0o777)
 
     insights_client.register(wait_for_registered=True)
+    ensure_cloud_inventory(insights_client)
     assert insights_client.wait_for_inventory()  # required by --check-results
     assert insights_client.wait_for_advisor()  # required by --check-results
 
