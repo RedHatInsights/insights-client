@@ -1,8 +1,38 @@
 import pytest
 import subprocess
 import logging
+import cloud_inventory
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(autouse=True)
+def _skip_when_cloud_inventory_unavailable(request):
+    """Skip remaining requires_cloud_inventory tests after a session probe failure."""
+    if request.node.get_closest_marker("requires_cloud_inventory") is None:
+        yield
+        return
+    cloud_inventory.skip_if_auth_unavailable()
+    yield
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """
+    Reclassify check_* fixture "teardown"/"setup" failures as FAIL (instead of ERROR) by
+    setting the test execution phase to "call" instead of "setup"/"teardown".
+    """
+    outcome = yield
+    rep = outcome.get_result()
+    if call.when == "call" or not call.excinfo:
+        return
+    if not isinstance(call.excinfo.value, pytest.fail.Exception):
+        return
+
+    for entry in call.excinfo.traceback:
+        if getattr(entry, "name", "").startswith("check_"):
+            rep.when = "call"
+            return
 
 
 @pytest.fixture(scope="session")
