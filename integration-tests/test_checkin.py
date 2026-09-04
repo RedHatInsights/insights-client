@@ -12,11 +12,13 @@ import pytest
 from pytest_client_tools.util import Version, loop_until
 
 from constants import HOST_DETAILS
+from cloud_inventory import ensure_cloud_inventory
 
 pytestmark = pytest.mark.usefixtures("register_subman")
 
 
 @pytest.mark.tier2
+@pytest.mark.requires_cloud_inventory
 def test_ultralight_checkin(insights_client, test_config):
     """
     :id: c662fd5e-0751-45e4-8477-6b0d27f735ac
@@ -42,6 +44,7 @@ def test_ultralight_checkin(insights_client, test_config):
         5. Both updated timestamps will be greater than before check-in
     """
     assert insights_client.register(wait_for_registered=True)
+    ensure_cloud_inventory(insights_client)
     assert insights_client.wait_for_inventory()  # required by --check-results
     assert insights_client.wait_for_advisor()  # required by --check-results
 

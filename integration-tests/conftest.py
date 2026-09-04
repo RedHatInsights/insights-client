@@ -5,11 +5,22 @@ import pytest
 import subprocess
 import tempfile
 import logging
+import cloud_inventory
 
 from selinux import SELinuxAVCChecker
 from pytest_client_tools.util import loop_until
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(autouse=True)
+def _skip_when_cloud_inventory_unavailable(request):
+    """Skip remaining requires_cloud_inventory tests after a session probe failure."""
+    if request.node.get_closest_marker("requires_cloud_inventory") is None:
+        yield
+        return
+    cloud_inventory.skip_if_auth_unavailable()
+    yield
 
 
 @pytest.hookimpl(hookwrapper=True)
