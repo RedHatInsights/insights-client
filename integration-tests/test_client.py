@@ -11,6 +11,7 @@ import glob
 import os
 import subprocess
 import pytest
+from cloud_inventory import ensure_cloud_inventory
 from pytest_client_tools.util import Version, loop_until
 
 
@@ -192,6 +193,7 @@ def test_verify_logrotate_feature(insights_client):
 
 @pytest.mark.usefixtures("register_subman")
 @pytest.mark.tier1
+@pytest.mark.requires_cloud_inventory
 def test_insights_details_file_exists(insights_client):
     """
     :id: 2ccc8e00-0e76-47fd-bdb2-27998c0094ab
@@ -214,6 +216,7 @@ def test_insights_details_file_exists(insights_client):
     """
     output_file = "/var/lib/insights/insights-details.json"
     insights_client.register(wait_for_registered=True)
+    ensure_cloud_inventory(insights_client)
     assert insights_client.wait_for_inventory()  # required by --check-results
     assert insights_client.wait_for_advisor()  # required by --check-results
 
