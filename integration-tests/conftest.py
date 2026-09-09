@@ -139,6 +139,15 @@ def add_known_avcs_to_skiplist(avc_checker):
         }
     )  # Bug: https://issues.redhat.com/browse/RHEL-247146
 
+    avc_checker.skip_avc_entry_by_fields(
+        {
+            "subj": "system_u:system_r:insights_core_t:s0",
+            "syscall": "openat",
+            "permission": "write",
+            "obj": "unconfined_u:object_r:cloud_what_var_cache_t:s0",
+        }
+    )  # Bug: https://redhat.atlassian.net/browse/RHEL-180919
+
 
 @pytest.fixture(autouse=True)
 def check_avcs(request):
