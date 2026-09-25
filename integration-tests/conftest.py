@@ -33,9 +33,6 @@ def pytest_runtest_makereport(item, call):
     rep = outcome.get_result()
     if call.when == "call" or not call.excinfo:
         return
-    if not isinstance(call.excinfo.value, pytest.fail.Exception):
-        return
-
     for entry in call.excinfo.traceback:
         if getattr(entry, "name", "").startswith("check_"):
             rep.when = "call"

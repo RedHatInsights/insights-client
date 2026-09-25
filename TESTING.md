@@ -48,3 +48,24 @@ same services API host the wait helpers use:
   returns 401/5xx (for example stage flapping mid-run), that individual test is
   reported as xfailed instead of hanging in `loop_until` until timeout which
   should help with stage Inventory auth failures.
+
+## Universal `check_*` fixtures — FAIL vs ERROR in JUnit
+
+Integration tests use autouse fixtures whose names start with `check_`
+(e.g. `check_avcs`, `check_no_egg_content`). These run during pytest
+teardown after every test.
+
+By default pytest reports any teardown exception as **ERROR**, which
+Jenkins, Polarion, and UMB gating interpret as "the harness broke" rather
+than "the test failed." This masks real product issues and can block
+gating pipelines.
+
+`integration-tests/conftest.py` contains a `pytest_runtest_makereport`
+hook that reclassifies teardown failures from `check_*` fixtures as
+**FAIL** so they appear correctly in JUnit XML and downstream reporting.
+The hook matches on traceback frame name (any frame starting with
+`check_`), not on exception type, so any exception raised inside a
+`check_*` fixture is reclassified.
+
+Fixtures that do **not** start with `check_` are left as ERROR, since
+those represent genuine infrastructure problems.
