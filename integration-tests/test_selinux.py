@@ -6,13 +6,12 @@
 :upstream: Yes
 """
 
-import re
 import subprocess
 import pytest
 from contextlib import contextmanager
 from pytest_client_tools.util import loop_until
+from insights_selinux import EXPECTED_SHADOW_FILE_DENIAL
 
-from selinux import SELinuxAVCChecker
 from constants import REGISTERED_FILE
 
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -68,7 +67,7 @@ def _selinux_mode(mode):
 
 
 @pytest.mark.tier2
-def test_register_unconfined_t_no_context_change(insights_client):
+def test_register_unconfined_t_no_context_change(insights_client, check_avcs):
     """
     :id: 91c9c37f-b954-4fc4-84da-a4a2a9dbee9d
     :title: Test insights-client --register runs in unconfined_t without context change
@@ -97,42 +96,42 @@ def test_register_unconfined_t_no_context_change(insights_client):
            unconfined_t context
         7. No SELinux AVC denials found in audit logs
     """
+    checker = check_avcs
     with _selinux_mode("Enforcing"):
         context = _get_current_context()
         assert "unconfined_t" in context, f"Expected unconfined_t, got: {context}"
 
-        with SELinuxAVCChecker() as checker:
-            result = insights_client.run("--register", selinux_context=None)
-            assert result.returncode == 0, f"Registration failed: {result.returncode}"
+        result = insights_client.run("--register", selinux_context=None)
+        assert result.returncode == 0, f"Registration failed: {result.returncode}"
 
-            # Verify registration
-            def check_registered():
-                status = insights_client.run("--status", check=False, selinux_context=None)
-                return status.returncode == 0 and any(
-                    i in status.stdout for i in ["This host is registered", "Registered"]
+        # Verify registration
+        def check_registered():
+            status = insights_client.run("--status", check=False, selinux_context=None)
+            return status.returncode == 0 and any(
+                i in status.stdout for i in ["This host is registered", "Registered"]
+            )
+
+        assert loop_until(check_registered)
+
+    # Verify process contexts from audit logs
+    for proc_name, scontext, running_context in checker.get_process_contexts():
+        if any(x in proc_name for x in ["insights-core", "insights_client", "python"]):
+            if any(x in running_context for x in ["insights_client_t", "insights_core_t"]):
+                pytest.fail(
+                    f"Process {proc_name} ran in confined context "
+                    f"{running_context} instead of unconfined_t. "
+                    f"Found contexts: {checker.get_process_contexts()}"
                 )
-
-            assert loop_until(check_registered)
-
-        # Verify process contexts from audit logs
-        for proc_name, scontext, running_context in checker.get_process_contexts():
-            if any(x in proc_name for x in ["insights-core", "insights_client", "python"]):
-                if any(x in running_context for x in ["insights_client_t", "insights_core_t"]):
-                    pytest.fail(
-                        f"Process {proc_name} ran in confined context "
-                        f"{running_context} instead of unconfined_t. "
-                        f"Found contexts: {checker.get_process_contexts()}"
-                    )
-                if "unconfined_t" not in scontext:
-                    pytest.fail(
-                        f"Process {proc_name} executed from non-unconfined "
-                        f"context {scontext}. "
-                        f"Found contexts: {checker.get_process_contexts()}"
-                    )
+            if "unconfined_t" not in scontext:
+                pytest.fail(
+                    f"Process {proc_name} executed from non-unconfined "
+                    f"context {scontext}. "
+                    f"Found contexts: {checker.get_process_contexts()}"
+                )
 
 
 @pytest.mark.tier2
-def test_register_unconfined_service_t_registration(insights_client):
+def test_register_unconfined_service_t_registration(insights_client, check_avcs):
     """
     :id: 38fb9519-a4cf-4677-a55a-d7f660a21a3e
     :title: Check registration running in unconfined_service_t context
@@ -158,17 +157,17 @@ def test_register_unconfined_service_t_registration(insights_client):
     """
     # Not switching explicitly to enforcing mode, the system should be already in it
     # unless someone wanted to explicitly test with permissive mode.
-    with SELinuxAVCChecker() as checker:
-        subprocess.run(
-            [
-                "runcon",
-                "system_u:system_r:unconfined_service_t:s0",
-                "/bin/bash",
-                "-c",
-                "insights-client --register",
-            ],
-            check=True,
-        )
+    checker = check_avcs
+    subprocess.run(
+        [
+            "runcon",
+            "system_u:system_r:unconfined_service_t:s0",
+            "/bin/bash",
+            "-c",
+            "insights-client --register",
+        ],
+        check=True,
+    )
 
     # copied from test_register_unconfined_t_no_context_change
     # and reformatted because black demanded it
@@ -216,48 +215,17 @@ def test_selinux_core_context(insights_client, check_avcs):
         4. System is successfully unregistered
         5. The SELinux AVC was hit
     """
-    expected_denial_pattern = re.compile(
-        r"^type=AVC .* avc:  denied  { unlink } for .* "
-        r"name=\.registered .* "
-        r"scontext=system_u:system_r:insights_core_t:s0 "
-        r"tcontext=unconfined_u:object_r:shadow_t:s0 "
-        r"tclass=file permissive=1 $",
-        flags=re.MULTILINE,
-    )
-    check_avcs.skip_avc_re(expected_denial_pattern)
-    check_avcs.skip_avc_entry_by_fields(
-        {
-            "subj": "system_u:system_r:insights_client_t:s0",
-            "syscall": "openat",
-            "obj": "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
-        }
-    )  # Bug: https://issues.redhat.com/browse/CCT-2009
-    check_avcs.skip_avc_entry_by_fields(
-        {
-            "subj": "system_u:system_r:insights_core_t:s0",
-            "syscall": "write",
-            "permission": "setfscreate",
-            "obj": "system_u:system_r:insights_core_t:s0",
-        }  # https://issues.redhat.com/browse/RHEL-146146
-    )
-    check_avcs.skip_avc_entry_by_fields(
-        {
-            "subj": "system_u:system_r:insights_core_t:s0",
-            "syscall": "inotify_add_watch",
-            "permission": "watch",
-        }  # https://issues.redhat.com/browse/RHEL-146146
-    )
     insights_client.register(wait_for_registered=True)
     subprocess.run(["chcon", "-t", "shadow_t", REGISTERED_FILE], check=True)
 
+    checker = check_avcs
     with _selinux_mode("permissive"):
-        with SELinuxAVCChecker() as checker:
-            status = insights_client.run("--unregister")
-            assert status.returncode == 0
-            assert status.stdout == "Successfully unregistered this host.\n"
+        status = insights_client.run("--unregister")
+        assert status.returncode == 0
+        assert status.stdout == "Successfully unregistered this host.\n"
 
     for avc in checker.get_avcs(skiplisted=False):
-        if expected_denial_pattern.search(str(avc)):
+        if EXPECTED_SHADOW_FILE_DENIAL.search(str(avc)):
             # Found the expected AVC
             break
     else:
