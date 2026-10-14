@@ -59,7 +59,7 @@ def test_upload_pre_collected_archive(insights_client, tmp_path):
 
 
 @pytest.mark.tier1
-def test_upload_wrong_content_type(insights_client, tmp_path):
+def test_upload_wrong_content_type(insights_client, tmp_path, test_config):
     """
     :id: bb9ee84a-d262-4c42-ae16-9b45bf5a385c
     :title: Test Upload with Wrong Content Type
@@ -80,6 +80,14 @@ def test_upload_wrong_content_type(insights_client, tmp_path):
         3. The upload process fails with the appropriate message
         4. The upload process fails with the appropriate message
     """
+    if "satellite617" in test_config.environment:
+        pytest.skip(
+            reason=(
+                "SAT-52339: Satellite 6.17 returns HTTP 500 for invalid content-type "
+                "instead of a client validation error (works on 6.18/6.19)"
+            )
+        )
+
     archive_name = "archive.tar.gz"
     archive_location = tmp_path / archive_name
 
@@ -114,7 +122,7 @@ def test_upload_wrong_content_type(insights_client, tmp_path):
 
 
 @pytest.mark.tier1
-def test_upload_too_large_archive(insights_client, tmp_path):
+def test_upload_too_large_archive(insights_client, tmp_path, test_config):
     """
     :id: a71c2b00-a472-4070-8dc8-f66dc9467c10
     :title: Test Upload of Too Large Archive
@@ -132,6 +140,14 @@ def test_upload_too_large_archive(insights_client, tmp_path):
         2. A large archive is created in the temporary directory
         3. The upload process fails with an appropriate message
     """
+    if "satellite617" in test_config.environment:
+        pytest.skip(
+            reason=(
+                "SAT-52339: Satellite 6.17 returns HTTP 500 for oversized archives "
+                "instead of a size-limit validation error (works on 6.18/6.19)"
+            )
+        )
+
     insights_client.register()
     assert loop_until(lambda: insights_client.is_registered)
 
@@ -246,7 +262,7 @@ def test_retries(insights_client):
 
 
 @pytest.mark.tier1
-def test_retries_not_happening_on_unrecoverable_errors(insights_client):
+def test_retries_not_happening_on_unrecoverable_errors(insights_client, test_config):
     """
     :id: 1d740d1c-e98b-4571-86ac-10a233ff65ce
     :title: Test No Retries on Uncoverable Errors
@@ -267,6 +283,14 @@ def test_retries_not_happening_on_unrecoverable_errors(insights_client):
         4. The process fails with an appropriate message
         5. No retries occurred
     """
+    if "satellite617" in test_config.environment:
+        pytest.skip(
+            reason=(
+                "SAT-52339: Satellite 6.17 returns HTTP 500 for invalid content-type, "
+                "which the client treats as recoverable and retries (works on 6.18/6.19)"
+            )
+        )
+
     reg_result = insights_client.run("--register", "--keep-archive")
     assert loop_until(lambda: insights_client.is_registered)
 
