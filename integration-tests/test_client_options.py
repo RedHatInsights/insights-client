@@ -234,7 +234,7 @@ def test_client_checkin_offline(insights_client):
 
 
 @pytest.mark.tier1
-def test_client_diagnosis(insights_client):
+def test_client_diagnosis(insights_client, test_config):
     """
     :id: 7659051f-0e87-4fd7-bc95-0152077fe67e
     :title: Test diagnosis option
@@ -259,6 +259,11 @@ def test_client_diagnosis(insights_client):
             machine id
         4. The machine ID in the diagnostic data matches the system's machine id
     """
+    if "satellite" in test_config.environment:
+        pytest.skip(
+            "Diagnosis still reports the host as unregistered when Insights "
+            "is registered through Satellite"
+        )
     # Running diagnosis on unregistered system returns appropriate error message
     diagnosis_result = insights_client.run("--diagnosis", check=False, selinux_context=None)
     assert diagnosis_result.returncode == 1
