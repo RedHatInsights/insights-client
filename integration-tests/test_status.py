@@ -45,6 +45,7 @@ def test_status_registered(external_candlepin, insights_client):
 
 
 @pytest.mark.tier1
+@pytest.mark.satellite_unsafe
 def test_status_registered_only_locally(external_candlepin, insights_client, external_inventory):
     """
     :id: 2ca3be87-8322-47b8-b451-9ea7fa3dbeef

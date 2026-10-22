@@ -32,6 +32,8 @@ def _core_ships_playbook() -> bool:
     ],
 )
 @pytest.mark.tier1
+@pytest.mark.bootc_unsafe
+@pytest.mark.satellite_unsafe
 def test_official_playbook(insights_client, filename: str):
     """
     :id: 3659e27f-3621-4591-b1c4-b5f0a277bb72
