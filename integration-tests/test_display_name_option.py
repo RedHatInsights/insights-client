@@ -36,6 +36,7 @@ def create_random_string(n: int):
 
 
 @pytest.mark.tier1
+@pytest.mark.satellite_unsafe
 def test_display_name(insights_client, test_config):
     """
     :id: 4758cb21-03b4-4334-852c-791b7c82b50a
