@@ -13,6 +13,7 @@ pytestmark = pytest.mark.usefixtures("register_subman")
 
 
 @pytest.mark.tier1
+@pytest.mark.satellite_unsafe
 def test_insights_client_version_in_inventory(insights_client, external_inventory):
     """
     :id: 1d5d101e-94ad-4404-900f-f86a26450c3f
