@@ -75,6 +75,8 @@ def test_register(insights_client):
 
 
 @pytest.mark.tier1
+@pytest.mark.bootc_unsafe
+@pytest.mark.satellite_unsafe
 def test_register_auth_proxy(insights_client, test_config):
     """
     :id: 1387745b-59a1-4a90-8f6d-dee2afa4723c
@@ -118,6 +120,8 @@ def test_register_auth_proxy(insights_client, test_config):
 
 
 @pytest.mark.tier1
+@pytest.mark.bootc_unsafe
+@pytest.mark.satellite_unsafe
 def test_register_noauth_proxy(insights_client, test_config):
     """
     :id: cbde1ce7-97fc-48d4-85bb-955ca45c8862
