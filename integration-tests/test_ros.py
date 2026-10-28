@@ -21,6 +21,7 @@ SERVICE = "pmlogger"
 
 
 @pytest.mark.tier1
+@pytest.mark.bootc_unsafe
 @pytest.mark.skipif(conftest.check_is_bootc_system(), reason="No dnf on bootc systems")
 def test_ros_install():
     """
@@ -135,6 +136,7 @@ def test_upload_pre_collected_archive_with_ros(insights_client, tmp_path):
 
 
 @pytest.mark.tier1
+@pytest.mark.bootc_unsafe
 @pytest.mark.skipif(conftest.check_is_bootc_system(), reason="No dnf on bootc systems")
 def test_cleanup_pmlogger_and_ros():
     """
