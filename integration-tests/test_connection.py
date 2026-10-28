@@ -109,6 +109,8 @@ def test_http_timeout(insights_client):
 
 
 @pytest.mark.tier1
+@pytest.mark.bootc_unsafe
+@pytest.mark.satellite_unsafe
 def test_noauth_proxy_connection(insights_client, test_config):
     """
     :id: a4bcb7e6-c04f-49d2-8362-525124dc61d9
@@ -146,6 +148,8 @@ def test_noauth_proxy_connection(insights_client, test_config):
 
 
 @pytest.mark.tier1
+@pytest.mark.bootc_unsafe
+@pytest.mark.satellite_unsafe
 def test_auth_proxy_connection(insights_client, test_config):
     """
     :id: 0b3e91d6-3b8b-42c7-8f3b-f7ee1728c311
