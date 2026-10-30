@@ -7,6 +7,8 @@
 """
 
 import os
+import shutil
+
 import pytest
 from pytest_client_tools.util import loop_until
 
@@ -25,6 +27,11 @@ def _system_is_rhel() -> bool:
     return False
 
 
+def _openscap_installed() -> bool:
+    """OpenSCAP provides the oscap command used by --compliance."""
+    return shutil.which("oscap") is not None
+
+
 pytestmark = [
     pytest.mark.usefixtures("register_subman"),
     pytest.mark.skipif(
@@ -36,6 +43,7 @@ pytestmark = [
 
 
 @pytest.mark.tier1
+@pytest.mark.skipif(not _openscap_installed(), reason="OpenSCAP is not installed")
 def test_compliance_option(insights_client):
     """
     :id: caa8b3e1-9347-494c-a1f5-1fa670136834
@@ -74,6 +82,7 @@ def test_compliance_option(insights_client):
 
 
 @pytest.mark.tier1
+@pytest.mark.skipif(not _openscap_installed(), reason="OpenSCAP is not installed")
 def test_compliance_policies_option(insights_client):
     """
     :id: ad3a2073-3a2e-485e-bc7b-fede2111a06a
