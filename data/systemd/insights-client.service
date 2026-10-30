@@ -22,6 +22,47 @@ ExecStart=/usr/bin/insights-client
 Restart=on-failure
 RestartSec=1h
 WatchdogSec=900
+
+# Insights Core must run as root to read protected host data. Keep only the
+# extra privileges used by protected-file collection, Malware process scans,
+# and dmesg collection.
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH CAP_SYS_PTRACE CAP_SYSLOG
+# Keep NoNewPrivileges disabled so SELinux can transition from init_t to
+# insights_client_t.
+
+# Collection and OpenSCAP/Malware scratch files use /tmp and /var/tmp. Keep
+# those private to this run, while making the rest of the host read-only.
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateMounts=yes
+# Client state, log files, RHSM facts, MOTD state, and watchdog pidfiles.
+# Temporary files are covered by PrivateTmp=yes. Optional paths are ignored
+# when their owning packages/features are not installed.
+ReadWritePaths=/etc/insights-client /var/lib/insights
+ReadWritePaths=/var/log/insights-client /var/cache/insights-client /run
+ReadWritePaths=-/etc/motd.d -/etc/rhsm/facts
+
+ProtectClock=yes
+ProtectHostname=yes
+ProtectControlGroups=yes
+ProtectKernelTunables=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+# Rootless tools that create user namespaces may need an override.
+RestrictNamespaces=~user
+# Extend the list if a configured collector needs a nonstandard socket family.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK AF_PACKET
+# Native ABI excludes legacy 32-bit helpers; W^X may exclude JIT-based tools.
+SystemCallArchitectures=native
+MemoryDenyWriteExecute=yes
+# Keep @debug available for Malware's live process scan. Block mount and
+# privileged syscalls as well as clock, module, obsolete, raw-I/O, reboot, and
+# swap operations.
+SystemCallFilter=~@clock @cpu-emulation @module @mount @obsolete @privileged @raw-io @reboot @swap
+UMask=0077
+
 CPUQuota=30%
 MemoryHigh=1G
 MemoryMax=2G
