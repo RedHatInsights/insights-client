@@ -193,6 +193,7 @@ def test_verify_logrotate_feature(insights_client):
 
 @pytest.mark.usefixtures("register_subman")
 @pytest.mark.tier1
+@pytest.mark.satellite_unsafe
 @pytest.mark.requires_cloud_inventory
 def test_insights_details_file_exists(insights_client):
     """

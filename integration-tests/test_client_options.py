@@ -19,6 +19,7 @@ ARCHIVE_CACHE_DIRECTORY = "/var/cache/insights-client"
 
 
 @pytest.mark.tier1
+@pytest.mark.satellite_unsafe
 @pytest.mark.requires_cloud_inventory
 def test_set_ansible_host_info(insights_client, test_config):
     """
@@ -225,6 +226,7 @@ def test_client_checkin_offline(insights_client):
 
 
 @pytest.mark.tier1
+@pytest.mark.satellite_unsafe
 def test_client_diagnosis(insights_client):
     """
     :id: 7659051f-0e87-4fd7-bc95-0152077fe67e
@@ -268,6 +270,7 @@ def test_client_diagnosis(insights_client):
 
 
 @pytest.mark.tier1
+@pytest.mark.satellite_unsafe
 @pytest.mark.requires_cloud_inventory
 def test_check_show_results(insights_client):
     """
