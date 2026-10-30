@@ -48,3 +48,14 @@ same services API host the wait helpers use:
   returns 401/5xx (for example stage flapping mid-run), that individual test is
   reported as xfailed instead of hanging in `loop_until` until timeout which
   should help with stage Inventory auth failures.
+
+## Deployment markers
+
+`bootc_unsafe` and `satellite_unsafe` are registered in `pytest.ini`. A new tier1 test runs on both periodics until it is marked. The image-mode periodic runs `-m "tier1 and not bootc_unsafe"`. The satellite periodic runs `-m "tier1 and not satellite_unsafe"`.
+
+Mark a tier1 test when it does not belong on that periodic:
+
+- `bootc_unsafe` — the test installs, removes packages, or drives `bootc upgrade`, `bootc rollback`, or `bootc switch`.
+- `satellite_unsafe` — the test calls cloud Inventory or Advisor (`external_inventory`, `ensure_cloud_inventory`, `wait_for_inventory`, `wait_for_advisor`).
+
+Proxy registration, proxy connection, and `test_official_playbook` are marked with both. Compliance tests skip when `oscap` is absent.
