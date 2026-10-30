@@ -27,6 +27,8 @@ PLAYBOOK_DIRECTORY = pathlib.Path(__file__).parent.absolute() / "playbooks"
     ],
 )
 @pytest.mark.tier1
+@pytest.mark.bootc_unsafe
+@pytest.mark.satellite_unsafe
 def test_official_playbook(filename: str):
     """
     :id: 3659e27f-3621-4591-b1c4-b5f0a277bb72
