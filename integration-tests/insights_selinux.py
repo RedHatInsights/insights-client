@@ -13,6 +13,18 @@ EXPECTED_SHADOW_FILE_DENIAL = re.compile(
 # This is the deliberate denial asserted by test_selinux_core_context.
 # https://redhat.atlassian.net/browse/CCT-1719
 
+# TF/tmt workdirs on image-mode are labeled container_file_t and often carry MCS
+# categories (e.g. s0:c72,c422). Field skips require an exact obj match, so use a
+# regex that accepts an optional MCS suffix.
+# https://redhat.atlassian.net/browse/TFT-4293
+_MCS_CATEGORIES = r"(?::c\d+(?:,c\d+)*)?"
+CONTAINER_FILE_SEARCH_DENIAL = re.compile(
+    r"avc:\s+denied\s+\{\s*search\s*\}.*?"
+    r"scontext=system_u:system_r:insights_client_t:s0\s+"
+    r"tcontext=system_u:object_r:container_file_t:s0" + _MCS_CATEGORIES + r"\s+tclass=dir",
+    flags=re.DOTALL,
+)
+
 
 _KNOWN_AVC_SKIPS = [
     {
@@ -54,13 +66,7 @@ _KNOWN_AVC_SKIPS = [
             "obj": "unconfined_u:object_r:admin_home_t:s0",
         }
     },  # https://redhat.atlassian.net/browse/TFT-4293
-    {
-        "fields": {
-            "subj": "system_u:system_r:insights_client_t:s0",
-            "permission": "search",
-            "obj": "system_u:object_r:container_file_t:s0",
-        }
-    },  # https://redhat.atlassian.net/browse/TFT-4293
+    {"regex": CONTAINER_FILE_SEARCH_DENIAL},  # https://redhat.atlassian.net/browse/TFT-4293
     {
         "fields": {
             "subj": "system_u:system_r:insights_client_t:s0",
