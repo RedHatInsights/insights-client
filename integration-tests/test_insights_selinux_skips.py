@@ -1,4 +1,8 @@
-from insights_selinux import EXPECTED_SHADOW_FILE_DENIAL, avc_skips_for_test
+from insights_selinux import (
+    CONTAINER_FILE_SEARCH_DENIAL,
+    EXPECTED_SHADOW_FILE_DENIAL,
+    avc_skips_for_test,
+)
 
 
 def test_auditctl_skip_applies_to_all_insights_selinux_tests():
@@ -27,18 +31,38 @@ def test_cloud_what_cache_skip_applies_to_all_insights_tests():
     assert expected in avc_skips_for_test("test_register_with_ros")
 
 
-def test_expected_shadow_denial_matches_ausearch_format():
-    denial = (
-        "type=AVC msg=audit(10/07/2026 09:00:00.000:123): avc:  denied  "
-        '{ unlink } for pid=123 comm="python" name=".registered" '
-        'dev="nvme0n1p3" ino=123 scontext=system_u:system_r:insights_core_t:s0 '
-        "tcontext=unconfined_u:object_r:shadow_t:s0 "
-        "tclass=file permissive=1"
+def test_container_file_search_skip_matches_optional_mcs_categories():
+    """Image-mode TF workdirs label container_file_t with MCS; exact field skips miss."""
+    without_mcs = (
+        "type=AVC msg=audit(01/01/26 00:00:00.000:1) : "
+        "avc:  denied  { search } for  pid=1 comm=insights-client "
+        "name=work-plansxxxxxx "
+        "scontext=system_u:system_r:insights_client_t:s0 "
+        "tcontext=system_u:object_r:container_file_t:s0 "
+        "tclass=dir permissive=0"
+    )
+    with_mcs = (
+        "type=AVC msg=audit(01/01/26 00:00:00.000:2) : "
+        "avc:  denied  { search } for  pid=1 comm=insights-client "
+        "name=work-plansxxxxxx "
+        "scontext=system_u:system_r:insights_client_t:s0 "
+        "tcontext=system_u:object_r:container_file_t:s0:c72,c422 "
+        "tclass=dir permissive=0"
+    )
+    unrelated = (
+        "type=AVC msg=audit(01/01/26 00:00:00.000:3) : "
+        "avc:  denied  { write } for  pid=1 comm=insights-client "
+        "name=insights-client.pid "
+        "scontext=system_u:system_r:insights_client_t:s0 "
+        "tcontext=system_u:object_r:var_run_t:s0 "
+        "tclass=file permissive=0"
     )
 
-    assert EXPECTED_SHADOW_FILE_DENIAL.search(denial)
-    assert EXPECTED_SHADOW_FILE_DENIAL.search(
-        denial.replace('name=".registered"', "name=.registered")
+    assert CONTAINER_FILE_SEARCH_DENIAL.search(without_mcs)
+    assert CONTAINER_FILE_SEARCH_DENIAL.search(with_mcs)
+    assert CONTAINER_FILE_SEARCH_DENIAL.search(unrelated) is None
+    assert {"regex": CONTAINER_FILE_SEARCH_DENIAL} in avc_skips_for_test(
+        "test_client_checkin_unregistered"
     )
 
 
