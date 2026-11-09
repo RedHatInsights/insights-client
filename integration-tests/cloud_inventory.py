@@ -38,18 +38,31 @@ def probe_cloud_inventory_auth(insights_client):
     Raises CloudInventoryAuthError on HTTP 401/5xx.
     Transport errors are logged and ignored (not treated as auth failures).
 
-    Uses the same corp HTTPS proxy as ``wait_for_inventory`` so the probe
-    exercises the same network path (Testing Farm guests reach cloud APIs
-    via squid, not directly).
+    Uses the same services API base URL, TLS verify setting, and corp HTTPS
+    proxy as ``wait_for_inventory`` so the probe exercises the same network
+    path (Testing Farm guests reach cloud/Satellite APIs via squid, not
+    directly).
     """
-    host = insights_client.get_services_api_host()
     insights_id = getattr(insights_client, "uuid", None) or ("00000000-0000-0000-0000-000000000000")
-    url = f"https://{host}/api/inventory/v1/host_exists?insights_id={insights_id}"
+    if hasattr(insights_client, "get_services_api_base_url"):
+        url = (
+            f"{insights_client.get_services_api_base_url()}"
+            f"/inventory/v1/host_exists?insights_id={insights_id}"
+        )
+    else:
+        # Older pytest-client-tools without Satellite base-URL helpers.
+        host = insights_client.get_services_api_host()
+        url = f"https://{host}/api/inventory/v1/host_exists?insights_id={insights_id}"
+    if hasattr(insights_client, "get_services_api_verify"):
+        verify = insights_client.get_services_api_verify()
+    else:
+        verify = True
     try:
         response = requests.get(
             url,
             cert=(CONSUMER_CERT, CONSUMER_KEY),
             timeout=30,
+            verify=verify,
             proxies=HTTPS_PROXIES,
         )
     except requests.exceptions.RequestException as exc:
