@@ -1,7 +1,10 @@
+import datetime
 import pytest
 import subprocess
 import logging
 import cloud_inventory
+
+from pytest_client_tools.util import loop_until
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +53,21 @@ def install_katello_rpm(test_config):
     if "satellite" in test_config.environment:
         cmd = "rpm -qa 'katello-ca-consumer*' | xargs rpm -e"
         subprocess.check_call(cmd, shell=True)
+
+
+def wait_for_services_to_finish(services=None):
+    if services is None:
+        services = (
+            "insights-client.service",
+            "insights-client-results.service",
+        )
+    logger.debug(f"{datetime.datetime.now()} Waiting for systemd services to finish: {services}")
+    for service in services:
+        if not loop_until(
+            lambda: subprocess.run(["systemctl", "is-active", "--quiet", service]).returncode != 0
+        ):
+            logger.info(f"Systemd service is still running: {service}")
+    logger.debug(f"{datetime.datetime.now()} Finished waiting for systemd services to finish")
 
 
 @pytest.fixture(scope="session")
