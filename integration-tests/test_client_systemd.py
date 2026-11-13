@@ -11,7 +11,7 @@ import subprocess
 from pathlib import Path
 import logging
 from pytest_client_tools.util import loop_until
-from constants import INSIGHTS_CLIENT_LOG_FILE
+from conftest import wait_for_services_to_finish
 
 logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.usefixtures("register_subman")
@@ -28,21 +28,38 @@ def _run_systemctl_command(cmd, description="systemctl operation"):
         raise RuntimeError(f"Failed {description}: {e.stderr}") from e
 
 
-def _wait_for_timer_execution_by_logfile(interval_minutes=3, additional_wait_sec=30):
-    """Wait for the systemd timer to execute by monitoring log file creation."""
-    log_file = Path(INSIGHTS_CLIENT_LOG_FILE)
+def _last_upload_state(last_upload_file):
+    """Return the current state of the last-upload marker, if it exists."""
+    try:
+        stat = last_upload_file.stat()
+        return stat.st_mtime_ns, stat.st_size, last_upload_file.read_bytes()
+    except FileNotFoundError:
+        return None
 
-    # Remove existing log file to ensure we detect new execution
-    log_file.unlink(missing_ok=True)
-    logger.debug("Removed existing insights-client log file")
 
-    # Wait for timer interval plus additional buffer time
+def _wait_for_timer_execution_by_lastupload(interval_minutes=3, additional_wait_sec=120):
+    """Wait for the systemd timer to complete an upload."""
+    last_upload_file = Path("/etc/insights-client/.lastupload")
+
+    # Persistent=true can trigger an immediate catch-up run when the timer is
+    # restarted. Drain that run before taking the baseline, otherwise the
+    # catch-up upload would be mistaken for the next scheduled run.
+    wait_for_services_to_finish()
+
+    baseline = _last_upload_state(last_upload_file)
+    logger.debug("Recorded .lastupload baseline: %s", baseline is not None)
+
+    # Wait for the timer interval plus additional buffer time. The timer keeps
+    # the default AccuracySec=1min, so allow enough headroom for the next run.
     wait_time = (interval_minutes * 60) + additional_wait_sec
-    logger.debug(f"Waiting {wait_time} seconds for timer execution...")
+    logger.debug(f"Waiting {wait_time} seconds for .lastupload to change...")
 
-    # Use loop_until to check for log file recreation
+    # A successful upload updates .lastupload. Unlike log-file creation, this
+    # does not require deleting a file that an insights_core_t process may use.
     return loop_until(
-        lambda: log_file.exists(),
+        lambda: (
+            (current := _last_upload_state(last_upload_file)) is not None and current != baseline
+        ),
         poll_sec=10,
         timeout_sec=wait_time,
     )
@@ -55,23 +72,21 @@ def test_data_upload_systemd_timer(insights_client):
     :title: Verify insights-client upload via systemd timer
     :description:
         Ensure that the insights-client data upload is triggered by the
-        systemd timer by verifying log file creation
-    :reference: https://issues.redhat.com/browse/CCT-1557
+        systemd timer by verifying the last-upload marker is updated
+    :reference: https://redhat.atlassian.net/browse/CCT-1557
     :tags: Tier 1
     :steps:
         1. Register the system
         2. Edit insights-client timer to run every 3 minutes with minimal delay
         3. Enable and restart the timer to apply new configuration
-        4. Remove existing log file
-        5. Wait for timer execution and upload to complete
-        6. Verify that log file was recreated, indicating successful upload
+        4. Wait for timer execution and upload to complete
+        5. Verify that the last-upload marker was updated
     :expectedresults:
         1. System is registered successfully
         2. The timer is adjusted to a 3-minute interval and restarted successfully
         3. Timer is active with the new configuration
-        4. Existing log file is removed successfully
-        5. Timer executes and upload completes within expected timeframe
-        6. Log file is recreated, confirming the timer triggered the upload
+        4. Timer executes and upload completes within expected timeframe
+        5. The last-upload marker is updated, confirming the timer triggered the upload
     """
     insights_client.register()
     assert loop_until(lambda: insights_client.is_registered)
@@ -111,15 +126,15 @@ def test_data_upload_systemd_timer(insights_client):
     logger.debug("Timer is now active with override configuration")
 
     try:
-        # Wait for the timer to execute by monitoring log file creation
-        timer_executed = _wait_for_timer_execution_by_logfile(interval_minutes=3)
+        # Wait for the timer to execute by monitoring the last-upload marker
+        timer_executed = _wait_for_timer_execution_by_lastupload(interval_minutes=3)
 
         assert timer_executed, (
             "Timer did not execute within expected timeframe. "
-            "Log file was not recreated, indicating upload did not occur."
+            ".lastupload was not updated, indicating upload did not occur."
         )
 
-        logger.debug("Timer execution confirmed - log file was recreated")
+        logger.debug("Timer execution confirmed - .lastupload was updated")
 
     finally:
         # Clean up: revert timer configuration and restore original state
@@ -132,8 +147,3 @@ def test_data_upload_systemd_timer(insights_client):
         # Ensure override file is removed
         override_path.unlink(missing_ok=True)
         logger.debug("Removed override configuration file")
-
-        # Clean up log file if it exists
-        log_file = Path(INSIGHTS_CLIENT_LOG_FILE)
-        log_file.unlink(missing_ok=True)
-        logger.debug("Cleaned up insights-client log file")
