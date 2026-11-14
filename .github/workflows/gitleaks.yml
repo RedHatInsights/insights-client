@@ -1,0 +1,48 @@
+name: gitleaks
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  gitleaks:
+    name: secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # gitleaks/gitleaks-action@v2 requires a paid GITLEAKS_LICENSE secret for
+      # organization repos, so run the pinned binary directly instead.
+      - name: Install gitleaks
+        run: |
+          set -eu
+          curl -sSL -o /tmp/gitleaks.tar.gz \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          sudo install -m 0755 /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      # Scan only what this PR/push introduces, so pre-existing history cannot
+      # block it. The repo's .gitleaks.toml (default rules + allowlist) is used.
+      - name: Scan for secrets
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          EVENT_BEFORE: ${{ github.event.before }}
+        run: |
+          set -eu
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            git fetch origin "${BASE_REF}" --quiet
+            gitleaks git --config .gitleaks.toml \
+              --log-opts="origin/${BASE_REF}..HEAD" --redact --verbose
+          elif git rev-parse --verify --quiet "${EVENT_BEFORE}^{commit}" >/dev/null 2>&1; then
+            gitleaks git --config .gitleaks.toml \
+              --log-opts="${EVENT_BEFORE}..HEAD" --redact --verbose
+          else
+            # branch just created or force-pushed from a rewritten tip: scan
+            # the current tree instead of the unreachable commit range
+            gitleaks dir --config .gitleaks.toml . --redact --verbose
+          fi

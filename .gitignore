@@ -1,0 +1,14 @@
+# settings.toml is downloaded from SETTINGS_URL by
+# systemtest/tests/integration/test.sh (sanitized, non-secret). Never commit it.
+settings.toml
+
+# Local secrets for integration tests (dynaconf merges this over the downloaded
+# settings.toml). Never commit this file.
+.secrets.toml
+
+# Backup of settings.toml made before the SETTINGS_URL download in
+# systemtest/tests/integration/test.sh
+settings.toml.bak
+
+__pycache__/
+*.py[cod]

@@ -24,8 +24,11 @@ if ! command -v bootc >/dev/null || bootc status | grep -q 'System is not deploy
     scap-security-guide openscap-scanner openscap bzip2-devel
 fi
 
-# If SETTINGS_URL is set (most likely in .testing-farm.yaml), download the settings
-# file from the provided URL. Back up any existing settings.toml before downloading.
+# If SETTINGS_URL is set (most likely in .testing-farm.yaml), download the
+# settings file from the provided URL. The served file is sanitized (secrets
+# stripped); secrets arrive via PYTEST_CLIENT_TOOLS_* environment variables
+# (see README.md, "Integration test configuration"). Back up any existing
+# settings.toml before downloading.
 if [[ -v SETTINGS_URL ]]; then
   [ -f ./settings.toml ] && mv ./settings.toml ./settings.toml.bak
   if ! curl -f "$SETTINGS_URL" -o ./settings.toml; then
