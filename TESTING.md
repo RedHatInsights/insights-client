@@ -7,6 +7,13 @@ $ python3 -m pip install -r src/insights_client/tests/requirements.txt
 $ python3 -m pytest src/insights_client/tests
 ```
 
+## Integration test configuration
+
+Integration tests download a sanitized, non-secret `settings.toml` from
+`SETTINGS_URL` (see `systemtest/tests/integration/test.sh`); secrets are
+provided via `PYTEST_CLIENT_TOOLS_*` environment variables — see
+"Integration test configuration" in [README.md](README.md).
+
 ## Specifying insights-core
 
 By default, the installed insights-core package is used to run the insights-client test suite.

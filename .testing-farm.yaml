@@ -1,7 +1,20 @@
 version: 1
 
+# SETTINGS_URL is delivered as an encrypted Testing Farm secret below, so the
+# location of the served configuration is not advertised in plain text. The
+# decrypted value is the URL of a sanitized (secret-free) settings.toml;
+# credential values never appear in that file — they are delivered separately
+# as Testing Farm secrets (PYTEST_CLIENT_TOOLS_* environment variables
+# override same-named keys from the downloaded file; those blobs are added to
+# this same map by the sync job at cutover). Gating pipelines pass the same
+# URL at request time.
+#
+# To regenerate this entry:
+#   testing-farm encrypt <url> --git-url https://github.com/RedHatInsights/insights-client
+# (authenticates with the team token; keep entries scalar — the sync job's
+# layout validation requires it).
+# See: https://docs.testing-farm.io/Testing%20Farm/0.1/test-request.html#secrets-in-repo-config
 environments:
-  secrets:
-    SETTINGS_URL:
-      - "ea2a89aa-6a78-40e0-906e-140f623c45b0,qdeC9UxsCJa8e4UA/873Bv41RgSaYlbmFWz97gNEkiFjgxBF5wQiZGD3KDgki110oOXmAb4Ty0haFAi7XB2SAZvA7ooXRxrVRP/U3dyxNir5uYmHRurBx+pqb05eOn2zmygqqyTthXNglRvg2kJnjuYB44h4W/u2VUl8Id+s4h67IaX15toY3VKr3vmdH2OxFMUI6U/atyd6Z96jqP0muxhu+KuYv40nYUrgiFqoOedom0DOCPCMQUubeYQ3mexcc0HF/L28bbyt1eFNWYYuSXb61/Gjg3s2Shw7e7RhWquqsvzWlCTa0JFalGD+uELgVxOjwHDbn56drnnjh3oVcpD20YTQQbsAGHCgPhqCuxkqCe9ayIvKKCsYKapdQ+D0NvjXFRyj2QfFrOdQHf4KUOD6MXBWAOswM/3C6x+zj6O5YZTSmMagq1oLgeG2wqhL56zNUGoxqgcRv9MYmgPzbiF6SPlAniMwWjjcDNsmWhMAoJDAI5q7+Tazjs7OvziUsEgMp1T4jZooIdHtAU+ily4K8Gf8lPiQHhxFD1ieC9E1xzBeVuh+tHhuB7E6WN+sISzxXdyUDTd5lyZicqgxJ/GmEjB2K+/MDDW1VI9Yyk6Ee3iUVGGBktvaF0eV4WqrNPv8AAJL/RMDU+T/grUTmf703DQFNWPyISAJDuw8h+Y="
-      - "49aa56cf-d330-42d7-9b53-e95753f0aeb7,TAh6iReeOQ3LMnrYZi+EQn7Nb9nJWa+qNctDIsLVN6Fuoj2OevbtcKvCoIRtBn5igZrCKyUbQ3fhDBYFR6EP3pqbFVaAFDMAzsUPXdXAL6UCegUrBZaouMfBIYtsGrTJbnj7DMNTXfoGjyEz7Z79DBnKzfP0LQhxiDXDBPKXHEkI3b8mGftlkj+CDycI022hn4Etv0KVbWPN/F9W1JizFp/BUQCIam8PzfOc6fayaUDflapV3xNK8OwYrAgkS0WcUGp3QjZPkXcoTgx7wCU6JFCNeTb5EOGQHmjG0Nrd9Spr51dLisdZ0CkeD+r1YZPg3uh5Q73N+cVhPOOsahx7HXQCaaju3bOr2r6Z0soL8jykzGcLyMmIUxooF/YkSsZltdikSZKgZUUT2FvF+TIrREfSKqHlk0rjnPqMs9E1Mr0VKVCChXUCEPJ5BuWkCGnq5AGsijNPJaSs/jjpqb72ZuKtKujAIl5Kqe40mMqY2cjg2FyyiTFu2JPdu4+5T+ohFZsaVXLErKJsmtdIqL0LN9Qzj8j4qZsbe/7rCsAk6GEjyzoB/JwOIaGLWR51iRRQXof6eV/XCNEGIOtHtXZ0N64MkxIEDC827is5OMCpG5KZu669waCaAEPamErDEvcJAW7EWAhmoHiPiCVjawAO8kVGSQKlHMna407S7tN+tiw="
+  default:
+    secrets:
+      SETTINGS_URL: "f59f9cfd-119c-40db-a0e5-c4e9ef277da5,QBaIqvObCv2WNcSBptBFBFkAbbYs0PRCClyWDH9akLaNO1aT6cqpg50H+zWJfRV4jw1nrUsKELqBrAwNuhQGYAvQiLeA9vxCLK/+uFyfiKAaD+wPLdwBrUgupImRTDAEy9lwFYDHRlnwAX77z8KhFAsXKDNOasAA6/V0IcOMCTs/FdgiOa/d4IQoJKfPPbm768210A3+jkBM5ic53sj7ZNIhwfJ+N+cmIr0aRPGQ6uFattkcy14l4UKOe+Z6ay1PRLwDx09weE6SNCblFkBaf2Scm47iSgZdL+TQdev16Sb3P1AIXq7hNOxN1LH7yGab9g2HXaB6JTlQovwHKciHC6XkxviRuIWxAtm7q3dci8ukVVjPaHMOTlJycwWZBAjDNASYvK2dV1F6M0jS68uTWilJYS5zIiNHfAoZq8zE7sCAnZp7HGNP+kcVDsg83sYxbDRTFH05jhie/vcfWcdcmwjAErvCcoTAWVmLpPxbmNO7V7jQPAQGB/IGFpUnCvXjXFOAA8tvjrGESGTvTAfvJrgC95pQQh9MaTEPSLQTBWT2EnZdCtnyGvu52rn0M/vsdmpitkOmBZvMXhg9aYpEmrzX97CW50iiOG2i1d8GKUds2jv8CgoCRJXpaOCOhhHocb0X1Img4e2m0RlP5fR/S34FZ6ObvtpoajXONJtI/C0="
