@@ -58,4 +58,10 @@ jobs:
             provisioning:
               tags:
                 BusinessUnit: sst_csi_client_tools
+          # Non-secret OS trust bundle (contains the Red Hat Internal
+          # Root CA): lets the guest complete the TLS handshake with
+          # Vault on Packit-submitted runs, which do not pass through
+          # the Jenkins pipelines that export it pipeline-side.
+          variables:
+            REQUESTS_CA_BUNDLE: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
     use_internal_tf: true
