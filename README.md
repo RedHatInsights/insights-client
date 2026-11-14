@@ -53,6 +53,34 @@ Follow these instructions to prepare your system for development.
 - Read [TESTING.md](TESTING.md) for more information.
 
 
+## Integration test configuration
+
+Integration tests (via [pytest-client-tools](https://github.com/RedHatInsights/pytest-client-tools)) read their configuration with dynaconf from `settings.toml` at the repository root. The file is **not committed**: when `SETTINGS_URL` is set (most likely in `.testing-farm.yaml`), `systemtest/tests/integration/test.sh` downloads a **sanitized, non-secret `settings.toml`** served by auto-services, backing up any pre-existing local file as `settings.toml.bak`. Locally you can instead provide your own git-ignored `settings.toml` and/or `.secrets.toml`.
+
+The served file contains only non-secret values (hosts, ports, URLs, client IDs, orgs). **Secrets are neither committed nor served** — provide them as environment variables (or a local `.secrets.toml`). The secret keys consumed by this repository's integration tests are:
+
+| Environment variable | Settings key | Used by |
+|----------------------|--------------|---------|
+| `PYTEST_CLIENT_TOOLS_CANDLEPIN__PASSWORD` | `candlepin.password` | `register_subman` fixture (non-Satellite registration) |
+| `PYTEST_CLIENT_TOOLS_CANDLEPIN__ACTIVATION_KEYS` | `candlepin.activation_keys` | `register_subman` fixture (Satellite registration) |
+| `PYTEST_CLIENT_TOOLS_AUTH_PROXY__USERNAME` | `auth_proxy.username` | `test_register_auth_proxy`, `test_auth_proxy_connection` |
+| `PYTEST_CLIENT_TOOLS_AUTH_PROXY__PASSWORD` | `auth_proxy.password` | `test_register_auth_proxy`, `test_auth_proxy_connection` |
+
+Note: Satellite environments (`ENV_FOR_DYNACONF=satellite617`, `satellite618`, `satellite619`, `satellite-capsule`) also require `PYTEST_CLIENT_TOOLS_CANDLEPIN__PASSWORD`. The value is never used for registration there — activation keys do the work — but the served `settings.toml` has `username = ""` in every Satellite section and pytest-client-tools validates that `candlepin.password` exists whenever `candlepin.username` exists; without it the config fails to load and every satellite test errors. Any non-empty dummy value satisfies the validator, though the real account password is recommended.
+
+Notes:
+
+- Nested keys use `PYTEST_CLIENT_TOOLS_<SECTION>__<KEY>` (each `.` becomes `__`, uppercased); flat keys use `PYTEST_CLIENT_TOOLS_<KEY>`. Values are parsed as TOML, so lists must be quoted: `'["key1", "key2"]'`.
+- Precedence is environment variables > `.secrets.toml` > `settings.toml` > defaults; no file needs to exist.
+- `ENV_FOR_DYNACONF` selects the environment (section) to use: `default` (default), `stage`, `prod`, `satellite617`, `satellite618`, `satellite619`, `satellite-capsule`, `testing`.
+
+### Sanitization of the served settings (CCT-3160)
+
+Previously, the file served from `SETTINGS_URL` included secrets and was downloaded over plain HTTP before the test run. The served file is now sanitized — secrets are stripped from it and must be provided via the environment variables above (or a git-ignored local `.secrets.toml`). If you still keep a local plaintext `settings.toml` with secrets, **delete it**.
+
+`settings.toml` remains a downloaded artifact: it is git-ignored and never committed. When `SETTINGS_URL` is set, `systemtest/tests/integration/test.sh` backs up any existing `settings.toml` and downloads the sanitized file; for purely local runs, unset `SETTINGS_URL` and provide your own `settings.toml`/`.secrets.toml` instead.
+
+
 ## Legacy Architecture Summary
 
 insights-client product consists of two parts: insights-client (wrapper) and insights-core. Historically, the Core (also named the Egg) has been distributed through CDN, with an older, frozen version packaged within insights-client itself. Later, the Core delivery model was changed to be RPM as well.
