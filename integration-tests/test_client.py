@@ -12,6 +12,7 @@ import os
 import subprocess
 import pytest
 from cloud_inventory import ensure_cloud_inventory
+from constants import INSIGHTS_CLIENT_LASTUPLOAD_FILE
 from pytest_client_tools.util import Version, loop_until
 
 
@@ -35,12 +36,11 @@ def test_client_files_permission(insights_client):
         2. The insights-client is registered
         3. The permission of /etc/insights-client/.lastupload is set to 0644
     """
-    file_last_upload = "/etc/insights-client/.lastupload"
     with contextlib.suppress(FileNotFoundError):
-        os.remove(file_last_upload)  # performing a cleanup before test
+        os.remove(INSIGHTS_CLIENT_LASTUPLOAD_FILE)  # performing a cleanup before test
     insights_client.register()
     assert loop_until(lambda: insights_client.is_registered)
-    assert oct(os.stat(file_last_upload).st_mode & 0o777) == "0o644"
+    assert oct(os.stat(INSIGHTS_CLIENT_LASTUPLOAD_FILE).st_mode & 0o777) == "0o644"
 
 
 @pytest.fixture()
