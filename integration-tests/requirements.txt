@@ -1,3 +1,5 @@
 git+https://github.com/RedHatInsights/pytest-client-tools@main
 pyyaml
 pytest-subtests
+dynaconf>=3.2.13,<4; python_version >= "3.8"  # deliberate security floor for CVE-2026-33154 (SSTI in @jinja resolver, fixed in 3.2.13); the same floor exists upstream in pytest-client-tools' metadata; capped <4 to stay on the 3.x API
+dynaconf>=3.1.5,<3.2; python_version < "3.8"  # EL8 guests run python 3.6, unsupported by 3.2.13, so they stay on 3.1.x where the advisory applies; the @jinja resolver is unused by our config
