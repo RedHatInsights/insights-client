@@ -57,10 +57,10 @@ RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
 # Native ABI excludes legacy 32-bit helpers; W^X may exclude JIT-based tools.
 SystemCallArchitectures=native
 MemoryDenyWriteExecute=yes
-# Keep @debug available for Malware's live process scan. Block mount and
-# privileged syscalls as well as clock, module, obsolete, raw-I/O, reboot, and
-# swap operations.
-SystemCallFilter=~@clock @cpu-emulation @module @mount @obsolete @privileged @raw-io @reboot @swap
+# Keep @debug available for Malware's live process scan. Leave @mount available
+# for Podman's open_tree and @privileged for package collection syscalls. Block
+# clock, CPU emulation, module, obsolete, raw-I/O, reboot, and swap operations.
+SystemCallFilter=~@clock @cpu-emulation @module @obsolete @raw-io @reboot @swap
 UMask=0077
 
 CPUQuota=30%
