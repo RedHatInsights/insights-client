@@ -66,6 +66,40 @@ Follow these instructions to prepare your system for development.
 - Read [TESTING.md](TESTING.md) for more information.
 
 
+## Integration test configuration
+
+Integration tests (via [pytest-client-tools](https://github.com/RedHatInsights/pytest-client-tools)) read their configuration with dynaconf from `settings.toml` at the repository root. The file is **not committed**: when `SETTINGS_URL` is set (most likely in `.testing-farm.yaml`), `systemtest/tests/integration/test.sh` downloads a **sanitized `settings.toml`** from the provided URL, backing up any pre-existing local file as `settings.toml.bak`. Locally you can instead provide your own git-ignored `settings.toml` and/or `.secrets.toml`.
+
+The served file carries non-secret values (hosts, ports, URLs, client IDs, orgs) directly. Secret values appear in it as `@vault:` sentinels: at config load, pytest-client-tools authenticates to the Vault instance named by `VAULT_ADDR` with the AppRole pair delivered as `VAULT_ROLE_ID` + `VAULT_SECRET_ID` (encrypted Testing Farm secrets, see `.testing-farm.yaml`) and reads each sentinel's value from Vault. `test.sh` also exports `PYTEST_CLIENT_TOOLS_VAULT_REQUIRED=1` when it downloads the served file, so a sentinel that cannot be resolved fails loudly at config load instead of degrading into a misleading validation error.
+
+`PYTEST_CLIENT_TOOLS_*` environment variables (or a local `.secrets.toml`) remain the **override** path — use them for local runs and for real environments the delivered credentials do not cover; they take precedence over any resolved value. The secret keys consumed by this repository's integration tests are:
+
+| Environment variable | Settings key | Used by |
+|----------------------|--------------|---------|
+| `PYTEST_CLIENT_TOOLS_CANDLEPIN__PASSWORD` | `candlepin.password` | `register_subman` fixture (non-Satellite registration) |
+| `PYTEST_CLIENT_TOOLS_CANDLEPIN__ACTIVATION_KEYS` | `candlepin.activation_keys` | `register_subman` fixture (Satellite registration) |
+| `PYTEST_CLIENT_TOOLS_AUTH_PROXY__USERNAME` | `auth_proxy.username` | `test_register_auth_proxy`, `test_auth_proxy_connection` |
+| `PYTEST_CLIENT_TOOLS_AUTH_PROXY__PASSWORD` | `auth_proxy.password` | `test_register_auth_proxy`, `test_auth_proxy_connection` |
+
+Note: Satellite environments (`ENV_FOR_DYNACONF=satellite617`, `satellite618`, `satellite619`, `satellite-capsule`) also require `PYTEST_CLIENT_TOOLS_CANDLEPIN__PASSWORD`. The value is never used for registration there — activation keys do the work — but the served `settings.toml` has `username = ""` in every Satellite section and pytest-client-tools validates that `candlepin.password` exists whenever `candlepin.username` exists; without it the config fails to load and every satellite test errors. Any non-empty dummy value satisfies the validator, though the real account password is recommended.
+
+Notes:
+
+- Nested keys use `PYTEST_CLIENT_TOOLS_<SECTION>__<KEY>` (each `.` becomes `__`, uppercased); flat keys use `PYTEST_CLIENT_TOOLS_<KEY>`. Values are parsed as TOML, so lists must be quoted: `'["key1", "key2"]'`.
+- Precedence is environment variables > `.secrets.toml` > `settings.toml` > defaults; no file needs to exist.
+- `ENV_FOR_DYNACONF` selects the environment (section) to use: `default` (default), `stage`, `prod`, `satellite617`, `satellite618`, `satellite619`, `satellite-capsule`, `testing`.
+- `ENV_FOR_DYNACONF=testing` (the containerized candlepin) is for **manual** runs only — no CI job sets it. When it is set and no explicit credentials are supplied, `test.sh` falls back to the container's well-known `admin`/`admin` credentials.
+
+### Secret handling
+
+Secrets are neither committed nor served in plain text: the file served at
+`SETTINGS_URL` carries them only as `@vault:` sentinels, resolved at config
+load as described above. The environment variables (or a git-ignored local
+`.secrets.toml`) override the resolved values. If a local `settings.toml` of
+yours contains real secrets, **delete it** — keep secrets out of that file
+entirely.
+
+
 ## Architecture Summary
 
 The Insights Client consists of two pieces: the main RPM-installed executable that ships with RHEL (the `insights-client` repository, from here on referred to as **wrapper**), and the updatable core module (the `insights-core` repository, from here on referred to as **egg**).
