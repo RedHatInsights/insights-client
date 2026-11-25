@@ -25,6 +25,16 @@ CONTAINER_FILE_SEARCH_DENIAL = re.compile(
     flags=re.DOTALL,
 )
 
+# insights-core is denied name_connect to custom proxy ports 3127/3129
+# (unreserved_port_t / netport_port_t) instead of the default 3128/squid_port_t.
+PROXY_PORT_CONNECT_DENIAL = re.compile(
+    r"avc:\s+denied\s+\{\s*name_connect\s*\}.*?"
+    r"scontext=system_u:system_r:insights_core_t:s0\s+"
+    r"tcontext=system_u:object_r:(?:unreserved_port_t|netport_port_t):s0\s+"
+    r"tclass=tcp_socket",
+    flags=re.DOTALL,
+)
+
 
 _KNOWN_AVC_SKIPS = [
     {
@@ -82,6 +92,7 @@ _KNOWN_AVC_SKIPS = [
             "obj": "unconfined_u:object_r:cloud_what_var_cache_t:s0",
         }
     },  # https://redhat.atlassian.net/browse/RHEL-180919
+    {"regex": PROXY_PORT_CONNECT_DENIAL},
 ]
 
 _SELINUX_CORE_CONTEXT_SKIPS = [
