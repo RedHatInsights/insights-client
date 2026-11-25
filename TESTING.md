@@ -7,6 +7,17 @@ $ python3 -m pip install -r src/insights_client/tests/requirements.txt
 $ python3 -m pytest src/insights_client/tests
 ```
 
+## Integration test configuration
+
+Integration tests download a sanitized `settings.toml` from `SETTINGS_URL`
+(see `systemtest/tests/integration/test.sh`). The served file carries
+non-secret values directly and secret values as `@vault:` sentinels,
+resolved at config load by pytest-client-tools through the Vault AppRole
+delivered as encrypted Testing Farm secrets; `PYTEST_CLIENT_TOOLS_*`
+environment variables override the resolved values for local runs and real
+environments. See "Integration test configuration" in
+[README.md](README.md) for the full details.
+
 ## Specifying the egg
 
 By default, we are using the `rpm.egg` to run insights-client test suite.
