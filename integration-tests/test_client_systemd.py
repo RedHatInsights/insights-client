@@ -6,10 +6,14 @@
 :upstream: Yes
 """
 
-import pytest
-import subprocess
-from pathlib import Path
+import datetime
 import logging
+import re
+import subprocess
+import tempfile
+from pathlib import Path
+
+import pytest
 from pytest_client_tools.util import loop_until
 from conftest import wait_for_services_to_finish
 from constants import INSIGHTS_CLIENT_LASTUPLOAD_FILE
@@ -148,3 +152,143 @@ def test_data_upload_systemd_timer(insights_client):
         # Ensure override file is removed
         override_path.unlink(missing_ok=True)
         logger.debug("Removed override configuration file")
+
+
+@pytest.mark.tier1
+def test_insights_client_service_completes_without_seccomp_kills(insights_client):
+    """
+    :id: 10b4efb4-4b26-4af7-91c3-45da9be513fd
+    :title: Verify Insights collection succeeds under the systemd sandbox
+    :description:
+        Run the default collection through insights-client.service and verify
+        that it completes successfully without seccomp killing a collector.
+    :reference: https://redhat.atlassian.net/browse/RHEL-288432
+    :tags: Tier 1
+    :steps:
+        1. Register insights-client
+        2. Stop the timer and disable service restarts for this invocation
+        3. Start insights-client.service and wait for it to exit
+        4. Verify the service exits successfully and produces no SECCOMP events
+    :expectedresults:
+        1. The client is registered
+        2. The service runs once with its normal command and sandbox settings
+        3. The service exits with Result=success and ExecMainStatus=0
+        4. No seccomp-denied syscall terminates collection processes
+    """
+    service = "insights-client.service"
+    timer = "insights-client.timer"
+
+    insights_client.register()
+    assert loop_until(lambda: insights_client.is_registered)
+
+    timer_state = _run_systemctl_command(
+        ["systemctl", "show", timer, "--property=ActiveState", "--value"],
+        "check client timer state",
+    ).stdout.strip()
+    timer_was_active = timer_state == "active"
+    override_path = None
+    override_dir = Path("/run/systemd/system/insights-client.service.d")
+
+    try:
+        _run_systemctl_command(["systemctl", "stop", timer], "stop client timer")
+        _run_systemctl_command(["systemctl", "stop", service], "stop client service")
+
+        override_dir.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            prefix="zz-insights-client-integration-",
+            suffix=".conf",
+            dir=override_dir,
+            delete=False,
+        ) as override_file:
+            override_file.write("[Service]\nRestart=no\n")
+            override_path = Path(override_file.name)
+
+        _run_systemctl_command(["systemctl", "daemon-reload"], "load service override")
+
+        auditctl_result = subprocess.run(
+            ["auditctl", "-s"], capture_output=True, text=True, check=False
+        )
+        assert (
+            auditctl_result.returncode == 0
+        ), f"auditctl -s failed: {auditctl_result.stderr or auditctl_result.stdout}"
+        audit_status = dict(
+            line.split(maxsplit=1)
+            for line in auditctl_result.stdout.splitlines()
+            if len(line.split(maxsplit=1)) == 2
+        )
+        assert audit_status.get("enabled") in {"1", "2"}, (
+            "Kernel auditing is disabled; cannot verify seccomp events: "
+            f"{auditctl_result.stdout}"
+        )
+
+        start_time = datetime.datetime.now()
+        start_result = subprocess.run(
+            ["systemctl", "start", "--wait", service],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        wait_for_services_to_finish()
+        end_time = datetime.datetime.now()
+
+        status_result = _run_systemctl_command(
+            [
+                "systemctl",
+                "show",
+                service,
+                "--property=Result",
+                "--property=ExecMainStatus",
+            ],
+            "read service result",
+        )
+        service_status = dict(
+            line.split("=", 1) for line in status_result.stdout.splitlines() if "=" in line
+        )
+
+        audit_result = subprocess.run(
+            ["ausearch", "-m", "SECCOMP", "-ts", "boot", "--raw"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        seccomp_records = [
+            line for line in audit_result.stdout.splitlines() if line.startswith("type=SECCOMP ")
+        ]
+        seccomp_events = []
+        for record in seccomp_records:
+            match = re.search(r"msg=audit\((\d+(?:\.\d+)?):", record)
+            assert match, f"Could not parse seccomp audit record: {record}"
+            event_time = float(match.group(1))
+            if start_time.timestamp() <= event_time <= end_time.timestamp():
+                seccomp_events.append(record)
+
+        assert start_result.returncode == 0, (
+            "systemctl start --wait failed:\n"
+            f"stdout: {start_result.stdout}\nstderr: {start_result.stderr}"
+        )
+        assert service_status.get("Result") == "success", service_status
+        assert service_status.get("ExecMainStatus") == "0", service_status
+        assert not audit_result.stderr.strip(), f"ausearch reported an error: {audit_result.stderr}"
+        assert audit_result.returncode in (
+            0,
+            1,
+        ), f"ausearch failed: {audit_result.stderr or audit_result.stdout}"
+        if audit_result.returncode == 1:
+            assert not audit_result.stdout.strip(), (
+                "ausearch returned 1 with output, so the audit query may have failed: "
+                f"{audit_result.stdout}"
+            )
+        assert (
+            not seccomp_events
+        ), "Seccomp events occurred while insights-client.service was running:\n" + "\n".join(
+            seccomp_events
+        )
+    finally:
+        subprocess.run(["systemctl", "stop", service], check=False)
+        if override_path is not None:
+            override_path.unlink(missing_ok=True)
+        subprocess.run(["systemctl", "daemon-reload"], check=False)
+        subprocess.run(["systemctl", "reset-failed", service], check=False)
+        if timer_was_active:
+            _run_systemctl_command(["systemctl", "start", timer], "restore client timer")

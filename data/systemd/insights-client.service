@@ -57,10 +57,15 @@ RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
 # Native ABI excludes legacy 32-bit helpers; W^X may exclude JIT-based tools.
 SystemCallArchitectures=native
 MemoryDenyWriteExecute=yes
-# Keep @debug available for Malware's live process scan. Block mount and
-# privileged syscalls as well as clock, module, obsolete, raw-I/O, reboot, and
-# swap operations.
-SystemCallFilter=~@clock @cpu-emulation @module @mount @obsolete @privileged @raw-io @reboot @swap
+# Keep @debug available for Malware's live process scan. On the tested RHEL
+# systemd, Podman's open_tree is in @mount; allowing it leaves the full,
+# version-dependent @mount group available. Revisit if the systemd version
+# changes (newer systemd places open_tree in @file-system).
+# Keep the remaining @privileged syscalls available for package collection
+# (e.g. rpm, dnf, and subscription-manager); its @clock, @module, @raw-io,
+# @reboot, and @swap subgroups are still blocked below. Also block CPU emulation
+# and obsolete syscalls.
+SystemCallFilter=~@clock @cpu-emulation @module @obsolete @raw-io @reboot @swap
 UMask=0077
 
 CPUQuota=30%
